@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/menu_retweet"
+        android:icon="@drawable/ic_repeat"
+        android:title="@string/retweet"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/menu_star"
+        android:icon="@drawable/ic_star"
+        android:title="@string/favorite"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/menu_copy"
+        android:title="@string/copy"
+        app:showAsAction="never" />
+</menu>

@@ -1,0 +1,24 @@
+<resources>
+
+    <string name="app_name">Robird</string>
+    <string name="settings">Settings</string>
+    <string name="home">Home</string>
+    <string name="mentions">Mentions</string>
+    <string name="retweets">Retweets</string>
+    <string name="favorites">Favorites</string>
+    <string name="directs">Directs</string>
+    <string name="lists">Lists</string>
+    <string name="whats">What\'s happening?</string>
+    <string name="compose">Compose</string>
+    <string name="camera">Camera</string>
+    <string name="tweet">Tweet</string>
+    <string name="retweet">Retweet</string>
+    <string name="favorite">Favorite</string>
+    <string name="copy">Copy</string>
+    <string name="successfully_retweeted">Successfully retweeted</string>
+    <string name="successfully_favorited">Successfully favorited</string>
+    <string name="successfully_deleted">Successfully deleted</string>
+    <string name="successfully_unfavorited">Successfully unfavorited</string>
+    <string name="successfully_unretweeted">Successfully unretweeted</string>
+
+</resources>

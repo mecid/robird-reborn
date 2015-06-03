@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/navigation_item_home"
+            android:icon="@drawable/ic_home_grey"
+            android:orderInCategory="0"
+            android:title="@string/home" />
+
+        <item
+            android:id="@+id/navigation_item_mentions"
+            android:icon="@drawable/ic_notifications_grey"
+            android:orderInCategory="1"
+            android:title="@string/mentions" />
+
+        <item
+            android:id="@+id/navigation_item_retweets"
+            android:icon="@drawable/ic_repeat_grey"
+            android:orderInCategory="2"
+            android:title="@string/retweets" />
+
+        <item
+            android:id="@+id/navigation_item_favorites"
+            android:icon="@drawable/ic_star_grey"
+            android:orderInCategory="3"
+            android:title="@string/favorites" />
+
+        <item
+            android:id="@+id/navigation_item_directs"
+            android:icon="@drawable/ic_message_grey"
+            android:orderInCategory="4"
+            android:title="@string/directs" />
+
+        <item
+            android:id="@+id/navigation_item_lists"
+            android:icon="@drawable/ic_list_grey"
+            android:orderInCategory="5"
+            android:title="@string/lists" />
+    </group>
+
+    <group android:checkableBehavior="none">
+        <item
+            android:id="@+id/navigation_item_settings"
+            android:icon="@drawable/ic_settings_grey"
+            android:orderInCategory="100"
+            android:title="@string/settings" />
+    </group>
+</menu>
