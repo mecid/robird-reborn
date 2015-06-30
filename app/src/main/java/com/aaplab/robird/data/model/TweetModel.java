@@ -1,5 +1,6 @@
 package com.aaplab.robird.data.model;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 
 import com.aaplab.robird.data.entity.Account;
@@ -41,6 +42,51 @@ public class TweetModel extends BaseTwitterModel {
         });
     }
 
+    public Observable<Status> retweet() {
+        return Observable.create(new Observable.OnSubscribe<Status>() {
+            @Override
+            public void call(Subscriber<? super Status> subscriber) {
+                try {
+                    Status status = mTwitter.showStatus(mTweet.tweetId);
+                    // is retweeted by me working only for tweet from my timeline
+                    if (status.isRetweetedByMe()) {
+                        status = mTwitter.destroyStatus(status.getCurrentUserRetweetId());
+                    } else {
+                        status = mTwitter.retweetStatus(mTweet.tweetId);
+                    }
+
+                    updateLocalTweet(status);
+                    subscriber.onNext(status);
+                    subscriber.onCompleted();
+                } catch (TwitterException e) {
+                    subscriber.onError(e);
+                }
+            }
+        });
+    }
+
+    public Observable<Status> favorite() {
+        return Observable.create(new Observable.OnSubscribe<Status>() {
+            @Override
+            public void call(Subscriber<? super Status> subscriber) {
+                try {
+                    Status status = mTwitter.showStatus(mTweet.tweetId);
+
+                    if (status.isFavorited())
+                        status = mTwitter.destroyFavorite(status.getId());
+                    else
+                        status = mTwitter.createFavorite(status.getId());
+
+                    updateLocalTweet(status);
+                    subscriber.onNext(status);
+                    subscriber.onCompleted();
+                } catch (TwitterException e) {
+                    subscriber.onError(e);
+                }
+            }
+        });
+    }
+
     public Observable<List<Tweet>> conversation() {
         return Observable.create(new Observable.OnSubscribe<List<Tweet>>() {
             @Override
@@ -66,6 +112,21 @@ public class TweetModel extends BaseTwitterModel {
                 }
             }
         });
+    }
+
+    private void updateLocalTweet(Status status) {
+        ContentValues values = new ContentValues();
+
+        values.put(TweetContract.FAVORITED, status.isFavorited());
+        values.put(TweetContract.RETWEETED_BY_ME, status.isRetweetedByMe());
+        values.put(TweetContract.RETWEETED_BY, status.isRetweet() ? status.getUser().getScreenName() : "");
+
+        Inject.contentResolver()
+                .update(TweetContract.CONTENT_URI, values,
+                        String.format("%s=%d AND %s=%d",
+                                TweetContract.ACCOUNT_ID, mAccount.id,
+                                TweetContract.TWEET_ID, mTweet.tweetId),
+                        null);
     }
 
     private Tweet findTweetById(long id) {
