@@ -47,13 +47,14 @@ public class TweetModel extends BaseTwitterModel {
             @Override
             public void call(Subscriber<? super Status> subscriber) {
                 try {
-                    Status status = mTwitter.showStatus(mTweet.tweetId);
-                    // is retweeted by me working only for tweet from my timeline
-                    if (status.isRetweetedByMe()) {
-                        status = mTwitter.destroyStatus(status.getCurrentUserRetweetId());
-                    } else {
-                        status = mTwitter.retweetStatus(mTweet.tweetId);
-                    }
+                    Status status = mTwitter.retweetStatus(mTweet.tweetId);
+//                    Status status = mTwitter.showStatus(mTweet.tweetId);
+//                    TODO is retweeted by me working only for tweet from my timeline
+//                    if (status.isRetweetedByMe()) {
+//                        mTwitter.destroyStatus(status.getCurrentUserRetweetId());
+//                    } else {
+//                        mTwitter.retweetStatus(mTweet.tweetId);
+//                    }
 
                     updateLocalTweet(status);
                     subscriber.onNext(status);

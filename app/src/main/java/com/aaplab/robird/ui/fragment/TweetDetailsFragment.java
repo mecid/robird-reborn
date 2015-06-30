@@ -102,7 +102,7 @@ public class TweetDetailsFragment extends BaseSwipeToRefreshRecyclerFragment {
                                     super.onNext(status);
                                     Snackbar.make(
                                             getView(),
-                                            status.isRetweetedByMe() ? R.string.successfully_retweeted : R.string.successfully_unretweeted,
+                                            R.string.successfully_retweeted,
                                             Snackbar.LENGTH_SHORT
                                     ).show();
                                 }
