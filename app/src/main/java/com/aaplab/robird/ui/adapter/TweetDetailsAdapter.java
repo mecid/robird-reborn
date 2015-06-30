@@ -57,12 +57,12 @@ public class TweetDetailsAdapter extends TweetAdapter {
         return position == 0 ? TWEET_DETAILS_TYPE : TWEET_ITEM_TYPE;
     }
 
-    public void showDetails(Status status) {
+    public void addDetails(Status status) {
         mDetailedStatus = status;
         notifyDataSetChanged();
     }
 
-    public void showConversation(List<Tweet> tweets) {
+    public void addConversation(List<Tweet> tweets) {
         mTweets.addAll(tweets);
         notifyDataSetChanged();
     }

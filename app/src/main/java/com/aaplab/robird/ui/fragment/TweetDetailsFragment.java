@@ -59,7 +59,7 @@ public class TweetDetailsFragment extends BaseSwipeToRefreshRecyclerFragment {
                             @Override
                             public void onNext(Status status) {
                                 super.onNext(status);
-                                mTweetDetailsAdapter.showDetails(status);
+                                mTweetDetailsAdapter.addDetails(status);
                             }
                         })
         );
@@ -73,7 +73,7 @@ public class TweetDetailsFragment extends BaseSwipeToRefreshRecyclerFragment {
                             @Override
                             public void onNext(List<Tweet> tweets) {
                                 super.onNext(tweets);
-                                mTweetDetailsAdapter.showConversation(tweets);
+                                mTweetDetailsAdapter.addConversation(tweets);
                             }
                         })
         );
