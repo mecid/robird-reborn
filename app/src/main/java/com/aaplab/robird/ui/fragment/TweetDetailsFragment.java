@@ -2,8 +2,10 @@ package com.aaplab.robird.ui.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import com.aaplab.robird.R;
 import com.aaplab.robird.data.entity.Account;
@@ -83,6 +85,50 @@ public class TweetDetailsFragment extends BaseSwipeToRefreshRecyclerFragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.tweet_details, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        if (item.getItemId() == R.id.menu_retweet) {
+            mSubscriptions.add(
+                    mTweetModel
+                            .retweet()
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new DefaultObserver<Status>() {
+                                @Override
+                                public void onNext(Status status) {
+                                    super.onNext(status);
+                                    Snackbar.make(
+                                            getView(),
+                                            status.isRetweetedByMe() ? R.string.successfully_retweeted : R.string.successfully_unretweeted,
+                                            Snackbar.LENGTH_SHORT
+                                    ).show();
+                                }
+                            })
+            );
+        } else if (item.getItemId() == R.id.menu_star) {
+            mSubscriptions.add(
+                    mTweetModel
+                            .favorite()
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new DefaultObserver<Status>() {
+                                @Override
+                                public void onNext(Status status) {
+                                    super.onNext(status);
+                                    Snackbar.make(
+                                            getView(),
+                                            status.isFavorited() ? R.string.successfully_favorited : R.string.successfully_unfavorited,
+                                            Snackbar.LENGTH_SHORT
+                                    ).show();
+                                }
+                            })
+            );
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
