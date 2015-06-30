@@ -1,6 +1,6 @@
 package com.aaplab.robird.ui.adapter;
 
-import android.content.Context;
+import android.app.Activity;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.aaplab.robird.R;
 import com.aaplab.robird.data.entity.Account;
 import com.aaplab.robird.data.entity.Tweet;
+import com.aaplab.robird.ui.activity.TweetDetailsActivity;
 import com.aaplab.robird.util.RoundTransformation;
 import com.squareup.picasso.Picasso;
 
@@ -26,20 +27,20 @@ import butterknife.ButterKnife;
 public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder> {
     public static final String IMAGE_LOADING_TAG = "tweet";
 
-    private List<Tweet> mTweets;
-    private Account mAccount;
-    private Context mContext;
+    protected List<Tweet> mTweets;
+    protected Activity mActivity;
+    protected Account mAccount;
 
-    public TweetAdapter(Context context, Account account, List<Tweet> tweets) {
+    public TweetAdapter(Activity activity, Account account, List<Tweet> tweets) {
         super();
-        mContext = context;
-        mTweets = tweets;
+        mActivity = activity;
         mAccount = account;
+        mTweets = tweets;
     }
 
     @Override
     public TweetHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new TweetHolder(LayoutInflater.from(mContext).inflate(R.layout.tweet_list_item, parent, false));
+        return new TweetHolder(LayoutInflater.from(mActivity).inflate(R.layout.tweet_item, parent, false));
     }
 
     @Override
@@ -55,29 +56,29 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
         holder.usernameTextView.setText("@" + tweet.username);
         holder.fullNameTextView.setText(tweet.fullname);
 
-        StringBuilder sb = new StringBuilder();
+        StringBuilder information = new StringBuilder();
 
         if (!TextUtils.isEmpty(tweet.retweetedBy))
-            sb.append(tweet.retweetedBy).append(" ");
+            information.append(tweet.retweetedBy).append(" ");
 
-        sb.append(DateUtils.getRelativeTimeSpanString(tweet.createdAt));
-        sb.append(" ").append(tweet.source);
+        information.append(DateUtils.getRelativeTimeSpanString(tweet.createdAt));
+        information.append(" ").append(tweet.source);
 
-        holder.infoTextView.setText(sb.toString());
+        holder.infoTextView.setText(information.toString());
         holder.retweetImageView.setVisibility(TextUtils.isEmpty(tweet.retweetedBy) ? View.GONE : View.VISIBLE);
         holder.mediaImageView.setVisibility(TextUtils.isEmpty(tweet.media) ? View.GONE : View.VISIBLE);
 
         if (holder.mediaImageView.getVisibility() == View.VISIBLE) {
             String[] media = tweet.media.split("\\+\\+\\+");
 
-            Picasso.with(mContext)
+            Picasso.with(mActivity)
                     .load(media[0])
                     .tag(IMAGE_LOADING_TAG)
                     .centerCrop().fit()
                     .into(holder.mediaImageView);
         }
 
-        Picasso.with(mContext)
+        Picasso.with(mActivity)
                 .load(tweet.avatar)
                 .tag(IMAGE_LOADING_TAG)
                 .centerCrop().fit()
@@ -87,12 +88,12 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                TweetDetailsActivity.start(mContext, mAccount, tweet);
+                TweetDetailsActivity.start(mActivity, mAccount, tweet);
             }
         });
     }
 
-    static final class TweetHolder extends RecyclerView.ViewHolder {
+    static class TweetHolder extends RecyclerView.ViewHolder {
 
         ImageView avatarImageView;
         TextView usernameTextView;
