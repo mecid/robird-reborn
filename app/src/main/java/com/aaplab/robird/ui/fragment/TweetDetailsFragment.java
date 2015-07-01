@@ -1,5 +1,8 @@
 package com.aaplab.robird.ui.fragment;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -126,6 +129,10 @@ public class TweetDetailsFragment extends BaseSwipeToRefreshRecyclerFragment {
                                 }
                             })
             );
+        } else if (item.getItemId() == R.id.menu_copy) {
+            ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+            clipboard.setPrimaryClip(ClipData.newPlainText("", mTweet.text));
+            Snackbar.make(getView(), R.string.copied_to_clipboard, Snackbar.LENGTH_SHORT).show();
         }
 
         return super.onOptionsItemSelected(item);
