@@ -1,7 +1,6 @@
 package com.aaplab.robird.ui.adapter;
 
 import android.app.Activity;
-import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,11 +9,10 @@ import android.widget.TextView;
 import com.aaplab.robird.R;
 import com.aaplab.robird.data.entity.Account;
 import com.aaplab.robird.data.entity.Tweet;
+import com.aaplab.robird.util.LinkifyUtils;
 import com.google.common.collect.Lists;
-import com.twitter.Regex;
 
 import java.util.List;
-import java.util.regex.Matcher;
 
 import butterknife.ButterKnife;
 import twitter4j.Status;
@@ -54,18 +52,7 @@ public class TweetDetailsAdapter extends TweetAdapter {
                 tweetDetailsHolder.retweetsCountTextView.setText(mDetailedStatus.getRetweetCount() + " ");
             }
 
-            final Linkify.TransformFilter transformFilter = new Linkify.TransformFilter() {
-                @Override
-                public String transformUrl(Matcher match, String url) {
-                    return url.trim();
-                }
-            };
-
-            Linkify.addLinks(tweetDetailsHolder.textView, Regex.VALID_URL, "http://", null, transformFilter);
-            Linkify.addLinks(tweetDetailsHolder.textView, Regex.VALID_URL, "https://", null, transformFilter);
-            Linkify.addLinks(tweetDetailsHolder.textView, Regex.VALID_MENTION_OR_LIST, null, null, transformFilter);
-            Linkify.addLinks(tweetDetailsHolder.textView, Regex.VALID_HASHTAG, null, null, transformFilter);
-
+            LinkifyUtils.linkifyTextView(holder.textView, true);
         }
     }
 
