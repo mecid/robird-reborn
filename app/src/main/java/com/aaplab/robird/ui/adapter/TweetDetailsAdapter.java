@@ -1,6 +1,7 @@
 package com.aaplab.robird.ui.adapter;
 
 import android.app.Activity;
+import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import com.aaplab.robird.R;
 import com.aaplab.robird.data.entity.Account;
 import com.aaplab.robird.data.entity.Tweet;
 import com.google.common.collect.Lists;
+import com.twitter.Regex;
 
 import java.util.List;
 
@@ -50,6 +52,11 @@ public class TweetDetailsAdapter extends TweetAdapter {
                 tweetDetailsHolder.favoritesCountTextView.setText(mDetailedStatus.getFavoriteCount() + " ");
                 tweetDetailsHolder.retweetsCountTextView.setText(mDetailedStatus.getRetweetCount() + " ");
             }
+
+            Linkify.addLinks(tweetDetailsHolder.textView, Regex.VALID_URL, null);
+            Linkify.addLinks(tweetDetailsHolder.textView, Regex.VALID_MENTION_OR_LIST, null);
+            Linkify.addLinks(tweetDetailsHolder.textView, Regex.VALID_HASHTAG, null);
+
         }
     }
 
