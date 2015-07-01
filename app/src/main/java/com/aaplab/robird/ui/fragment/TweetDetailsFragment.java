@@ -104,7 +104,7 @@ public class TweetDetailsFragment extends BaseSwipeToRefreshRecyclerFragment {
                                 public void onNext(Status status) {
                                     super.onNext(status);
                                     Snackbar.make(
-                                            getView(),
+                                            getActivity().findViewById(R.id.coordinator),
                                             R.string.successfully_retweeted,
                                             Snackbar.LENGTH_SHORT
                                     ).show();
@@ -122,7 +122,7 @@ public class TweetDetailsFragment extends BaseSwipeToRefreshRecyclerFragment {
                                 public void onNext(Status status) {
                                     super.onNext(status);
                                     Snackbar.make(
-                                            getView(),
+                                            getActivity().findViewById(R.id.coordinator),
                                             status.isFavorited() ? R.string.successfully_favorited : R.string.successfully_unfavorited,
                                             Snackbar.LENGTH_SHORT
                                     ).show();
@@ -132,7 +132,8 @@ public class TweetDetailsFragment extends BaseSwipeToRefreshRecyclerFragment {
         } else if (item.getItemId() == R.id.menu_copy) {
             ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
             clipboard.setPrimaryClip(ClipData.newPlainText("", mTweet.text));
-            Snackbar.make(getView(), R.string.copied_to_clipboard, Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(getActivity().findViewById(R.id.coordinator),
+                    R.string.copied_to_clipboard, Snackbar.LENGTH_SHORT).show();
         }
 
         return super.onOptionsItemSelected(item);
