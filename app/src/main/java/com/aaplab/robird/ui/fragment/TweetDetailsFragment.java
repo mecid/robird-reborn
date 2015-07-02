@@ -3,6 +3,7 @@ package com.aaplab.robird.ui.fragment;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -134,6 +135,11 @@ public class TweetDetailsFragment extends BaseSwipeToRefreshRecyclerFragment {
             clipboard.setPrimaryClip(ClipData.newPlainText("", mTweet.text));
             Snackbar.make(getActivity().findViewById(R.id.coordinator),
                     R.string.copied_to_clipboard, Snackbar.LENGTH_SHORT).show();
+        } else if (item.getItemId() == R.id.menu_share) {
+            Intent shareIntent = new Intent(Intent.ACTION_SEND);
+            shareIntent.setType("text/plain");
+            shareIntent.putExtra(Intent.EXTRA_TEXT, mTweet.text);
+            startActivity(Intent.createChooser(shareIntent, ""));
         }
 
         return super.onOptionsItemSelected(item);
