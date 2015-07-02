@@ -15,6 +15,11 @@
         app:showAsAction="ifRoom" />
 
     <item
+        android:id="@+id/menu_share"
+        android:title="@string/share"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/menu_copy"
         android:title="@string/copy"
         app:showAsAction="never" />

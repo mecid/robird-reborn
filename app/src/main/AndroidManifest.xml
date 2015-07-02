@@ -44,6 +44,10 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".ui.activity.TweetDetailsActivity"
+            android:label="@string/tweet" />
+
         <provider
             android:name=".data.provider.RobirdContentProvider"
             android:authorities="com.aaplab.robird" />

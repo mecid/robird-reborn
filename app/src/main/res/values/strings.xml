@@ -20,5 +20,7 @@
     <string name="successfully_deleted">Successfully deleted</string>
     <string name="successfully_unfavorited">Successfully unfavorited</string>
     <string name="successfully_unretweeted">Successfully unretweeted</string>
+    <string name="copied_to_clipboard">Copied to clipboard</string>
+    <string name="share">Share</string>
 
 </resources>
