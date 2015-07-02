@@ -7,8 +7,6 @@ import android.text.style.URLSpan;
 import android.text.util.Linkify;
 import android.widget.TextView;
 
-import com.twitter.Regex;
-
 import java.util.regex.Pattern;
 
 /**
@@ -22,11 +20,8 @@ public class LinkifyUtils {
     public static void linkifyTextView(TextView textView, boolean clickable) {
 
         Linkify.addLinks(textView, Linkify.WEB_URLS);
-
-        Pattern mentionPattern = Pattern.compile("@([A-Za-z0-9_-]+)");
-        Linkify.addLinks(textView, mentionPattern, MENTION_SCHEME);
-
-        Linkify.addLinks(textView, Regex.VALID_HASHTAG, HASHTAG_SCHEME);
+        Linkify.addLinks(textView, Pattern.compile("@([A-Za-z0-9_-]+)"), MENTION_SCHEME);
+        Linkify.addLinks(textView, Pattern.compile("#([A-Za-z0-9_-]+)"), HASHTAG_SCHEME);
 
         stripUnderlines(textView);
 
