@@ -33,7 +33,7 @@ public class TweetModel extends BaseTwitterModel {
             @Override
             public void call(Subscriber<? super Status> subscriber) {
                 try {
-                    subscriber.onNext(mTwitter.showStatus(mTweet.tweetId));
+                    subscriber.onNext(mTwitter.showStatus(mTweet.tweetId()));
                     subscriber.onCompleted();
                 } catch (TwitterException e) {
                     subscriber.onError(e);
@@ -47,7 +47,7 @@ public class TweetModel extends BaseTwitterModel {
             @Override
             public void call(Subscriber<? super Status> subscriber) {
                 try {
-                    Status status = mTwitter.retweetStatus(mTweet.tweetId);
+                    Status status = mTwitter.retweetStatus(mTweet.tweetId());
 //                    Status status = mTwitter.showStatus(mTweet.tweetId);
 //                    TODO is retweeted by me working only for tweet from my timeline
 //                    if (status.isRetweetedByMe()) {
@@ -71,7 +71,7 @@ public class TweetModel extends BaseTwitterModel {
             @Override
             public void call(Subscriber<? super Status> subscriber) {
                 try {
-                    Status status = mTwitter.showStatus(mTweet.tweetId);
+                    Status status = mTwitter.showStatus(mTweet.tweetId());
 
                     if (status.isFavorited())
                         status = mTwitter.destroyFavorite(status.getId());
@@ -93,17 +93,17 @@ public class TweetModel extends BaseTwitterModel {
             @Override
             public void call(Subscriber<? super List<Tweet>> subscriber) {
                 List<Tweet> conversation = new ArrayList<>();
-                long inReplyToStatus = mTweet.inReplyToStatus;
+                long inReplyToStatus = mTweet.inReplyToStatus();
 
                 try {
                     while (inReplyToStatus > 0) {
                         Tweet temp = findTweetById(inReplyToStatus);
                         if (temp == null) {
-                            temp = new Tweet(mTwitter.showStatus(inReplyToStatus));
+                            temp = Tweet.from(mTwitter.showStatus(inReplyToStatus));
                         }
 
                         conversation.add(temp);
-                        inReplyToStatus = temp.inReplyToStatus;
+                        inReplyToStatus = temp.inReplyToStatus();
                     }
 
                     subscriber.onNext(conversation);
@@ -125,8 +125,8 @@ public class TweetModel extends BaseTwitterModel {
         Inject.contentResolver()
                 .update(TweetContract.CONTENT_URI, values,
                         String.format("%s=%d AND %s=%d",
-                                TweetContract.ACCOUNT_ID, mAccount.id,
-                                TweetContract.TWEET_ID, mTweet.tweetId),
+                                TweetContract.ACCOUNT_ID, mAccount.id(),
+                                TweetContract.TWEET_ID, mTweet.tweetId()),
                         null);
     }
 
@@ -135,7 +135,7 @@ public class TweetModel extends BaseTwitterModel {
                 .query(TweetContract.CONTENT_URI,
                         TweetContract.PROJECTION,
                         String.format("%s=%d AND %s=%d",
-                                TweetContract.ACCOUNT_ID, mAccount.id,
+                                TweetContract.ACCOUNT_ID, mAccount.id(),
                                 TweetContract.TWEET_ID, id),
                         null, null);
 

@@ -90,16 +90,17 @@ public class SignInActivity extends BaseActivity {
                                 public void onNext(final Account account) {
                                     super.onNext(account);
                                     UserModel userModel = new UserModel(account);
-                                    userModel.user(account.screenName)
+                                    userModel.user(account.screenName())
                                             .flatMap(new Func1<User, Observable<Account>>() {
                                                 @Override
                                                 public Observable<Account> call(User user) {
-                                                    account.userBackground = user.getProfileBannerMobileRetinaURL();
-                                                    account.avatar = user.getOriginalProfileImageURL();
-                                                    account.screenName = user.getScreenName();
-                                                    account.fullName = user.getName();
-
-                                                    return mAccountModel.update(account);
+                                                    return mAccountModel.update(
+                                                            account.updateMeta(
+                                                                    user.getName(),
+                                                                    user.getScreenName(),
+                                                                    user.getOriginalProfileImageURL(),
+                                                                    user.getProfileBannerMobileRetinaURL()
+                                                            ));
                                                 }
                                             })
                                             .observeOn(AndroidSchedulers.mainThread())

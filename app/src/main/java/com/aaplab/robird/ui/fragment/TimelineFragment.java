@@ -22,8 +22,8 @@ public class TimelineFragment extends BaseTimelineFragment {
 
     public static TimelineFragment create(Account account, @TimelineModel.Type int type) {
         Bundle args = new Bundle();
-        args.putSerializable("account", account);
         args.putInt("type", type);
+        args.putParcelable("account", account);
 
         TimelineFragment fragment = new TimelineFragment();
         fragment.setArguments(args);

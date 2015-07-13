@@ -24,8 +24,8 @@ public abstract class BaseTwitterModel {
 
         builder.setOAuthConsumerKey(Config.TWITTER_CONSUMER_KEY);
         builder.setOAuthConsumerSecret(Config.TWITTER_CONSUMER_SECRET);
-        builder.setOAuthAccessTokenSecret(account.tokenSecret);
-        builder.setOAuthAccessToken(account.token);
+        builder.setOAuthAccessTokenSecret(account.tokenSecret());
+        builder.setOAuthAccessToken(account.token());
 
         return new TwitterFactory(builder.build()).getInstance();
     }

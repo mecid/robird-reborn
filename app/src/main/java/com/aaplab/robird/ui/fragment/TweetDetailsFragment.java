@@ -31,8 +31,8 @@ public class TweetDetailsFragment extends BaseSwipeToRefreshRecyclerFragment {
 
     public static TweetDetailsFragment create(Account account, Tweet tweet) {
         Bundle args = new Bundle();
-        args.putSerializable("account", account);
-        args.putSerializable("tweet", tweet);
+        args.putParcelable("account", account);
+        args.putParcelable("tweet", tweet);
 
         TweetDetailsFragment fragment = new TweetDetailsFragment();
         fragment.setArguments(args);
@@ -42,14 +42,13 @@ public class TweetDetailsFragment extends BaseSwipeToRefreshRecyclerFragment {
 
     private TweetDetailsAdapter mTweetDetailsAdapter;
     private TweetModel mTweetModel;
-    private Account mAccount;
     private Tweet mTweet;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mAccount = (Account) getArguments().getSerializable("account");
-        mTweet = (Tweet) getArguments().getSerializable("tweet");
+        final Account mAccount = getArguments().getParcelable("account");
+        mTweet = getArguments().getParcelable("tweet");
         mTweetModel = new TweetModel(mAccount, mTweet);
         mTweetDetailsAdapter = new TweetDetailsAdapter(getActivity(), mAccount, mTweet);
         mRecyclerView.setAdapter(mTweetDetailsAdapter);
@@ -132,13 +131,13 @@ public class TweetDetailsFragment extends BaseSwipeToRefreshRecyclerFragment {
             );
         } else if (item.getItemId() == R.id.menu_copy) {
             ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
-            clipboard.setPrimaryClip(ClipData.newPlainText("", mTweet.text));
+            clipboard.setPrimaryClip(ClipData.newPlainText("", mTweet.text()));
             Snackbar.make(getActivity().findViewById(R.id.coordinator),
                     R.string.copied_to_clipboard, Snackbar.LENGTH_SHORT).show();
         } else if (item.getItemId() == R.id.menu_share) {
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
             shareIntent.setType("text/plain");
-            shareIntent.putExtra(Intent.EXTRA_TEXT, mTweet.text);
+            shareIntent.putExtra(Intent.EXTRA_TEXT, mTweet.text());
             startActivity(Intent.createChooser(shareIntent, ""));
         }
 

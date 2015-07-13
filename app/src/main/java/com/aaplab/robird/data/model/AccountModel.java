@@ -46,7 +46,7 @@ public class AccountModel {
                     public Observable<Integer> call(Integer integer) {
                         return mSqlBriteContentProvider
                                 .update(AccountContract.CONTENT_URI, activate,
-                                        String.format("%s=%d", AccountContract._ID, account.id),
+                                        String.format("%s=%d", AccountContract._ID, account.id()),
                                         null
                                 );
                     }
@@ -76,27 +76,15 @@ public class AccountModel {
     }
 
     public Observable<Account> update(final Account account) {
-        ContentValues values = new ContentValues();
-
-        values.put(AccountContract.TOKEN, account.token);
-        values.put(AccountContract.TOKEN_SECRET, account.tokenSecret);
-        values.put(AccountContract.USER_ID, account.userId);
-
-        values.put(AccountContract.FULL_NAME, account.fullName);
-        values.put(AccountContract.SCREEN_NAME, account.screenName);
-
-        values.put(AccountContract.AVATAR, account.avatar);
-        values.put(AccountContract.USER_BACKGROUND, account.userBackground);
-
         return mSqlBriteContentProvider
-                .update(AccountContract.CONTENT_URI, values,
-                        String.format("%s=%d", AccountContract._ID, account.id), null)
+                .update(AccountContract.CONTENT_URI, account.toContentValues(),
+                        String.format("%s=%d", AccountContract._ID, account.id()), null)
                 .flatMap(new Func1<Integer, Observable<SqlBriteContentProvider.Query>>() {
                     @Override
                     public Observable<SqlBriteContentProvider.Query> call(Integer integer) {
                         return mSqlBriteContentProvider
                                 .query(
-                                        ContentUris.withAppendedId(AccountContract.CONTENT_URI, account.id),
+                                        ContentUris.withAppendedId(AccountContract.CONTENT_URI, account.id()),
                                         AccountContract.PROJECTION, null, null, null, false
                                 );
                     }

@@ -152,18 +152,18 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         mAccounts = accounts;
         Account activeAccount = mAccounts.get(0);
 
-        mScreenNameTextView.setText("@" + activeAccount.screenName);
-        mFullNameTextView.setText(activeAccount.fullName);
+        mScreenNameTextView.setText("@" + activeAccount.screenName());
+        mFullNameTextView.setText(activeAccount.fullName());
 
         Picasso.with(this)
-                .load(activeAccount.userBackground)
+                .load(activeAccount.userBackground())
                 .centerCrop().fit()
                 .into(mBackgroundImageView);
 
         for (int i = 0; i < mAccounts.size(); ++i) {
             Account account = mAccounts.get(i);
             Picasso.with(this)
-                    .load(account.avatar)
+                    .load(account.avatar())
                     .centerCrop().fit()
                     .transform(new RoundTransformation())
                     .into(avatars[i]);

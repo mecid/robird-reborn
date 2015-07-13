@@ -29,8 +29,8 @@ public abstract class BaseTimelineFragment extends BaseSwipeToRefreshRecyclerFra
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mAccount = (Account) getArguments().getSerializable("account");
         mTweets = new CopyOnWriteArrayList<>();
+        mAccount = getArguments().getParcelable("account");
         mAdapter = new TweetAdapter(getActivity(), mAccount, mTweets);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.addOnScrollListener(new ScrollListener());
@@ -61,14 +61,14 @@ public abstract class BaseTimelineFragment extends BaseSwipeToRefreshRecyclerFra
 
     protected long findFirstVisibleTweetId() {
         int i = mLayoutManager.findFirstVisibleItemPosition();
-        return i != -1 ? mTweets.get(i).tweetId : -1;
+        return i != -1 ? mTweets.get(i).tweetId() : -1;
     }
 
     protected void setTimelinePosition(final long tweetId, int top) {
         int index = Iterables.indexOf(mTweets, new Predicate<Tweet>() {
             @Override
             public boolean apply(Tweet input) {
-                return tweetId == input.tweetId;
+                return tweetId == input.tweetId();
             }
         });
 

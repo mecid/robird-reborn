@@ -49,13 +49,13 @@ public class TimelineModel extends BaseTwitterModel {
 
     public void saveTimelinePosition(long position) {
         Inject.preferences().edit().putLong(
-                String.format("%s#type#%d", mAccount.screenName, mType),
+                String.format("%s#type#%d", mAccount.screenName(), mType),
                 position).apply();
     }
 
     public long timelinePosition() {
         return Inject.preferences().getLong(
-                String.format("%s#type#%d", mAccount.screenName, mType)
+                String.format("%s#type#%d", mAccount.screenName(), mType)
                 , 0);
     }
 
@@ -63,7 +63,7 @@ public class TimelineModel extends BaseTwitterModel {
         return mSqlBriteContentProvider.query(
                 TweetContract.CONTENT_URI, TweetContract.PROJECTION,
                 String.format("%s=%d AND %s=%d",
-                        TweetContract.ACCOUNT_ID, mAccount.id,
+                        TweetContract.ACCOUNT_ID, mAccount.id(),
                         TweetContract.TIMELINE_TYPE, mType
                 ),
                 null, TweetContract.TWEET_ID + " DESC", false)
@@ -77,7 +77,7 @@ public class TimelineModel extends BaseTwitterModel {
                     @Override
                     public Observable<List<Status>> call(List<Tweet> tweets) {
                         Paging paging = new Paging().count(200);
-                        if (!tweets.isEmpty()) paging.sinceId(tweets.get(0).tweetId);
+                        if (!tweets.isEmpty()) paging.sinceId(tweets.get(0).tweetId());
                         return downloadTimeline(paging);
                     }
                 })
@@ -97,7 +97,8 @@ public class TimelineModel extends BaseTwitterModel {
                     @Override
                     public Observable<List<Status>> call(List<Tweet> tweets) {
                         Paging paging = new Paging().count(50);
-                        if (!tweets.isEmpty()) paging.maxId(tweets.get(tweets.size() - 1).tweetId);
+                        if (!tweets.isEmpty())
+                            paging.maxId(tweets.get(tweets.size() - 1).tweetId());
                         return downloadTimeline(paging);
                     }
                 })
@@ -155,14 +156,14 @@ public class TimelineModel extends BaseTwitterModel {
             ArrayList<Tweet> tweets = new ArrayList<>(statuses.size());
 
             for (Status status : statuses) {
-                tweets.add(new Tweet(status));
+                tweets.add(Tweet.from(status));
             }
 
             ArrayList<ContentValues> values = new ArrayList<>(tweets.size());
 
             for (Tweet tweet : tweets) {
                 ContentValues cv = tweet.toContentValues();
-                cv.put(TweetContract.ACCOUNT_ID, account.id);
+                cv.put(TweetContract.ACCOUNT_ID, account.id());
                 cv.put(TweetContract.TIMELINE_TYPE, type);
                 values.add(cv);
             }

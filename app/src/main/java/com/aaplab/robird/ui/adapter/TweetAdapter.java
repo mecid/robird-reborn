@@ -52,24 +52,24 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
     public void onBindViewHolder(TweetHolder holder, int position) {
         final Tweet tweet = mTweets.get(position);
 
-        holder.textView.setText(tweet.text);
-        holder.usernameTextView.setText("@" + tweet.username);
-        holder.fullNameTextView.setText(tweet.fullname);
+        holder.textView.setText(tweet.text());
+        holder.usernameTextView.setText("@" + tweet.username());
+        holder.fullNameTextView.setText(tweet.fullname());
 
         StringBuilder information = new StringBuilder();
 
-        if (!TextUtils.isEmpty(tweet.retweetedBy))
-            information.append(tweet.retweetedBy).append(" ");
+        if (!TextUtils.isEmpty(tweet.retweetedBy()))
+            information.append(tweet.retweetedBy()).append(" ");
 
-        information.append(DateUtils.getRelativeTimeSpanString(tweet.createdAt));
-        information.append(" ").append(tweet.source);
+        information.append(DateUtils.getRelativeTimeSpanString(tweet.createdAt()));
+        information.append(" ").append(tweet.source());
 
         holder.infoTextView.setText(information.toString());
-        holder.retweetImageView.setVisibility(TextUtils.isEmpty(tweet.retweetedBy) ? View.GONE : View.VISIBLE);
-        holder.mediaImageView.setVisibility(TextUtils.isEmpty(tweet.media) ? View.GONE : View.VISIBLE);
+        holder.retweetImageView.setVisibility(TextUtils.isEmpty(tweet.retweetedBy()) ? View.GONE : View.VISIBLE);
+        holder.mediaImageView.setVisibility(TextUtils.isEmpty(tweet.media()) ? View.GONE : View.VISIBLE);
 
         if (holder.mediaImageView.getVisibility() == View.VISIBLE) {
-            String[] media = tweet.media.split("\\+\\+\\+");
+            String[] media = tweet.media().split("\\+\\+\\+");
 
             Picasso.with(mActivity)
                     .load(media[0])
@@ -79,7 +79,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
         }
 
         Picasso.with(mActivity)
-                .load(tweet.avatar)
+                .load(tweet.avatar())
                 .tag(IMAGE_LOADING_TAG)
                 .centerCrop().fit()
                 .transform(new RoundTransformation())

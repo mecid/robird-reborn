@@ -2,14 +2,15 @@ package com.aaplab.robird.data.entity;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.os.Parcelable;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.aaplab.robird.data.provider.contract.TweetContract;
 import com.aaplab.robird.util.TweetLongerUtils;
 import com.aaplab.robird.util.TweetUtils;
 
-import java.io.Serializable;
-
+import auto.parcel.AutoParcel;
 import twitter4j.MediaEntity;
 import twitter4j.Status;
 import twitter4j.URLEntity;
@@ -18,48 +19,62 @@ import twitter4j.UserMentionEntity;
 /**
  * Created by majid on 19.01.15.
  */
-public class Tweet implements Serializable {
-    public int id;
-    public long tweetId;
-    public long inReplyToStatus;
-    public long createdAt;
-    public String text;
-    public boolean favorited;
-    public boolean retweetedByMe;
-    public String retweetedBy;
-    public String username;
-    public String fullname;
-    public String avatar;
-    public String media;
-    public String source;
-    public String mentions;
+@AutoParcel
+public abstract class Tweet implements Parcelable {
+    public abstract int id();
 
-    public Tweet() {
-    }
+    public abstract long tweetId();
 
-    public Tweet(Status status) {
-        tweetId = status.getId();
-        createdAt = status.getCreatedAt().getTime();
-        source = TweetUtils.getSourceName(status.getSource());
+    public abstract long inReplyToStatus();
 
-        retweetedByMe = status.isRetweetedByMe();
+    public abstract long createdAt();
+
+    public abstract String text();
+
+    public abstract boolean favorited();
+
+    public abstract boolean retweetedByMe();
+
+    @Nullable
+    public abstract String retweetedBy();
+
+    public abstract String username();
+
+    public abstract String fullname();
+
+    public abstract String avatar();
+
+    @Nullable
+    public abstract String media();
+
+    public abstract String source();
+
+    public abstract String mentions();
+
+    public static Tweet from(Status status) {
+        long tweetId = status.getId();
+        long createdAt = status.getCreatedAt().getTime();
+        String source = TweetUtils.getSourceName(status.getSource());
+
+        String retweetedBy = null;
+        boolean retweetedByMe = status.isRetweetedByMe();
         if (status.isRetweet()) {
             retweetedBy = status.getUser().getScreenName();
             status = status.getRetweetedStatus();
         }
 
-        text = status.getText();
-        fullname = status.getUser().getName();
-        username = status.getUser().getScreenName();
-        avatar = status.getUser().getOriginalProfileImageURL();
-        inReplyToStatus = status.getInReplyToStatusId();
-        favorited = status.isFavorited();
+        String text = status.getText();
+        String fullname = status.getUser().getName();
+        String username = status.getUser().getScreenName();
+        String avatar = status.getUser().getOriginalProfileImageURL();
+        long inReplyToStatus = status.getInReplyToStatusId();
+        boolean favorited = status.isFavorited();
 
         StringBuilder sb = new StringBuilder();
         for (UserMentionEntity mention : status.getUserMentionEntities()) {
             sb.append("@").append(mention.getScreenName()).append(" ");
         }
-        mentions = sb.toString();
+        String mentions = sb.toString();
         sb = new StringBuilder();
 
         MediaEntity[] mediaEntities = status.getExtendedMediaEntities();
@@ -90,6 +105,7 @@ public class Tweet implements Serializable {
             }
         }
 
+        String media = null;
         if (!TextUtils.isEmpty(sb.toString()))
             media = sb.toString();
 
@@ -100,47 +116,49 @@ public class Tweet implements Serializable {
             if (TextUtils.isEmpty(media))
                 media = mediaEntity.getMediaURL();
         }
+
+        return new AutoParcel_Tweet(0, tweetId, inReplyToStatus, createdAt, text, favorited,
+                retweetedByMe, retweetedBy, username, fullname, avatar, media, source, mentions);
+    }
+
+    public static Tweet from(Cursor cursor) {
+        int id = cursor.getInt(cursor.getColumnIndexOrThrow(TweetContract._ID));
+        long tweetId = cursor.getLong(cursor.getColumnIndexOrThrow(TweetContract.TWEET_ID));
+        long createdAt = cursor.getLong(cursor.getColumnIndexOrThrow(TweetContract.CREATED_AT));
+        long inReplyToStatus = cursor.getLong(cursor.getColumnIndexOrThrow(TweetContract.IN_REPLY_TO_STATUS));
+        String avatar = cursor.getString(cursor.getColumnIndexOrThrow(TweetContract.AVATAR));
+        String username = cursor.getString(cursor.getColumnIndexOrThrow(TweetContract.USERNAME));
+        String fullname = cursor.getString(cursor.getColumnIndexOrThrow(TweetContract.FULLNAME));
+        boolean favorited = cursor.getInt(cursor.getColumnIndexOrThrow(TweetContract.FAVORITED)) == 1;
+        boolean retweetedByMe = cursor.getInt(cursor.getColumnIndexOrThrow(TweetContract.RETWEETED_BY_ME)) == 1;
+        String retweetedBy = cursor.getString(cursor.getColumnIndexOrThrow(TweetContract.RETWEETED_BY));
+        String text = cursor.getString(cursor.getColumnIndexOrThrow(TweetContract.TEXT));
+        String media = cursor.getString(cursor.getColumnIndexOrThrow(TweetContract.MEDIA));
+        String mentions = cursor.getString(cursor.getColumnIndexOrThrow(TweetContract.MENTIONS));
+        String source = cursor.getString(cursor.getColumnIndexOrThrow(TweetContract.SOURCE));
+
+        return new AutoParcel_Tweet(id, tweetId, inReplyToStatus, createdAt, text, favorited,
+                retweetedByMe, retweetedBy, username, fullname, avatar, media, source, mentions);
     }
 
     public ContentValues toContentValues() {
         ContentValues values = new ContentValues();
 
-        values.put(TweetContract.TWEET_ID, tweetId);
-        values.put(TweetContract.TEXT, text);
-        values.put(TweetContract.SOURCE, source);
-        values.put(TweetContract.AVATAR, avatar);
-        values.put(TweetContract.TWEET_ID, tweetId);
-        values.put(TweetContract.CREATED_AT, createdAt);
-        values.put(TweetContract.FAVORITED, favorited);
-        values.put(TweetContract.FULLNAME, fullname);
-        values.put(TweetContract.MEDIA, media);
-        values.put(TweetContract.MENTIONS, mentions);
-        values.put(TweetContract.USERNAME, username);
-        values.put(TweetContract.RETWEETED_BY, retweetedBy);
-        values.put(TweetContract.RETWEETED_BY_ME, retweetedByMe);
-        values.put(TweetContract.IN_REPLY_TO_STATUS, inReplyToStatus);
+        values.put(TweetContract.TWEET_ID, tweetId());
+        values.put(TweetContract.TEXT, text());
+        values.put(TweetContract.SOURCE, source());
+        values.put(TweetContract.AVATAR, avatar());
+        values.put(TweetContract.TWEET_ID, tweetId());
+        values.put(TweetContract.CREATED_AT, createdAt());
+        values.put(TweetContract.FAVORITED, favorited());
+        values.put(TweetContract.FULLNAME, fullname());
+        values.put(TweetContract.MEDIA, media());
+        values.put(TweetContract.MENTIONS, mentions());
+        values.put(TweetContract.USERNAME, username());
+        values.put(TweetContract.RETWEETED_BY, retweetedBy());
+        values.put(TweetContract.RETWEETED_BY_ME, retweetedByMe());
+        values.put(TweetContract.IN_REPLY_TO_STATUS, inReplyToStatus());
 
         return values;
-    }
-
-    public static Tweet from(Cursor cursor) {
-        Tweet tweet = new Tweet();
-
-        tweet.id = cursor.getInt(cursor.getColumnIndexOrThrow(TweetContract._ID));
-        tweet.tweetId = cursor.getLong(cursor.getColumnIndexOrThrow(TweetContract.TWEET_ID));
-        tweet.avatar = cursor.getString(cursor.getColumnIndexOrThrow(TweetContract.AVATAR));
-        tweet.username = cursor.getString(cursor.getColumnIndexOrThrow(TweetContract.USERNAME));
-        tweet.fullname = cursor.getString(cursor.getColumnIndexOrThrow(TweetContract.FULLNAME));
-        tweet.createdAt = cursor.getLong(cursor.getColumnIndexOrThrow(TweetContract.CREATED_AT));
-        tweet.favorited = cursor.getInt(cursor.getColumnIndexOrThrow(TweetContract.FAVORITED)) == 1;
-        tweet.retweetedByMe = cursor.getInt(cursor.getColumnIndexOrThrow(TweetContract.RETWEETED_BY_ME)) == 1;
-        tweet.retweetedBy = cursor.getString(cursor.getColumnIndexOrThrow(TweetContract.RETWEETED_BY));
-        tweet.inReplyToStatus = cursor.getLong(cursor.getColumnIndexOrThrow(TweetContract.IN_REPLY_TO_STATUS));
-        tweet.text = cursor.getString(cursor.getColumnIndexOrThrow(TweetContract.TEXT));
-        tweet.media = cursor.getString(cursor.getColumnIndexOrThrow(TweetContract.MEDIA));
-        tweet.mentions = cursor.getString(cursor.getColumnIndexOrThrow(TweetContract.MENTIONS));
-        tweet.source = cursor.getString(cursor.getColumnIndexOrThrow(TweetContract.SOURCE));
-
-        return tweet;
     }
 }

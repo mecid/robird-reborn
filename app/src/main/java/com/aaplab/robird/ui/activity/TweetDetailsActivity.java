@@ -37,8 +37,8 @@ public class TweetDetailsActivity extends BaseActivity implements View.OnClickLi
         mFloatingActionButton.setOnClickListener(this);
 
         if (savedInstanceState == null) {
-            final Account account = (Account) getIntent().getSerializableExtra("account");
-            final Tweet tweet = (Tweet) getIntent().getSerializableExtra("tweet");
+            final Account account = getIntent().getParcelableExtra("account");
+            final Tweet tweet = getIntent().getParcelableExtra("tweet");
 
             getSupportFragmentManager()
                     .beginTransaction()
