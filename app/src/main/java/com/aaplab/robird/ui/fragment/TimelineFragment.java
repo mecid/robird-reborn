@@ -9,7 +9,6 @@ import com.aaplab.robird.data.model.TimelineModel;
 import com.aaplab.robird.util.DefaultObserver;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -42,7 +41,6 @@ public class TimelineFragment extends BaseTimelineFragment {
         mSubscriptions.add(
                 mTimelineModel
                         .timeline()
-                        .debounce(200, TimeUnit.MILLISECONDS)
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeOn(Schedulers.io())
                         .subscribe(new DefaultObserver<List<Tweet>>() {

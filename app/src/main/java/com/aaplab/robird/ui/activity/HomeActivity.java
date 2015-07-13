@@ -4,6 +4,7 @@ package com.aaplab.robird.ui.activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -68,6 +69,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     @InjectView(R.id.navigation)
     NavigationView mNavigationView;
 
+    private final Handler mNavigationHandler = new Handler();
     private ActionBarDrawerToggle mDrawerToggle;
     private AccountModel mAccountModel;
     private List<Account> mAccounts;
@@ -109,21 +111,28 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     @Override
-    public boolean onNavigationItemSelected(MenuItem menuItem) {
+    public boolean onNavigationItemSelected(final MenuItem menuItem) {
         if (menuItem.getItemId() != R.id.navigation_item_settings) {
             Timber.d("on navigation item selected: %s", menuItem.getTitle());
             mSelectedNavigationMenuId = menuItem.getItemId();
             setTitle(menuItem.getTitle());
             menuItem.setChecked(true);
+            mDrawerLayout.closeDrawers();
 
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.content,
-                            TimelineFragment.create(mAccounts.get(0), menuItem.getOrder()))
-                    .commit();
+            mNavigationHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.content,
+                                    TimelineFragment.create(mAccounts.get(0), menuItem.getOrder()))
+                            .commit();
+                }
+            }, 200);
+        } else {
+            //TODO start settings activity
         }
 
-        mDrawerLayout.closeDrawers();
         return true;
     }
 
