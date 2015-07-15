@@ -36,7 +36,7 @@ public abstract class Account implements Parcelable {
 
     public abstract int active();
 
-    public Account updateMeta(String fullName, String screenName, String avatar, String userBackground) {
+    public Account withMeta(String fullName, String screenName, String avatar, String userBackground) {
         return new AutoParcel_Account(id(), token(), tokenSecret(), screenName, fullName, avatar,
                 userBackground, userId(), active());
     }

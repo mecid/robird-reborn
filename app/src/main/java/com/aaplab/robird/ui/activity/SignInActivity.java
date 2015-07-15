@@ -95,7 +95,7 @@ public class SignInActivity extends BaseActivity {
                                                 @Override
                                                 public Observable<Account> call(User user) {
                                                     return mAccountModel.update(
-                                                            account.updateMeta(
+                                                            account.withMeta(
                                                                     user.getName(),
                                                                     user.getScreenName(),
                                                                     user.getOriginalProfileImageURL(),
