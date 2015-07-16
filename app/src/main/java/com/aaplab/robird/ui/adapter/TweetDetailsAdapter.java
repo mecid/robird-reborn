@@ -14,7 +14,7 @@ import com.google.common.collect.Lists;
 
 import java.util.List;
 
-import butterknife.ButterKnife;
+import butterknife.Bind;
 import twitter4j.Status;
 
 /**
@@ -73,14 +73,14 @@ public class TweetDetailsAdapter extends TweetAdapter {
 
     static final class TweetDetailsHolder extends TweetAdapter.TweetHolder {
 
+        @Bind(R.id.favorite_count)
         TextView favoritesCountTextView;
+
+        @Bind(R.id.retweet_count)
         TextView retweetsCountTextView;
 
         public TweetDetailsHolder(View itemView) {
             super(itemView);
-
-            favoritesCountTextView = ButterKnife.findById(itemView, R.id.favorite_count);
-            retweetsCountTextView = ButterKnife.findById(itemView, R.id.retweet_count);
         }
     }
 }

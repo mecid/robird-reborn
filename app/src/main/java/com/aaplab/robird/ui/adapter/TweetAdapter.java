@@ -19,6 +19,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
 
 /**
@@ -95,24 +96,30 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
 
     static class TweetHolder extends RecyclerView.ViewHolder {
 
+        @Bind(R.id.avatar)
         ImageView avatarImageView;
+
+        @Bind(R.id.screen_name)
         TextView usernameTextView;
+
+        @Bind(R.id.full_name)
         TextView fullNameTextView;
+
+        @Bind(R.id.media)
         ImageView mediaImageView;
+
+        @Bind(R.id.retweet)
         ImageView retweetImageView;
+
+        @Bind(R.id.info)
         TextView infoTextView;
+
+        @Bind(R.id.text)
         TextView textView;
 
         public TweetHolder(View itemView) {
             super(itemView);
-
-            avatarImageView = ButterKnife.findById(itemView, R.id.avatar);
-            usernameTextView = ButterKnife.findById(itemView, R.id.screen_name);
-            fullNameTextView = ButterKnife.findById(itemView, R.id.full_name);
-            mediaImageView = ButterKnife.findById(itemView, R.id.media);
-            retweetImageView = ButterKnife.findById(itemView, R.id.retweet);
-            infoTextView = ButterKnife.findById(itemView, R.id.info);
-            textView = ButterKnife.findById(itemView, R.id.text);
+            ButterKnife.bind(this, itemView);
         }
     }
 }

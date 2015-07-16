@@ -14,15 +14,15 @@ import com.aaplab.robird.data.entity.Account;
 import com.aaplab.robird.data.entity.Tweet;
 import com.aaplab.robird.ui.fragment.TweetDetailsFragment;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 
 /**
  * Created by majid on 21.06.15.
  */
 public class TweetDetailsActivity extends BaseActivity implements View.OnClickListener {
 
-    @InjectView(R.id.fab)
+    @Bind(R.id.fab)
     FloatingActionButton mFloatingActionButton;
 
     @Override
@@ -31,7 +31,7 @@ public class TweetDetailsActivity extends BaseActivity implements View.OnClickLi
         setContentView(R.layout.activity_coordinator_with_fab);
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
 
         mFloatingActionButton.setImageResource(R.drawable.ic_reply);
         mFloatingActionButton.setOnClickListener(this);

@@ -28,9 +28,8 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
-import butterknife.InjectViews;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
@@ -42,31 +41,31 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
 
     private static final String NAVIGATION_STATE = "navigation_state";
 
-    @InjectView(R.id.fab)
+    @Bind(R.id.fab)
     FloatingActionButton mFloatingActionButton;
 
-    @InjectView(R.id.drawer_layout)
+    @Bind(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
 
-    @InjectView(R.id.toolbar)
+    @Bind(R.id.toolbar)
     Toolbar mToolbar;
 
-    @InjectViews({R.id.avatar, R.id.avatar2, R.id.avatar3})
+    @Bind({R.id.avatar, R.id.avatar2, R.id.avatar3})
     ImageView[] avatars;
 
-    @InjectView(R.id.user_background)
+    @Bind(R.id.user_background)
     ImageView mBackgroundImageView;
 
-    @InjectView(R.id.screen_name)
+    @Bind(R.id.screen_name)
     TextView mScreenNameTextView;
 
-    @InjectView(R.id.full_name)
+    @Bind(R.id.full_name)
     TextView mFullNameTextView;
 
-    @InjectView(R.id.add_account_button)
+    @Bind(R.id.add_account_button)
     ImageView mAddAccountImageView;
 
-    @InjectView(R.id.navigation)
+    @Bind(R.id.navigation)
     NavigationView mNavigationView;
 
     private final Handler mNavigationHandler = new Handler();
@@ -79,7 +78,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
         setSupportActionBar(mToolbar);
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.app_name, R.string.app_name);

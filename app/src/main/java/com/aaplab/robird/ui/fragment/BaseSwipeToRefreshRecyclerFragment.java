@@ -11,18 +11,18 @@ import android.view.ViewGroup;
 
 import com.aaplab.robird.R;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 
 /**
  * Created by majid on 19.01.15.
  */
 public abstract class BaseSwipeToRefreshRecyclerFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
 
-    @InjectView(R.id.refresh)
+    @Bind(R.id.refresh)
     SwipeRefreshLayout mRefreshLayout;
 
-    @InjectView(R.id.recycler)
+    @Bind(R.id.recycler)
     RecyclerView mRecyclerView;
 
     protected LinearLayoutManager mLayoutManager;
@@ -45,6 +45,6 @@ public abstract class BaseSwipeToRefreshRecyclerFragment extends BaseFragment im
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ButterKnife.inject(this, view);
+        ButterKnife.bind(this, view);
     }
 }
