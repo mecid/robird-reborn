@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import rx.functions.Func1;
+import twitter4j.Status;
 
 /**
  * Created by majid on 16.01.15.
@@ -64,6 +65,17 @@ public final class MapFunctions {
             }
 
             cursor.close();
+            return tweets;
+        }
+    };
+
+    public static Func1<List<Status>, List<Tweet>> STATUSES_TO_TWEETS = new Func1<List<Status>, List<Tweet>>() {
+        @Override
+        public List<Tweet> call(List<Status> statuses) {
+            ArrayList<Tweet> tweets = new ArrayList<>(statuses.size());
+            for (Status status : statuses)
+                tweets.add(Tweet.from(status));
+
             return tweets;
         }
     };
