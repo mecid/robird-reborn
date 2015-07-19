@@ -12,6 +12,7 @@ import java.util.List;
 
 import rx.Observable;
 import rx.Subscriber;
+import twitter4j.PagableResponseList;
 import twitter4j.Paging;
 import twitter4j.Status;
 import twitter4j.TwitterException;
@@ -27,7 +28,15 @@ public class UserModel extends BaseTwitterModel {
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({TWEETS, FAVORITES})
-    public @interface Type {
+    public @interface TimelineType {
+    }
+
+    public static final int FRIENDS = 0;
+    public static final int FOLLOWERS = 1;
+
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({FRIENDS, FOLLOWERS})
+    public @interface FriendsType {
     }
 
     public UserModel(Account account) {
@@ -66,5 +75,25 @@ public class UserModel extends BaseTwitterModel {
                 }
             }
         }).map(MapFunctions.STATUSES_TO_TWEETS);
+    }
+
+    public Observable<PagableResponseList<User>> friends(final String screenName,
+                                                         final int type,
+                                                         final long cursor) {
+        return Observable.create(new Observable.OnSubscribe<PagableResponseList<User>>() {
+            @Override
+            public void call(Subscriber<? super PagableResponseList<User>> subscriber) {
+                try {
+                    subscriber.onNext(
+                            type == FRIENDS ?
+                                    mTwitter.getFriendsList(screenName, cursor) :
+                                    mTwitter.getFollowersList(screenName, cursor)
+                    );
+                    subscriber.onCompleted();
+                } catch (TwitterException e) {
+                    subscriber.onError(e);
+                }
+            }
+        });
     }
 }
