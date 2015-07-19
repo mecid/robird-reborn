@@ -52,54 +52,60 @@ public class UserFriendsFragment extends BaseSwipeToRefreshRecyclerFragment {
         mRecyclerView.setAdapter(mAdapter);
 
         mUserModel = new UserModel(account);
-        mUserModel
-                .friends(mScreenName, mType, -1)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(new DefaultObserver<PagableResponseList<User>>() {
-                    @Override
-                    public void onNext(PagableResponseList<User> users) {
-                        super.onNext(users);
-                        mUsers.addAll(users);
-                        mAdapter.notifyDataSetChanged();
-                        mCursor = users.getNextCursor();
-                    }
-                });
+        mSubscriptions.add(
+                mUserModel
+                        .friends(mScreenName, mType, -1)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(Schedulers.io())
+                        .subscribe(new DefaultObserver<PagableResponseList<User>>() {
+                            @Override
+                            public void onNext(PagableResponseList<User> users) {
+                                super.onNext(users);
+                                mUsers.addAll(users);
+                                mAdapter.notifyDataSetChanged();
+                                mCursor = users.getNextCursor();
+                            }
+                        })
+        );
     }
 
     @Override
     public void onRefresh() {
-        mUserModel
-                .friends(mScreenName, mType, -1)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(new DefaultObserver<PagableResponseList<User>>() {
-                    @Override
-                    public void onNext(PagableResponseList<User> users) {
-                        super.onNext(users);
-                        mUsers.clear();
-                        mUsers.addAll(users);
-                        mAdapter.notifyDataSetChanged();
-                        mCursor = users.getNextCursor();
-                    }
-                });
+        mSubscriptions.add(
+                mUserModel
+                        .friends(mScreenName, mType, -1)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(Schedulers.io())
+                        .subscribe(new DefaultObserver<PagableResponseList<User>>() {
+                            @Override
+                            public void onNext(PagableResponseList<User> users) {
+                                super.onNext(users);
+                                mUsers.clear();
+                                mUsers.addAll(users);
+                                mAdapter.notifyDataSetChanged();
+                                mCursor = users.getNextCursor();
+                            }
+                        })
+        );
     }
 
     @Override
     public void startBottomLoading() {
-        mUserModel
-                .friends(mScreenName, mType, mCursor)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(new DefaultObserver<PagableResponseList<User>>() {
-                    @Override
-                    public void onNext(PagableResponseList<User> users) {
-                        super.onNext(users);
-                        mUsers.addAll(users);
-                        mAdapter.notifyDataSetChanged();
-                        mCursor = users.getNextCursor();
-                        stopBottoLoading(mCursor != 0);
-                    }
-                });
+        mSubscriptions.add(
+                mUserModel
+                        .friends(mScreenName, mType, mCursor)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(Schedulers.io())
+                        .subscribe(new DefaultObserver<PagableResponseList<User>>() {
+                            @Override
+                            public void onNext(PagableResponseList<User> users) {
+                                super.onNext(users);
+                                mUsers.addAll(users);
+                                mAdapter.notifyDataSetChanged();
+                                mCursor = users.getNextCursor();
+                                stopBottoLoading(mCursor != 0);
+                            }
+                        })
+        );
     }
 }
