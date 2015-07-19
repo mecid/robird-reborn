@@ -2,7 +2,6 @@ package com.aaplab.robird.ui.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.aaplab.robird.data.entity.Account;
@@ -10,7 +9,6 @@ import com.aaplab.robird.data.entity.Tweet;
 import com.aaplab.robird.ui.adapter.TweetAdapter;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -21,9 +19,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public abstract class BaseTimelineFragment extends BaseSwipeToRefreshRecyclerFragment {
 
     protected Account mAccount;
-    private boolean mBottomLoading;
     protected TweetAdapter mAdapter;
-    private boolean mKeepOnAppending = true;
     protected CopyOnWriteArrayList<Tweet> mTweets;
 
     @Override
@@ -33,7 +29,6 @@ public abstract class BaseTimelineFragment extends BaseSwipeToRefreshRecyclerFra
         mAccount = getArguments().getParcelable("account");
         mAdapter = new TweetAdapter(getActivity(), mAccount, mTweets);
         mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.addOnScrollListener(new ScrollListener());
     }
 
     protected void appendTweetsToTop(List<Tweet> newTweets) {
@@ -73,42 +68,5 @@ public abstract class BaseTimelineFragment extends BaseSwipeToRefreshRecyclerFra
         });
 
         mLayoutManager.scrollToPositionWithOffset(index, top);
-    }
-
-    protected void stopBottoLoading(boolean keepOnAppending) {
-        mBottomLoading = false;
-        mKeepOnAppending = keepOnAppending;
-    }
-
-    public abstract void startBottomLoading();
-
-    private final class ScrollListener extends RecyclerView.OnScrollListener {
-
-        @Override
-        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-            super.onScrolled(recyclerView, dx, dy);
-
-            int totalItemCount = mLayoutManager.getItemCount();
-            int firstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
-            int visibleItemCount = mLayoutManager.findLastVisibleItemPosition() - firstVisibleItem;
-
-            if (totalItemCount > 0 && mKeepOnAppending) {
-                if (!mBottomLoading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + 10)) {
-                    mBottomLoading = true;
-                    startBottomLoading();
-                }
-            }
-        }
-
-        @Override
-        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-            super.onScrollStateChanged(recyclerView, newState);
-            Picasso picasso = Picasso.with(recyclerView.getContext());
-            if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                picasso.resumeTag(TweetAdapter.IMAGE_LOADING_TAG);
-            } else {
-                picasso.pauseTag(TweetAdapter.IMAGE_LOADING_TAG);
-            }
-        }
     }
 }
