@@ -12,8 +12,10 @@ import java.util.List;
 
 import rx.Observable;
 import rx.Subscriber;
+import rx.functions.Func1;
 import twitter4j.PagableResponseList;
 import twitter4j.Paging;
+import twitter4j.Relationship;
 import twitter4j.Status;
 import twitter4j.TwitterException;
 import twitter4j.User;
@@ -49,6 +51,97 @@ public class UserModel extends BaseTwitterModel {
             public void call(Subscriber<? super User> subscriber) {
                 try {
                     subscriber.onNext(mTwitter.showUser(screenName));
+                    subscriber.onCompleted();
+                } catch (TwitterException e) {
+                    subscriber.onError(e);
+                }
+            }
+        });
+    }
+
+    public Observable<Relationship> report(final String screenName) {
+        return Observable.create(new Observable.OnSubscribe<User>() {
+            @Override
+            public void call(Subscriber<? super User> subscriber) {
+                try {
+                    subscriber.onNext(mTwitter.reportSpam(screenName));
+                    subscriber.onCompleted();
+                } catch (TwitterException e) {
+                    subscriber.onError(e);
+                }
+            }
+        }).flatMap(new Func1<User, Observable<Relationship>>() {
+            @Override
+            public Observable<Relationship> call(User user) {
+                return relationship(screenName);
+            }
+        });
+    }
+
+    public Observable<Relationship> follow(final String screenName) {
+        return relationship(screenName)
+                .flatMap(new Func1<Relationship, Observable<User>>() {
+                    @Override
+                    public Observable<User> call(final Relationship relationship) {
+                        return Observable.create(new Observable.OnSubscribe<User>() {
+                            @Override
+                            public void call(Subscriber<? super User> subscriber) {
+                                try {
+                                    if (relationship.isSourceFollowingTarget())
+                                        subscriber.onNext(mTwitter.destroyFriendship(screenName));
+                                    else
+                                        subscriber.onNext(mTwitter.createFriendship(screenName));
+                                    subscriber.onCompleted();
+                                } catch (TwitterException e) {
+                                    subscriber.onError(e);
+                                }
+                            }
+                        });
+                    }
+                })
+                .flatMap(new Func1<User, Observable<Relationship>>() {
+                    @Override
+                    public Observable<Relationship> call(User user) {
+                        return relationship(user.getScreenName());
+                    }
+                });
+    }
+
+    public Observable<Relationship> block(final String screenName) {
+        return relationship(screenName)
+                .flatMap(new Func1<Relationship, Observable<User>>() {
+                    @Override
+                    public Observable<User> call(final Relationship relationship) {
+                        return Observable.create(new Observable.OnSubscribe<User>() {
+                            @Override
+                            public void call(Subscriber<? super User> subscriber) {
+                                try {
+                                    if (relationship.isSourceBlockingTarget())
+                                        subscriber.onNext(mTwitter.destroyBlock(screenName));
+                                    else
+                                        subscriber.onNext(mTwitter.createBlock(screenName));
+                                    subscriber.onCompleted();
+                                } catch (TwitterException e) {
+                                    subscriber.onError(e);
+                                }
+                            }
+                        });
+                    }
+                })
+                .flatMap(new Func1<User, Observable<Relationship>>() {
+                    @Override
+                    public Observable<Relationship> call(User user) {
+                        return relationship(user.getScreenName());
+                    }
+                });
+    }
+
+    public Observable<Relationship> relationship(final String screenName) {
+        return Observable.create(new Observable.OnSubscribe<Relationship>() {
+            @Override
+            public void call(Subscriber<? super Relationship> subscriber) {
+                try {
+                    subscriber.onNext(mTwitter.showFriendship(mAccount.screenName(), screenName));
                     subscriber.onCompleted();
                 } catch (TwitterException e) {
                     subscriber.onError(e);
