@@ -255,12 +255,6 @@ public class UserProfileActivity extends BaseActivity {
                         });
     }
 
-    @Override
-    public boolean onSupportNavigateUp() {
-        ActivityCompat.finishAfterTransition(this);
-        return true;
-    }
-
     public static void start(Activity activity, Account account, String screenName) {
         Intent intent = new Intent(activity, UserProfileActivity.class);
         intent.putExtra("account", account);

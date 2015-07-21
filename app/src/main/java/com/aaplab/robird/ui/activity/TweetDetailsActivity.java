@@ -48,12 +48,6 @@ public class TweetDetailsActivity extends BaseActivity implements View.OnClickLi
         }
     }
 
-    @Override
-    public boolean onSupportNavigateUp() {
-        ActivityCompat.finishAfterTransition(this);
-        return true;
-    }
-
     public static void start(Activity activity, Account account, Tweet tweet) {
         Intent intent = new Intent(activity, TweetDetailsActivity.class);
         intent.putExtra("account", account);

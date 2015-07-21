@@ -2,6 +2,7 @@ package com.aaplab.robird.ui.activity;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 
 import com.aaplab.robird.inject.Inject;
@@ -40,5 +41,11 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         mSubscriptions.unsubscribe();
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        ActivityCompat.finishAfterTransition(this);
+        return true;
     }
 }
