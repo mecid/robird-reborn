@@ -2,6 +2,7 @@ package com.aaplab.robird.ui.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,7 +18,7 @@ import butterknife.ButterKnife;
 /**
  * Created by majid on 19.01.15.
  */
-public abstract class BaseSwipeToRefreshRecyclerFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
+public abstract class BaseSwipeToRefreshRecyclerFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, AppBarLayout.OnOffsetChangedListener {
 
     @Bind(R.id.refresh)
     SwipeRefreshLayout mRefreshLayout;
@@ -26,6 +27,10 @@ public abstract class BaseSwipeToRefreshRecyclerFragment extends BaseFragment im
     RecyclerView mRecyclerView;
 
     protected LinearLayoutManager mLayoutManager;
+    private AppBarLayout mAppBar;
+
+    private boolean mKeepOnAppending = true;
+    private boolean mBottomLoading = false;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -33,8 +38,24 @@ public abstract class BaseSwipeToRefreshRecyclerFragment extends BaseFragment im
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.addOnScrollListener(new ScrollListener());
         mRefreshLayout.setColorSchemeResources(R.color.primary);
         mRefreshLayout.setOnRefreshListener(this);
+        mAppBar = ButterKnife.findById(getActivity(), R.id.app_bar);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (mAppBar != null)
+            mAppBar.addOnOffsetChangedListener(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mAppBar != null)
+            mAppBar.removeOnOffsetChangedListener(this);
     }
 
     @Override
@@ -46,5 +67,43 @@ public abstract class BaseSwipeToRefreshRecyclerFragment extends BaseFragment im
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
+    }
+
+    @Override
+    public void onOffsetChanged(AppBarLayout appBarLayout, int i) {
+        mRefreshLayout.setEnabled(i == 0);
+    }
+
+    private final class ScrollListener extends RecyclerView.OnScrollListener {
+
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            super.onScrolled(recyclerView, dx, dy);
+
+            int totalItemCount = mLayoutManager.getItemCount();
+            int firstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
+            int visibleItemCount = mLayoutManager.findLastVisibleItemPosition() - firstVisibleItem;
+
+            if (totalItemCount > 0 && mKeepOnAppending) {
+                if (!mBottomLoading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + 10)) {
+                    mBottomLoading = true;
+                    startBottomLoading();
+                }
+            }
+        }
+    }
+
+    protected void stopBottoLoading(boolean keepOnAppending) {
+        mBottomLoading = false;
+        mKeepOnAppending = keepOnAppending;
+    }
+
+    public void startBottomLoading() {
+        stopBottoLoading(false);
+    }
+
+    @Override
+    public void onRefresh() {
+
     }
 }

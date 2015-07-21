@@ -3,6 +3,7 @@
     <string name="app_name">Robird</string>
     <string name="settings">Settings</string>
     <string name="home">Home</string>
+    <string name="tweets">Tweets</string>
     <string name="mentions">Mentions</string>
     <string name="retweets">Retweets</string>
     <string name="favorites">Favorites</string>
@@ -22,5 +23,14 @@
     <string name="successfully_unretweeted">Successfully unretweeted</string>
     <string name="copied_to_clipboard">Copied to clipboard</string>
     <string name="share">Share</string>
+    <string name="friends">Friends</string>
+    <string name="followers">Followers</string>
+    <string name="follow">Follow</string>
+    <string name="block">Block</string>
+    <string name="unblock">Unblock</string>
+    <string name="report_spam">Report spam</string>
+    <string name="unfollow">Unfollow</string>
+    <string name="following_you">Following you</string>
+    <string name="not_following_you">Not following you</string>
 
 </resources>

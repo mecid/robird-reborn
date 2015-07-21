@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/menu_follow"
+        android:icon="@drawable/ic_person_add"
+        android:title="@string/follow"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/menu_block"
+        android:title="@string/block"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/menu_spam"
+        android:title="@string/report_spam"
+        app:showAsAction="never" />
+
+</menu>

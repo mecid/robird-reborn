@@ -143,9 +143,4 @@ public class TweetDetailsFragment extends BaseSwipeToRefreshRecyclerFragment {
 
         return super.onOptionsItemSelected(item);
     }
-
-    @Override
-    public void onRefresh() {
-
-    }
 }

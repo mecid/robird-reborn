@@ -14,6 +14,7 @@ import com.aaplab.robird.R;
 import com.aaplab.robird.data.entity.Account;
 import com.aaplab.robird.data.entity.Tweet;
 import com.aaplab.robird.ui.activity.TweetDetailsActivity;
+import com.aaplab.robird.ui.activity.UserProfileActivity;
 import com.aaplab.robird.util.RoundTransformation;
 import com.squareup.picasso.Picasso;
 
@@ -85,6 +86,13 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
                 .centerCrop().fit()
                 .transform(new RoundTransformation())
                 .into(holder.avatarImageView);
+
+        holder.avatarImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                UserProfileActivity.start(mActivity, mAccount, tweet.username());
+            }
+        });
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
