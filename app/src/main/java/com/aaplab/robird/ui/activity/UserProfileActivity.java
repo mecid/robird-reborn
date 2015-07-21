@@ -125,6 +125,13 @@ public class UserProfileActivity extends BaseActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.user_profile, menu);
+
+        if (mUser != null && TextUtils.equals(mAccount.screenName(), mUser.getScreenName())) {
+            menu.findItem(R.id.menu_spam).setVisible(false);
+            menu.findItem(R.id.menu_block).setVisible(false);
+            menu.findItem(R.id.menu_follow).setVisible(false);
+        }
+
         if (mRelationship != null) {
             boolean isFollowing = mRelationship.isSourceFollowingTarget();
             boolean isBlocking = mRelationship.isSourceBlockingTarget();
@@ -136,6 +143,7 @@ public class UserProfileActivity extends BaseActivity {
             menu.findItem(R.id.menu_block)
                     .setTitle(isBlocking ? R.string.unblock : R.string.block);
         }
+
         return super.onCreateOptionsMenu(menu);
     }
 
