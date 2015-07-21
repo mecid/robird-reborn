@@ -50,6 +50,7 @@ public class UserFriendsFragment extends BaseSwipeToRefreshRecyclerFragment {
         mUsers = new CopyOnWriteArrayList<>();
         mAdapter = new UserAdapter(getActivity(), account, mUsers);
         mRecyclerView.setAdapter(mAdapter);
+        mRefreshLayout.setRefreshing(true);
 
         mUserModel = new UserModel(account, mScreenName);
         mSubscriptions.add(
@@ -64,6 +65,7 @@ public class UserFriendsFragment extends BaseSwipeToRefreshRecyclerFragment {
                                 mUsers.addAll(users);
                                 mAdapter.notifyDataSetChanged();
                                 mCursor = users.getNextCursor();
+                                mRefreshLayout.setRefreshing(false);
                             }
                         })
         );
@@ -84,6 +86,7 @@ public class UserFriendsFragment extends BaseSwipeToRefreshRecyclerFragment {
                                 mUsers.addAll(users);
                                 mAdapter.notifyDataSetChanged();
                                 mCursor = users.getNextCursor();
+                                mRefreshLayout.setRefreshing(false);
                             }
                         })
         );
