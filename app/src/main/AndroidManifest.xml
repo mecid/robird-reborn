@@ -48,6 +48,22 @@
             android:name=".ui.activity.TweetDetailsActivity"
             android:label="@string/tweet" />
 
+        <activity
+            android:name=".ui.activity.UserProfileActivity"
+            android:theme="@style/AppTheme.Transparent">
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="profile"
+                    android:scheme="robird" />
+            </intent-filter>
+        </activity>
+
         <provider
             android:name=".data.provider.RobirdContentProvider"
             android:authorities="com.aaplab.robird" />
