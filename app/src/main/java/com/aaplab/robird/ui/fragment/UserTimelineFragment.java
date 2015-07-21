@@ -40,12 +40,12 @@ public class UserTimelineFragment extends BaseTimelineFragment {
         super.onActivityCreated(savedInstanceState);
         mScreenName = getArguments().getString(UserProfileActivity.SCREEN_NAME);
         mType = getArguments().getInt("type");
-        mUserModel = new UserModel(mAccount);
+        mUserModel = new UserModel(mAccount, mScreenName);
         mRefreshLayout.setRefreshing(true);
 
         mSubscriptions.add(
                 mUserModel
-                        .tweets(mScreenName, mType, new Paging().count(50))
+                        .tweets(mType, new Paging().count(50))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new DefaultObserver<List<Tweet>>() {
@@ -64,7 +64,7 @@ public class UserTimelineFragment extends BaseTimelineFragment {
         super.onRefresh();
         mSubscriptions.add(
                 mUserModel
-                        .tweets(mScreenName, mType, new Paging(findFirstVisibleTweetId()))
+                        .tweets(mType, new Paging(findFirstVisibleTweetId()))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new DefaultObserver<List<Tweet>>() {
@@ -82,8 +82,7 @@ public class UserTimelineFragment extends BaseTimelineFragment {
     public void startBottomLoading() {
         mSubscriptions.add(
                 mUserModel
-                        .tweets(mScreenName, mType,
-                                new Paging().maxId(mTweets.get(mTweets.size() - 1).tweetId()))
+                        .tweets(mType, new Paging().maxId(mTweets.get(mTweets.size() - 1).tweetId()))
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeOn(Schedulers.io())
                         .subscribe(new DefaultObserver<List<Tweet>>() {

@@ -51,10 +51,10 @@ public class UserFriendsFragment extends BaseSwipeToRefreshRecyclerFragment {
         mAdapter = new UserAdapter(getActivity(), account, mUsers);
         mRecyclerView.setAdapter(mAdapter);
 
-        mUserModel = new UserModel(account);
+        mUserModel = new UserModel(account, mScreenName);
         mSubscriptions.add(
                 mUserModel
-                        .friends(mScreenName, mType, -1)
+                        .friends(mType, -1)
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeOn(Schedulers.io())
                         .subscribe(new DefaultObserver<PagableResponseList<User>>() {
@@ -73,7 +73,7 @@ public class UserFriendsFragment extends BaseSwipeToRefreshRecyclerFragment {
     public void onRefresh() {
         mSubscriptions.add(
                 mUserModel
-                        .friends(mScreenName, mType, -1)
+                        .friends(mType, -1)
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeOn(Schedulers.io())
                         .subscribe(new DefaultObserver<PagableResponseList<User>>() {
@@ -93,7 +93,7 @@ public class UserFriendsFragment extends BaseSwipeToRefreshRecyclerFragment {
     public void startBottomLoading() {
         mSubscriptions.add(
                 mUserModel
-                        .friends(mScreenName, mType, mCursor)
+                        .friends(mType, mCursor)
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeOn(Schedulers.io())
                         .subscribe(new DefaultObserver<PagableResponseList<User>>() {

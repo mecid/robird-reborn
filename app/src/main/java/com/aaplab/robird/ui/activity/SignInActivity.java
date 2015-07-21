@@ -89,8 +89,8 @@ public class SignInActivity extends BaseActivity {
                                 @Override
                                 public void onNext(final Account account) {
                                     super.onNext(account);
-                                    UserModel userModel = new UserModel(account);
-                                    userModel.user(account.screenName())
+                                    UserModel userModel = new UserModel(account, account.screenName());
+                                    userModel.user()
                                             .flatMap(new Func1<User, Observable<Account>>() {
                                                 @Override
                                                 public Observable<Account> call(User user) {

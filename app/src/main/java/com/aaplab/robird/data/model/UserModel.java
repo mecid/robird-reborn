@@ -41,16 +41,19 @@ public class UserModel extends BaseTwitterModel {
     public @interface FriendsType {
     }
 
-    public UserModel(Account account) {
+    private final String mScreenName;
+
+    public UserModel(Account account, String screenName) {
         super(account);
+        mScreenName = screenName;
     }
 
-    public Observable<User> user(final String screenName) {
+    public Observable<User> user() {
         return Observable.create(new Observable.OnSubscribe<User>() {
             @Override
             public void call(Subscriber<? super User> subscriber) {
                 try {
-                    subscriber.onNext(mTwitter.showUser(screenName));
+                    subscriber.onNext(mTwitter.showUser(mScreenName));
                     subscriber.onCompleted();
                 } catch (TwitterException e) {
                     subscriber.onError(e);
@@ -59,12 +62,12 @@ public class UserModel extends BaseTwitterModel {
         });
     }
 
-    public Observable<Relationship> report(final String screenName) {
+    public Observable<Relationship> report() {
         return Observable.create(new Observable.OnSubscribe<User>() {
             @Override
             public void call(Subscriber<? super User> subscriber) {
                 try {
-                    subscriber.onNext(mTwitter.reportSpam(screenName));
+                    subscriber.onNext(mTwitter.reportSpam(mScreenName));
                     subscriber.onCompleted();
                 } catch (TwitterException e) {
                     subscriber.onError(e);
@@ -73,13 +76,13 @@ public class UserModel extends BaseTwitterModel {
         }).flatMap(new Func1<User, Observable<Relationship>>() {
             @Override
             public Observable<Relationship> call(User user) {
-                return relationship(screenName);
+                return relationship();
             }
         });
     }
 
-    public Observable<Relationship> follow(final String screenName) {
-        return relationship(screenName)
+    public Observable<Relationship> follow() {
+        return relationship()
                 .flatMap(new Func1<Relationship, Observable<User>>() {
                     @Override
                     public Observable<User> call(final Relationship relationship) {
@@ -88,9 +91,9 @@ public class UserModel extends BaseTwitterModel {
                             public void call(Subscriber<? super User> subscriber) {
                                 try {
                                     if (relationship.isSourceFollowingTarget())
-                                        subscriber.onNext(mTwitter.destroyFriendship(screenName));
+                                        subscriber.onNext(mTwitter.destroyFriendship(mScreenName));
                                     else
-                                        subscriber.onNext(mTwitter.createFriendship(screenName));
+                                        subscriber.onNext(mTwitter.createFriendship(mScreenName));
                                     subscriber.onCompleted();
                                 } catch (TwitterException e) {
                                     subscriber.onError(e);
@@ -102,13 +105,13 @@ public class UserModel extends BaseTwitterModel {
                 .flatMap(new Func1<User, Observable<Relationship>>() {
                     @Override
                     public Observable<Relationship> call(User user) {
-                        return relationship(user.getScreenName());
+                        return relationship();
                     }
                 });
     }
 
-    public Observable<Relationship> block(final String screenName) {
-        return relationship(screenName)
+    public Observable<Relationship> block() {
+        return relationship()
                 .flatMap(new Func1<Relationship, Observable<User>>() {
                     @Override
                     public Observable<User> call(final Relationship relationship) {
@@ -117,9 +120,9 @@ public class UserModel extends BaseTwitterModel {
                             public void call(Subscriber<? super User> subscriber) {
                                 try {
                                     if (relationship.isSourceBlockingTarget())
-                                        subscriber.onNext(mTwitter.destroyBlock(screenName));
+                                        subscriber.onNext(mTwitter.destroyBlock(mScreenName));
                                     else
-                                        subscriber.onNext(mTwitter.createBlock(screenName));
+                                        subscriber.onNext(mTwitter.createBlock(mScreenName));
                                     subscriber.onCompleted();
                                 } catch (TwitterException e) {
                                     subscriber.onError(e);
@@ -131,17 +134,17 @@ public class UserModel extends BaseTwitterModel {
                 .flatMap(new Func1<User, Observable<Relationship>>() {
                     @Override
                     public Observable<Relationship> call(User user) {
-                        return relationship(user.getScreenName());
+                        return relationship();
                     }
                 });
     }
 
-    public Observable<Relationship> relationship(final String screenName) {
+    public Observable<Relationship> relationship() {
         return Observable.create(new Observable.OnSubscribe<Relationship>() {
             @Override
             public void call(Subscriber<? super Relationship> subscriber) {
                 try {
-                    subscriber.onNext(mTwitter.showFriendship(mAccount.screenName(), screenName));
+                    subscriber.onNext(mTwitter.showFriendship(mAccount.screenName(), mScreenName));
                     subscriber.onCompleted();
                 } catch (TwitterException e) {
                     subscriber.onError(e);
@@ -150,8 +153,7 @@ public class UserModel extends BaseTwitterModel {
         });
     }
 
-    public Observable<List<Tweet>> tweets(final String screenName,
-                                          final int type,
+    public Observable<List<Tweet>> tweets(final int type,
                                           final Paging paging) {
         return Observable.create(new Observable.OnSubscribe<List<Status>>() {
             @Override
@@ -159,8 +161,8 @@ public class UserModel extends BaseTwitterModel {
                 try {
                     subscriber.onNext(
                             type == TWEETS ?
-                                    mTwitter.getUserTimeline(screenName, paging) :
-                                    mTwitter.getFavorites(screenName, paging)
+                                    mTwitter.getUserTimeline(mScreenName, paging) :
+                                    mTwitter.getFavorites(mScreenName, paging)
                     );
                     subscriber.onCompleted();
                 } catch (TwitterException e) {
@@ -170,8 +172,7 @@ public class UserModel extends BaseTwitterModel {
         }).map(MapFunctions.STATUSES_TO_TWEETS);
     }
 
-    public Observable<PagableResponseList<User>> friends(final String screenName,
-                                                         final int type,
+    public Observable<PagableResponseList<User>> friends(final int type,
                                                          final long cursor) {
         return Observable.create(new Observable.OnSubscribe<PagableResponseList<User>>() {
             @Override
@@ -179,8 +180,8 @@ public class UserModel extends BaseTwitterModel {
                 try {
                     subscriber.onNext(
                             type == FRIENDS ?
-                                    mTwitter.getFriendsList(screenName, cursor) :
-                                    mTwitter.getFollowersList(screenName, cursor)
+                                    mTwitter.getFriendsList(mScreenName, cursor) :
+                                    mTwitter.getFollowersList(mScreenName, cursor)
                     );
                     subscriber.onCompleted();
                 } catch (TwitterException e) {

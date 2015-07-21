@@ -95,13 +95,13 @@ public class UserProfileActivity extends BaseActivity {
             mAccount = new AccountModel().accounts().toBlocking().first().get(0);
         }
 
-        mUserModel = new UserModel(mAccount);
+        mUserModel = new UserModel(mAccount, mScreenName);
         mViewPager.setAdapter(new UserProfilePagerAdapter(getSupportFragmentManager()));
 
         mSubscriptions.add(
                 Observable.zip(
-                        mUserModel.user(mScreenName),
-                        mUserModel.relationship(mScreenName),
+                        mUserModel.user(),
+                        mUserModel.relationship(),
                         new Func2<User, Relationship, UserAndRelationship>() {
                             @Override
                             public UserAndRelationship call(User user, Relationship relationship) {
@@ -144,7 +144,7 @@ public class UserProfileActivity extends BaseActivity {
         if (item.getItemId() == R.id.menu_follow) {
             mSubscriptions.add(
                     mUserModel
-                            .follow(mScreenName)
+                            .follow()
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribeOn(Schedulers.io())
                             .subscribe(new DefaultObserver<Relationship>() {
@@ -159,7 +159,7 @@ public class UserProfileActivity extends BaseActivity {
         } else if (item.getItemId() == R.id.menu_block) {
             mSubscriptions.add(
                     mUserModel
-                            .block(mScreenName)
+                            .block()
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribeOn(Schedulers.io())
                             .subscribe(new DefaultObserver<Relationship>() {
@@ -174,7 +174,7 @@ public class UserProfileActivity extends BaseActivity {
         } else if (item.getItemId() == R.id.menu_spam) {
             mSubscriptions.add(
                     mUserModel
-                            .report(mScreenName)
+                            .report()
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribeOn(Schedulers.io())
                             .subscribe(new DefaultObserver<Relationship>() {
