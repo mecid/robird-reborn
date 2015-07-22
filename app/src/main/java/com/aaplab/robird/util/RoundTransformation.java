@@ -1,43 +1,52 @@
 package com.aaplab.robird.util;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 
-import com.squareup.picasso.Transformation;
+import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
+import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
 
-public final class RoundTransformation implements Transformation {
+public final class RoundTransformation extends BitmapTransformation {
+    public RoundTransformation(Context context) {
+        super(context);
+    }
 
     @Override
-    public Bitmap transform(Bitmap source) {
+    protected Bitmap transform(BitmapPool pool, Bitmap source, int outWidth, int outHeight) {
         int size = Math.min(source.getWidth(), source.getHeight());
 
-        int x = (source.getWidth() - size) / 2;
-        int y = (source.getHeight() - size) / 2;
+        int width = (source.getWidth() - size) / 2;
+        int height = (source.getHeight() - size) / 2;
 
-        Bitmap squaredBitmap = Bitmap.createBitmap(source, x, y, size, size);
-        if (squaredBitmap != source) {
-            source.recycle();
+        Bitmap bitmap = pool.get(size, size, source.getConfig());
+        if (bitmap == null) {
+            bitmap = Bitmap.createBitmap(size, size, source.getConfig());
         }
-
-        Bitmap bitmap = Bitmap.createBitmap(size, size, source.getConfig());
 
         Canvas canvas = new Canvas(bitmap);
         Paint paint = new Paint();
-        BitmapShader shader = new BitmapShader(squaredBitmap, BitmapShader.TileMode.CLAMP, BitmapShader.TileMode.CLAMP);
+        BitmapShader shader = new BitmapShader(source, BitmapShader.TileMode.CLAMP,
+                BitmapShader.TileMode.CLAMP);
+        if (width != 0 || height != 0) {
+            Matrix matrix = new Matrix();
+            matrix.setTranslate(-width, -height);
+            shader.setLocalMatrix(matrix);
+        }
         paint.setShader(shader);
         paint.setAntiAlias(true);
 
-        float radius = size / 2f;
-        canvas.drawCircle(radius, radius, radius, paint);
+        float r = size / 2f;
+        canvas.drawCircle(r, r, r, paint);
 
-        squaredBitmap.recycle();
         return bitmap;
     }
 
     @Override
-    public String key() {
-        return "circle";
+    public String getId() {
+        return "RoundTransformation";
     }
 }

@@ -12,7 +12,8 @@ import com.aaplab.robird.R;
 import com.aaplab.robird.data.entity.Account;
 import com.aaplab.robird.ui.activity.UserProfileActivity;
 import com.aaplab.robird.util.RoundTransformation;
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import java.util.List;
 
@@ -49,10 +50,10 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserHolder> {
         holder.fullNameTextView.setText(user.getName());
         holder.infoTextView.setText(user.getLocation());
 
-        Picasso.with(mActivity)
+        Glide.with(mActivity)
                 .load(user.getOriginalProfileImageURL())
-                .fit().centerCrop()
-                .transform(new RoundTransformation())
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .transform(new RoundTransformation(mActivity))
                 .into(holder.avatarImageView);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
