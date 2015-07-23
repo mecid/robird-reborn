@@ -2,6 +2,7 @@ package com.aaplab.robird.ui.activity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -27,9 +28,10 @@ import com.aaplab.robird.data.model.UserModel;
 import com.aaplab.robird.ui.fragment.UserFriendsFragment;
 import com.aaplab.robird.ui.fragment.UserTimelineFragment;
 import com.aaplab.robird.util.DefaultObserver;
-import com.aaplab.robird.util.PaletteTransformation;
-import com.aaplab.robird.util.RoundTransformation;
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -225,34 +227,31 @@ public class UserProfileActivity extends BaseActivity {
         );
         mBioTextView.setVisibility(TextUtils.isEmpty(mBioTextView.getText()) ? View.GONE : View.VISIBLE);
 
-        Picasso.with(getApplicationContext())
+        Glide.with(this)
                 .load(mUser.getOriginalProfileImageURL())
-                .fit().centerCrop()
-                .transform(new RoundTransformation())
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(mAvatarImageView);
 
-        Picasso.with(getApplicationContext())
+        Glide.with(this)
                 .load(mUser.getProfileBannerMobileRetinaURL())
-                .transform(PaletteTransformation.instance())
-                .fit().centerCrop()
-                .into(mUserBackgroundImageView,
-                        new PaletteTransformation.PaletteCallback(mUserBackgroundImageView) {
-                            @Override
-                            protected void onSuccess(Palette palette) {
-                                int muted = palette.getMutedColor(R.color.primary);
-                                int darkMuted = palette.getDarkMutedColor(R.color.primaryDark);
+                .asBitmap()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .centerCrop()
+                .into(new BitmapImageViewTarget(mUserBackgroundImageView) {
+                    @Override
+                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                        super.onResourceReady(resource, glideAnimation);
 
-                                mCollapsingToolbar.setStatusBarScrimColor(darkMuted);
-                                mCollapsingToolbar.setContentScrimColor(muted);
-                                mBioTextView.setBackgroundColor(muted);
-                                mTabs.setBackgroundColor(muted);
-                            }
+                        final Palette palette = Palette.from(resource).generate();
+                        final int muted = palette.getMutedColor(R.color.primary);
+                        final int darkMuted = palette.getDarkMutedColor(R.color.primaryDark);
 
-                            @Override
-                            public void onError() {
-
-                            }
-                        });
+                        mCollapsingToolbar.setStatusBarScrimColor(darkMuted);
+                        mCollapsingToolbar.setContentScrimColor(muted);
+                        mBioTextView.setBackgroundColor(muted);
+                        mTabs.setBackgroundColor(muted);
+                    }
+                });
     }
 
     public static void start(Activity activity, Account account, String screenName) {

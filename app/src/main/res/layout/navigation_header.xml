@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="171dp" />
 
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/avatar"
         android:layout_width="64dp"
         android:layout_height="64dp"
@@ -17,7 +17,7 @@
         android:background="?selectableItemBackground"
         android:clickable="true" />
 
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/avatar2"
         android:layout_width="40dp"
         android:layout_height="40dp"
@@ -28,7 +28,7 @@
         android:clickable="true"
         android:visibility="gone" />
 
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/avatar3"
         android:layout_width="40dp"
         android:layout_height="40dp"

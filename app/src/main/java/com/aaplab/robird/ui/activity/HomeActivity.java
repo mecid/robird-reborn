@@ -23,8 +23,8 @@ import com.aaplab.robird.data.model.AccountModel;
 import com.aaplab.robird.ui.fragment.TimelineFragment;
 import com.aaplab.robird.util.DefaultObserver;
 import com.aaplab.robird.util.NavigationUtils;
-import com.aaplab.robird.util.RoundTransformation;
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import java.util.List;
 
@@ -163,17 +163,17 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         mScreenNameTextView.setText("@" + activeAccount.screenName());
         mFullNameTextView.setText(activeAccount.fullName());
 
-        Picasso.with(this)
+        Glide.with(this)
                 .load(activeAccount.userBackground())
-                .centerCrop().fit()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .centerCrop()
                 .into(mBackgroundImageView);
 
         for (int i = 0; i < mAccounts.size(); ++i) {
             Account account = mAccounts.get(i);
-            Picasso.with(this)
+            Glide.with(this)
                     .load(account.avatar())
-                    .centerCrop().fit()
-                    .transform(new RoundTransformation())
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(avatars[i]);
             avatars[i].setVisibility(View.VISIBLE);
         }
