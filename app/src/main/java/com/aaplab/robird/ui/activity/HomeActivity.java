@@ -23,7 +23,6 @@ import com.aaplab.robird.data.model.AccountModel;
 import com.aaplab.robird.ui.fragment.TimelineFragment;
 import com.aaplab.robird.util.DefaultObserver;
 import com.aaplab.robird.util.NavigationUtils;
-import com.aaplab.robird.util.RoundTransformation;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
@@ -175,7 +174,6 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
             Glide.with(this)
                     .load(account.avatar())
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .transform(new RoundTransformation(this))
                     .into(avatars[i]);
             avatars[i].setVisibility(View.VISIBLE);
         }

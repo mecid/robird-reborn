@@ -15,7 +15,6 @@ import com.aaplab.robird.data.entity.Account;
 import com.aaplab.robird.data.entity.Tweet;
 import com.aaplab.robird.ui.activity.TweetDetailsActivity;
 import com.aaplab.robird.ui.activity.UserProfileActivity;
-import com.aaplab.robird.util.RoundTransformation;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
@@ -84,7 +83,6 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
         Glide.with(mActivity)
                 .load(tweet.avatar())
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .transform(new RoundTransformation(mActivity))
                 .into(holder.avatarImageView);
 
         holder.avatarImageView.setOnClickListener(new View.OnClickListener() {

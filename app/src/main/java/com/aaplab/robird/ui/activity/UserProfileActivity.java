@@ -28,7 +28,6 @@ import com.aaplab.robird.data.model.UserModel;
 import com.aaplab.robird.ui.fragment.UserFriendsFragment;
 import com.aaplab.robird.ui.fragment.UserTimelineFragment;
 import com.aaplab.robird.util.DefaultObserver;
-import com.aaplab.robird.util.RoundTransformation;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.animation.GlideAnimation;
@@ -231,7 +230,6 @@ public class UserProfileActivity extends BaseActivity {
         Glide.with(this)
                 .load(mUser.getOriginalProfileImageURL())
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .transform(new RoundTransformation(this))
                 .into(mAvatarImageView);
 
         Glide.with(this)
