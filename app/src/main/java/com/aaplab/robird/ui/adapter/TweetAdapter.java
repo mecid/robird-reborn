@@ -76,7 +76,6 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
             Glide.with(mActivity)
                     .load(media[0])
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .centerCrop()
                     .into(holder.mediaImageView);
         }
 

@@ -6,7 +6,8 @@
     <ImageView
         android:id="@+id/user_background"
         android:layout_width="match_parent"
-        android:layout_height="171dp" />
+        android:layout_height="171dp"
+        android:scaleType="centerCrop" />
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/avatar"

@@ -166,7 +166,6 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         Glide.with(this)
                 .load(activeAccount.userBackground())
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .centerCrop()
                 .into(mBackgroundImageView);
 
         for (int i = 0; i < mAccounts.size(); ++i) {

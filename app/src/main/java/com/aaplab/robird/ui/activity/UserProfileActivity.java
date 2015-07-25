@@ -236,7 +236,6 @@ public class UserProfileActivity extends BaseActivity {
                 .load(mUser.getProfileBannerMobileRetinaURL())
                 .asBitmap()
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .centerCrop()
                 .into(new BitmapImageViewTarget(mUserBackgroundImageView) {
                     @Override
                     public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {

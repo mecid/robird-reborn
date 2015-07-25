@@ -74,6 +74,7 @@
         android:layout_marginRight="@dimen/keyline_1"
         android:layout_marginTop="@dimen/keyline_1"
         android:layout_toRightOf="@id/avatar"
+        android:scaleType="centerCrop"
         android:visibility="gone" />
 
     <View
