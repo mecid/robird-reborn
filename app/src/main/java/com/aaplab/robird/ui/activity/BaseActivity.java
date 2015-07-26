@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import com.aaplab.robird.inject.Inject;
 import com.squareup.otto.Bus;
 
+import icepick.Icepick;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -21,8 +22,15 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Icepick.restoreInstanceState(this, savedInstanceState);
         mSubscriptions = new CompositeSubscription();
         mBus = Inject.eventBus();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Icepick.saveInstanceState(this, outState);
     }
 
     @Override

@@ -11,6 +11,7 @@ import com.aaplab.robird.util.DefaultObserver;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import icepick.Icicle;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import twitter4j.PagableResponseList;
@@ -33,42 +34,47 @@ public class UserFriendsFragment extends BaseSwipeToRefreshRecyclerFragment {
         return fragment;
     }
 
+    @Icicle
+    CopyOnWriteArrayList<User> mUsers;
+
+    @Icicle
+    long mCursor;
+
+    private UserAdapter mAdapter;
     private UserModel mUserModel;
     private String mScreenName;
     private int mType;
-
-    private CopyOnWriteArrayList<User> mUsers;
-    private UserAdapter mAdapter;
-    private long mCursor;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         final Account account = getArguments().getParcelable("account");
         mScreenName = getArguments().getString(UserProfileActivity.SCREEN_NAME);
-        mType = getArguments().getInt("type");
-        mUsers = new CopyOnWriteArrayList<>();
+        mUsers = savedInstanceState == null ? new CopyOnWriteArrayList<User>() : mUsers;
         mAdapter = new UserAdapter(getActivity(), account, mUsers);
-        mRecyclerView.setAdapter(mAdapter);
-        mRefreshLayout.setRefreshing(true);
-
         mUserModel = new UserModel(account, mScreenName);
-        mSubscriptions.add(
-                mUserModel
-                        .friends(mType, -1)
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribeOn(Schedulers.io())
-                        .subscribe(new DefaultObserver<PagableResponseList<User>>() {
-                            @Override
-                            public void onNext(PagableResponseList<User> users) {
-                                super.onNext(users);
-                                mUsers.addAll(users);
-                                mAdapter.notifyDataSetChanged();
-                                mCursor = users.getNextCursor();
-                                mRefreshLayout.setRefreshing(false);
-                            }
-                        })
-        );
+        mRecyclerView.setAdapter(mAdapter);
+        mType = getArguments().getInt("type");
+
+        if (savedInstanceState == null) {
+            mRefreshLayout.setRefreshing(true);
+            mSubscriptions.add(
+                    mUserModel
+                            .friends(mType, -1)
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeOn(Schedulers.io())
+                            .subscribe(new DefaultObserver<PagableResponseList<User>>() {
+                                @Override
+                                public void onNext(PagableResponseList<User> users) {
+                                    super.onNext(users);
+                                    mUsers.addAll(users);
+                                    mAdapter.notifyDataSetChanged();
+                                    mCursor = users.getNextCursor();
+                                    mRefreshLayout.setRefreshing(false);
+                                }
+                            })
+            );
+        }
     }
 
     @Override
