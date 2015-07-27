@@ -90,9 +90,6 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         avatars[1].setOnClickListener(this);
         avatars[2].setOnClickListener(this);
 
-        mSelectedNavigationMenuId = savedInstanceState == null ?
-                R.id.navigation_item_home : mSelectedNavigationMenuId;
-
         mAccountModel = new AccountModel();
         mSubscriptions.add(
                 mAccountModel
@@ -113,21 +110,23 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     public boolean onNavigationItemSelected(final MenuItem menuItem) {
         if (menuItem.getItemId() != R.id.navigation_item_settings) {
             Timber.d("on navigation item selected: %s", menuItem.getTitle());
-            mSelectedNavigationMenuId = menuItem.getItemId();
             setTitle(menuItem.getTitle());
             menuItem.setChecked(true);
             mDrawerLayout.closeDrawers();
 
-            mNavigationHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    getSupportFragmentManager()
-                            .beginTransaction()
-                            .replace(R.id.content,
-                                    TimelineFragment.create(mAccounts.get(0), menuItem.getOrder()))
-                            .commit();
-                }
-            }, 200);
+            if (mSelectedNavigationMenuId != menuItem.getItemId()) {
+                mSelectedNavigationMenuId = menuItem.getItemId();
+                mNavigationHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        getSupportFragmentManager()
+                                .beginTransaction()
+                                .replace(R.id.content,
+                                        TimelineFragment.create(mAccounts.get(0), menuItem.getOrder()))
+                                .commit();
+                    }
+                }, 200);
+            }
         } else {
             //TODO start settings activity
         }
@@ -177,7 +176,9 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
             avatars[i].setVisibility(View.VISIBLE);
         }
 
-        onNavigationItemSelected(mNavigationView.getMenu().findItem(mSelectedNavigationMenuId));
+        MenuItem navigationItem = mNavigationView.getMenu().findItem(mSelectedNavigationMenuId);
+        onNavigationItemSelected(navigationItem == null ?
+                mNavigationView.getMenu().findItem(R.id.navigation_item_home) : navigationItem);
         mNavigationView.setNavigationItemSelectedListener(this);
     }
 
