@@ -35,6 +35,7 @@ import com.bumptech.glide.request.target.BitmapImageViewTarget;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import icepick.Icicle;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func2;
@@ -75,11 +76,15 @@ public class UserProfileActivity extends BaseActivity {
     @Bind(R.id.tabs)
     TabLayout mTabs;
 
-    private Relationship mRelationship;
+    @Icicle
+    User mUser;
+
+    @Icicle
+    Relationship mRelationship;
+
     private UserModel mUserModel;
     private String mScreenName;
     private Account mAccount;
-    private User mUser;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -100,28 +105,33 @@ public class UserProfileActivity extends BaseActivity {
         mUserModel = new UserModel(mAccount, mScreenName);
         mViewPager.setAdapter(new UserProfilePagerAdapter(getSupportFragmentManager()));
 
-        mSubscriptions.add(
-                Observable.zip(
-                        mUserModel.user(),
-                        mUserModel.relationship(),
-                        new Func2<User, Relationship, UserAndRelationship>() {
-                            @Override
-                            public UserAndRelationship call(User user, Relationship relationship) {
-                                return new UserAndRelationship(user, relationship);
+        if (savedInstanceState == null) {
+            mSubscriptions.add(
+                    Observable.zip(
+                            mUserModel.user(),
+                            mUserModel.relationship(),
+                            new Func2<User, Relationship, UserAndRelationship>() {
+                                @Override
+                                public UserAndRelationship call(User user, Relationship relationship) {
+                                    return new UserAndRelationship(user, relationship);
+                                }
                             }
-                        }
-                )
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new DefaultObserver<UserAndRelationship>() {
-                            @Override
-                            public void onNext(UserAndRelationship userAndRelationship) {
-                                super.onNext(userAndRelationship);
-                                setupUserDetails(userAndRelationship);
-                                invalidateOptionsMenu();
-                            }
-                        })
-        );
+                    )
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new DefaultObserver<UserAndRelationship>() {
+                                @Override
+                                public void onNext(UserAndRelationship userAndRelationship) {
+                                    super.onNext(userAndRelationship);
+                                    setupUserDetails(userAndRelationship);
+                                    supportInvalidateOptionsMenu();
+                                }
+                            })
+            );
+        } else {
+            setupUserDetails(new UserAndRelationship(mUser, mRelationship));
+            supportInvalidateOptionsMenu();
+        }
     }
 
     @Override
@@ -162,7 +172,7 @@ public class UserProfileActivity extends BaseActivity {
                                 public void onNext(Relationship relationship) {
                                     super.onNext(relationship);
                                     mRelationship = relationship;
-                                    invalidateOptionsMenu();
+                                    supportInvalidateOptionsMenu();
                                 }
                             })
             );
@@ -177,7 +187,7 @@ public class UserProfileActivity extends BaseActivity {
                                 public void onNext(Relationship relationship) {
                                     super.onNext(relationship);
                                     mRelationship = relationship;
-                                    invalidateOptionsMenu();
+                                    supportInvalidateOptionsMenu();
                                 }
                             })
             );
@@ -192,7 +202,7 @@ public class UserProfileActivity extends BaseActivity {
                                 public void onNext(Relationship relationship) {
                                     super.onNext(relationship);
                                     mRelationship = relationship;
-                                    invalidateOptionsMenu();
+                                    supportInvalidateOptionsMenu();
                                 }
                             })
             );

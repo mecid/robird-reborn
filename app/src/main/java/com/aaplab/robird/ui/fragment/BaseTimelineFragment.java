@@ -13,22 +13,37 @@ import com.google.common.collect.Iterables;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import icepick.Icicle;
+
 /**
  * Created by majid on 26.01.15.
  */
 public abstract class BaseTimelineFragment extends BaseSwipeToRefreshRecyclerFragment {
 
+    @Icicle
+    CopyOnWriteArrayList<Tweet> mTweets;
+
+    @Icicle
+    long mFirstVisibleTweetPositionId;
+
     protected Account mAccount;
     protected TweetAdapter mAdapter;
-    protected CopyOnWriteArrayList<Tweet> mTweets;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mTweets = new CopyOnWriteArrayList<>();
         mAccount = getArguments().getParcelable("account");
+        mTweets = savedInstanceState == null || mTweets == null ?
+                new CopyOnWriteArrayList<Tweet>() : mTweets;
         mAdapter = new TweetAdapter(getActivity(), mAccount, mTweets);
         mRecyclerView.setAdapter(mAdapter);
+        setTimelinePosition(mFirstVisibleTweetPositionId, 0);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        mFirstVisibleTweetPositionId = findFirstVisibleTweetId();
+        super.onSaveInstanceState(outState);
     }
 
     protected void appendTweetsToTop(List<Tweet> newTweets) {

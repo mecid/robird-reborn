@@ -39,24 +39,26 @@ public class UserTimelineFragment extends BaseTimelineFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mScreenName = getArguments().getString(UserProfileActivity.SCREEN_NAME);
-        mType = getArguments().getInt("type");
         mUserModel = new UserModel(mAccount, mScreenName);
-        mRefreshLayout.setRefreshing(true);
+        mType = getArguments().getInt("type");
 
-        mSubscriptions.add(
-                mUserModel
-                        .tweets(mType, new Paging().count(50))
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new DefaultObserver<List<Tweet>>() {
-                            @Override
-                            public void onNext(List<Tweet> tweets) {
-                                super.onNext(tweets);
-                                appendTweetsToTop(tweets);
-                                mRefreshLayout.setRefreshing(false);
-                            }
-                        })
-        );
+        if (savedInstanceState == null) {
+            mRefreshLayout.setRefreshing(true);
+            mSubscriptions.add(
+                    mUserModel
+                            .tweets(mType, new Paging().count(50))
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new DefaultObserver<List<Tweet>>() {
+                                @Override
+                                public void onNext(List<Tweet> tweets) {
+                                    super.onNext(tweets);
+                                    appendTweetsToTop(tweets);
+                                    mRefreshLayout.setRefreshing(false);
+                                }
+                            })
+            );
+        }
     }
 
     @Override

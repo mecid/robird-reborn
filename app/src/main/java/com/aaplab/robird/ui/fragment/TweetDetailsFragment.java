@@ -18,8 +18,10 @@ import com.aaplab.robird.data.model.TweetModel;
 import com.aaplab.robird.ui.adapter.TweetDetailsAdapter;
 import com.aaplab.robird.util.DefaultObserver;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import icepick.Icicle;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import twitter4j.Status;
@@ -40,6 +42,12 @@ public class TweetDetailsFragment extends BaseSwipeToRefreshRecyclerFragment {
         return fragment;
     }
 
+    @Icicle
+    ArrayList<Tweet> mConversation;
+
+    @Icicle
+    Status mDetailedStatus;
+
     private TweetDetailsAdapter mTweetDetailsAdapter;
     private TweetModel mTweetModel;
     private Tweet mTweet;
@@ -55,33 +63,40 @@ public class TweetDetailsFragment extends BaseSwipeToRefreshRecyclerFragment {
         mRefreshLayout.setEnabled(false);
         setHasOptionsMenu(true);
 
-        mSubscriptions.add(
-                mTweetModel
-                        .tweet()
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribeOn(Schedulers.io())
-                        .subscribe(new DefaultObserver<Status>() {
-                            @Override
-                            public void onNext(Status status) {
-                                super.onNext(status);
-                                mTweetDetailsAdapter.addDetails(status);
-                            }
-                        })
-        );
+        if (savedInstanceState == null) {
+            mSubscriptions.add(
+                    mTweetModel
+                            .tweet()
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeOn(Schedulers.io())
+                            .subscribe(new DefaultObserver<Status>() {
+                                @Override
+                                public void onNext(Status status) {
+                                    super.onNext(status);
+                                    mDetailedStatus = status;
+                                    mTweetDetailsAdapter.addDetails(mDetailedStatus);
+                                }
+                            })
+            );
 
-        mSubscriptions.add(
-                mTweetModel
-                        .conversation()
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribeOn(Schedulers.io())
-                        .subscribe(new DefaultObserver<List<Tweet>>() {
-                            @Override
-                            public void onNext(List<Tweet> tweets) {
-                                super.onNext(tweets);
-                                mTweetDetailsAdapter.addConversation(tweets);
-                            }
-                        })
-        );
+            mSubscriptions.add(
+                    mTweetModel
+                            .conversation()
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeOn(Schedulers.io())
+                            .subscribe(new DefaultObserver<List<Tweet>>() {
+                                @Override
+                                public void onNext(List<Tweet> tweets) {
+                                    super.onNext(tweets);
+                                    mConversation = new ArrayList<>(tweets);
+                                    mTweetDetailsAdapter.addConversation(mConversation);
+                                }
+                            })
+            );
+        } else {
+            mTweetDetailsAdapter.addDetails(mDetailedStatus);
+            mTweetDetailsAdapter.addConversation(mConversation);
+        }
     }
 
     @Override

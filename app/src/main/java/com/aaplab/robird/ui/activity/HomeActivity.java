@@ -30,6 +30,7 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import icepick.Icicle;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
@@ -38,8 +39,6 @@ import timber.log.Timber;
  * Created by majid on 07.05.15.
  */
 public class HomeActivity extends BaseActivity implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
-
-    private static final String NAVIGATION_STATE = "navigation_state";
 
     @Bind(R.id.fab)
     FloatingActionButton mFloatingActionButton;
@@ -68,11 +67,13 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     @Bind(R.id.navigation)
     NavigationView mNavigationView;
 
+    @Icicle
+    int mSelectedNavigationMenuId;
+
     private final Handler mNavigationHandler = new Handler();
     private ActionBarDrawerToggle mDrawerToggle;
     private AccountModel mAccountModel;
     private List<Account> mAccounts;
-    private int mSelectedNavigationMenuId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,10 +89,6 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         mAddAccountImageView.setOnClickListener(this);
         avatars[1].setOnClickListener(this);
         avatars[2].setOnClickListener(this);
-
-        mSelectedNavigationMenuId = savedInstanceState != null ?
-                savedInstanceState.getInt(NAVIGATION_STATE, R.id.navigation_item_home) :
-                R.id.navigation_item_home;
 
         mAccountModel = new AccountModel();
         mSubscriptions.add(
@@ -113,21 +110,23 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     public boolean onNavigationItemSelected(final MenuItem menuItem) {
         if (menuItem.getItemId() != R.id.navigation_item_settings) {
             Timber.d("on navigation item selected: %s", menuItem.getTitle());
-            mSelectedNavigationMenuId = menuItem.getItemId();
             setTitle(menuItem.getTitle());
             menuItem.setChecked(true);
             mDrawerLayout.closeDrawers();
 
-            mNavigationHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    getSupportFragmentManager()
-                            .beginTransaction()
-                            .replace(R.id.content,
-                                    TimelineFragment.create(mAccounts.get(0), menuItem.getOrder()))
-                            .commit();
-                }
-            }, 200);
+            if (mSelectedNavigationMenuId != menuItem.getItemId()) {
+                mSelectedNavigationMenuId = menuItem.getItemId();
+                mNavigationHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        getSupportFragmentManager()
+                                .beginTransaction()
+                                .replace(R.id.content,
+                                        TimelineFragment.create(mAccounts.get(0), menuItem.getOrder()))
+                                .commit();
+                    }
+                }, 200);
+            }
         } else {
             //TODO start settings activity
         }
@@ -177,7 +176,9 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
             avatars[i].setVisibility(View.VISIBLE);
         }
 
-        onNavigationItemSelected(mNavigationView.getMenu().findItem(mSelectedNavigationMenuId));
+        MenuItem navigationItem = mNavigationView.getMenu().findItem(mSelectedNavigationMenuId);
+        onNavigationItemSelected(navigationItem == null ?
+                mNavigationView.getMenu().findItem(R.id.navigation_item_home) : navigationItem);
         mNavigationView.setNavigationItemSelectedListener(this);
     }
 
@@ -189,12 +190,6 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                         .subscribeOn(Schedulers.io())
                         .subscribe()
         );
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt(NAVIGATION_STATE, mSelectedNavigationMenuId);
     }
 
     @Override
