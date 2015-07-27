@@ -70,6 +70,9 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     @Icicle
     int mSelectedNavigationMenuId;
 
+    @Icicle
+    int mSelectedAccountId;
+
     private final Handler mNavigationHandler = new Handler();
     private ActionBarDrawerToggle mDrawerToggle;
     private AccountModel mAccountModel;
@@ -114,8 +117,12 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
             menuItem.setChecked(true);
             mDrawerLayout.closeDrawers();
 
-            if (mSelectedNavigationMenuId != menuItem.getItemId()) {
+            if (mSelectedNavigationMenuId != menuItem.getItemId() ||
+                    mSelectedAccountId != mAccounts.get(0).id()) {
+
                 mSelectedNavigationMenuId = menuItem.getItemId();
+                mSelectedAccountId = mAccounts.get(0).id();
+
                 mNavigationHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
