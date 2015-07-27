@@ -54,11 +54,6 @@ public class TimelineFragment extends BaseTimelineFragment {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        // disable state saving, use database cache instead.
-    }
-
-    @Override
     public void onStop() {
         super.onStop();
         mTimelineModel.saveTimelinePosition(findFirstVisibleTweetId());
