@@ -32,5 +32,7 @@
     <string name="unfollow">Unfollow</string>
     <string name="following_you">Following you</string>
     <string name="not_following_you">Not following you</string>
+    <string name="schedule">Schedule</string>
+    <string name="tweet_is_too_long">Tweet is too long</string>
 
 </resources>
