@@ -9,6 +9,7 @@ import com.aaplab.robird.inject.Inject;
 import com.squareup.otto.Bus;
 
 import icepick.Icepick;
+import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -49,6 +50,11 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         mSubscriptions.unsubscribe();
+    }
+
+    public void compositeSubscription(Subscription subscription) {
+        mSubscriptions.add(subscription);
+
     }
 
     @Override
