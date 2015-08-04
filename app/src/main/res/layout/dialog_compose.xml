@@ -36,24 +36,14 @@
 
     </LinearLayout>
 
-    <EditText
-        android:id="@+id/text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/avatar"
-        android:layout_marginBottom="@dimen/keyline_1"
-        android:layout_marginLeft="@dimen/keyline_1"
-        android:layout_marginRight="@dimen/keyline_1"
-        android:hint="@string/whats"
-        android:inputType="textCapSentences|textMultiLine"
-        android:maxLines="5"
-        android:minLines="5" />
-
     <LinearLayout
         android:id="@+id/images"
         android:layout_width="match_parent"
         android:layout_height="96dp"
-        android:layout_below="@id/text"
+        android:layout_below="@id/avatar"
+        android:layout_marginLeft="@dimen/keyline_1"
+        android:layout_marginRight="@dimen/keyline_1"
+        android:layout_marginTop="@dimen/keyline_1"
         android:orientation="horizontal"
         android:visibility="gone">
 
@@ -61,6 +51,8 @@
             android:id="@+id/image1"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
             android:layout_weight="1"
             android:scaleType="centerCrop" />
 
@@ -68,6 +60,8 @@
             android:id="@+id/image2"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
             android:layout_weight="1"
             android:scaleType="centerCrop" />
 
@@ -75,6 +69,8 @@
             android:id="@+id/image3"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
             android:layout_weight="1"
             android:scaleType="centerCrop" />
 
@@ -87,12 +83,25 @@
 
     </LinearLayout>
 
+    <EditText
+        android:id="@+id/text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/images"
+        android:layout_marginBottom="@dimen/keyline_1"
+        android:layout_marginLeft="@dimen/keyline_1"
+        android:layout_marginRight="@dimen/keyline_1"
+        android:hint="@string/whats"
+        android:inputType="textCapSentences|textMultiLine"
+        android:maxLines="5"
+        android:minLines="5" />
+
     <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/images"
+        android:layout_below="@id/text"
         android:background="?attr/colorPrimary"
         android:minHeight="?attr/actionBarSize"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
