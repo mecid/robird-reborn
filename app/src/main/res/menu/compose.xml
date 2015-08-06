@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/menu_at"
+        android:icon="@drawable/ic_at"
+        android:title="@string/at"
+        android:visible="false"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/menu_hashtag"
+        android:icon="@drawable/ic_hashtag"
+        android:title="@string/hashtag"
+        android:visible="false"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/menu_camera"
+        android:icon="@drawable/ic_camera_alt"
+        android:title="@string/camera"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/menu_send"
+        android:icon="@drawable/ic_send"
+        android:title="@string/tweet"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/menu_schedule"
+        android:title="@string/schedule"
+        app:showAsAction="never" />
+
+</menu>

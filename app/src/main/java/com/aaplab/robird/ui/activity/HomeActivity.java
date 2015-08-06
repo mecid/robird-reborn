@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.aaplab.robird.R;
 import com.aaplab.robird.data.entity.Account;
 import com.aaplab.robird.data.model.AccountModel;
+import com.aaplab.robird.ui.fragment.ComposeFragment;
 import com.aaplab.robird.ui.fragment.TimelineFragment;
 import com.aaplab.robird.util.DefaultObserver;
 import com.aaplab.robird.util.NavigationUtils;
@@ -158,7 +159,8 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
             Account selectedAccount = mAccounts.get(2);
             activate(selectedAccount);
         } else if (mFloatingActionButton == v) {
-            // TODO start compose activity
+            ComposeFragment.create(mAccounts.get(0))
+                    .show(getSupportFragmentManager(), ComposeFragment.TAG_COMPOSE);
         }
     }
 

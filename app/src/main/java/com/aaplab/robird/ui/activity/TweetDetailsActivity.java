@@ -12,6 +12,7 @@ import android.view.View;
 import com.aaplab.robird.R;
 import com.aaplab.robird.data.entity.Account;
 import com.aaplab.robird.data.entity.Tweet;
+import com.aaplab.robird.ui.fragment.ComposeFragment;
 import com.aaplab.robird.ui.fragment.TweetDetailsFragment;
 
 import butterknife.Bind;
@@ -25,6 +26,9 @@ public class TweetDetailsActivity extends BaseActivity implements View.OnClickLi
     @Bind(R.id.fab)
     FloatingActionButton mFloatingActionButton;
 
+    private Account mAccount;
+    private Tweet mTweet;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,13 +41,13 @@ public class TweetDetailsActivity extends BaseActivity implements View.OnClickLi
         mFloatingActionButton.setOnClickListener(this);
 
         if (savedInstanceState == null) {
-            final Account account = getIntent().getParcelableExtra("account");
-            final Tweet tweet = getIntent().getParcelableExtra("tweet");
+            mAccount = getIntent().getParcelableExtra("account");
+            mTweet = getIntent().getParcelableExtra("tweet");
 
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.container,
-                            TweetDetailsFragment.create(account, tweet))
+                            TweetDetailsFragment.create(mAccount, mTweet))
                     .commit();
         }
     }
@@ -57,6 +61,7 @@ public class TweetDetailsActivity extends BaseActivity implements View.OnClickLi
 
     @Override
     public void onClick(View v) {
-        //TODO start compose screen
+        ComposeFragment.create(mAccount, mTweet)
+                .show(getSupportFragmentManager(), ComposeFragment.TAG_REPLY);
     }
 }
