@@ -255,6 +255,10 @@ public class ComposeFragment extends DialogFragment implements Toolbar.OnMenuIte
                     Timber.e(e, "Exception while starting image picker in compose screen.");
                 }
             }
+        } else if (item.getItemId() == R.id.menu_at) {
+            mEditText.append("@");
+        } else if (item.getItemId() == R.id.menu_hashtag) {
+            mEditText.append("#");
         }
 
         return true;

@@ -3,10 +3,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/menu_at"
+        android:icon="@drawable/ic_at"
+        android:title="@string/at"
+        android:visible="false"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/menu_hashtag"
+        android:icon="@drawable/ic_hashtag"
+        android:title="@string/hashtag"
+        android:visible="false"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/menu_camera"
         android:icon="@drawable/ic_camera_alt"
         android:title="@string/camera"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/menu_send"
