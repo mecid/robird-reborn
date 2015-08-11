@@ -57,6 +57,7 @@ public class SearchActivity extends BaseActivity {
 
         final SearchPagerAdapter adapter = new SearchPagerAdapter(getSupportFragmentManager());
         mTabs.setTabsFromPagerAdapter(adapter);
+        mTabs.setOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabs));
         mViewPager.setAdapter(adapter);
     }
