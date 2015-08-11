@@ -53,6 +53,22 @@
             android:label="@string/tweet" />
 
         <activity
+            android:name=".ui.activity.SearchActivity"
+            android:label="@string/search">
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="hashtag"
+                    android:scheme="robird" />
+            </intent-filter>
+        </activity>
+
+        <activity
             android:name=".ui.activity.UserProfileActivity"
             android:theme="@style/AppTheme.Transparent">
 
