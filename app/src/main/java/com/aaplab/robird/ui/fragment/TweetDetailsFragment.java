@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ShareCompat;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -150,10 +151,14 @@ public class TweetDetailsFragment extends BaseSwipeToRefreshRecyclerFragment {
             Snackbar.make(getActivity().findViewById(R.id.coordinator),
                     R.string.copied_to_clipboard, Snackbar.LENGTH_SHORT).show();
         } else if (item.getItemId() == R.id.menu_share) {
-            Intent shareIntent = new Intent(Intent.ACTION_SEND);
-            shareIntent.setType("text/plain");
-            shareIntent.putExtra(Intent.EXTRA_TEXT, mTweet.text());
-            startActivity(Intent.createChooser(shareIntent, ""));
+            Intent shareIntent = ShareCompat.IntentBuilder.from(getActivity())
+                    .setType("text/plain")
+                    .setText(mTweet.text())
+                    .getIntent();
+
+            if (shareIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+                startActivity(shareIntent);
+            }
         }
 
         return super.onOptionsItemSelected(item);
