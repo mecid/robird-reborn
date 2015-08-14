@@ -61,7 +61,7 @@ public class TweetDetailsActivity extends BaseActivity implements View.OnClickLi
 
     @Override
     public void onClick(View v) {
-        ComposeFragment.create(mAccount, mTweet)
+        ComposeFragment.reply(mAccount, mTweet)
                 .show(getSupportFragmentManager(), ComposeFragment.TAG_REPLY);
     }
 }

@@ -76,7 +76,7 @@ public class ComposeFragment extends DialogFragment implements Toolbar.OnMenuIte
         return fragment;
     }
 
-    public static ComposeFragment create(Account account, Tweet tweet) {
+    public static ComposeFragment reply(Account account, Tweet tweet) {
         Bundle args = new Bundle();
         args.putParcelable("account", account);
         args.putParcelable("tweet", tweet);
@@ -126,7 +126,7 @@ public class ComposeFragment extends DialogFragment implements Toolbar.OnMenuIte
     LinearLayout mImagesLayout;
 
     @Icicle
-    ArrayList<String> mAttachedImages;
+    ArrayList<Uri> mAttachedImages;
 
     private Tweet mTweet;
     private Account mAccount;
@@ -138,9 +138,9 @@ public class ComposeFragment extends DialogFragment implements Toolbar.OnMenuIte
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mActivityWeak = new WeakReference<>((BaseActivity) getActivity());
         Icepick.restoreInstanceState(this, savedInstanceState);
-        mAttachedImages = mAttachedImages == null ? new ArrayList<String>() : mAttachedImages;
+        mActivityWeak = new WeakReference<>((BaseActivity) getActivity());
+        mAttachedImages = mAttachedImages == null ? new ArrayList<Uri>() : mAttachedImages;
         mAccount = getArguments().getParcelable("account");
         mAccount = mAccount != null ? mAccount : new AccountModel().accounts().toBlocking().first().get(0);
         mTweet = getArguments().getParcelable("tweet");
@@ -170,11 +170,9 @@ public class ComposeFragment extends DialogFragment implements Toolbar.OnMenuIte
         }
 
         final ArrayList<Uri> images = getArguments().getParcelableArrayList("images");
-        if (images != null) {
-            for (Uri image : images)
-                mAttachedImages.add(image.toString());
-            previewImages();
-        }
+        if (mAttachedImages.isEmpty() && images != null)
+            mAttachedImages.addAll(images);
+        previewImages();
     }
 
     @Override
@@ -301,10 +299,10 @@ public class ComposeFragment extends DialogFragment implements Toolbar.OnMenuIte
             if (resultCode == Activity.RESULT_OK) {
                 if (data == null) {
                     //Camera
-                    mAttachedImages.add(mCameraImageUri.toString());
+                    mAttachedImages.add(mCameraImageUri);
                 } else {
                     Uri selectedImageUri = data.getData();
-                    mAttachedImages.add(selectedImageUri.toString());
+                    mAttachedImages.add(selectedImageUri);
                 }
 
                 previewImages();
