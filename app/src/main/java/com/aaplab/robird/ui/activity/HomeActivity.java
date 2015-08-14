@@ -116,10 +116,11 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         final ShareCompat.IntentReader reader = ShareCompat.IntentReader.from(this);
         if (reader.isShareIntent()) {
             if (reader.getStreamCount() > 0) {
+                final int count = reader.getStreamCount() > 4 ? 4 : reader.getStreamCount();
                 ComposeFragment
                         .share(new ArrayList<Uri>() {
                             {
-                                for (int i = 0; i < reader.getStreamCount(); ++i)
+                                for (int i = 0; i < count; ++i)
                                     add(reader.getStream(i));
                             }
                         })
