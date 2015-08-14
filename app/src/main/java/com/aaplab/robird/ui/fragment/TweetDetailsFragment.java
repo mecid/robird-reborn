@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ShareCompat;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -51,12 +52,13 @@ public class TweetDetailsFragment extends BaseSwipeToRefreshRecyclerFragment {
 
     private TweetDetailsAdapter mTweetDetailsAdapter;
     private TweetModel mTweetModel;
+    private Account mAccount;
     private Tweet mTweet;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        final Account mAccount = getArguments().getParcelable("account");
+        mAccount = getArguments().getParcelable("account");
         mTweet = getArguments().getParcelable("tweet");
         mTweetModel = new TweetModel(mAccount, mTweet);
         mTweetDetailsAdapter = new TweetDetailsAdapter(getActivity(), mAccount, mTweet);
@@ -104,6 +106,11 @@ public class TweetDetailsFragment extends BaseSwipeToRefreshRecyclerFragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.tweet_details, menu);
+
+        if (TextUtils.equals(mAccount.screenName(), mTweet.username())) {
+            menu.findItem(R.id.menu_retweet).setVisible(false);
+            menu.findItem(R.id.menu_remove).setVisible(true);
+        }
     }
 
     @Override
@@ -159,6 +166,24 @@ public class TweetDetailsFragment extends BaseSwipeToRefreshRecyclerFragment {
             if (shareIntent.resolveActivity(getActivity().getPackageManager()) != null) {
                 startActivity(shareIntent);
             }
+        } else if (item.getItemId() == R.id.menu_remove) {
+            mSubscriptions.add(
+                    mTweetModel
+                            .delete()
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new DefaultObserver<Status>() {
+                                @Override
+                                public void onNext(Status status) {
+                                    super.onNext(status);
+                                    Snackbar.make(
+                                            getActivity().findViewById(R.id.coordinator),
+                                            R.string.successfully_deleted,
+                                            Snackbar.LENGTH_SHORT
+                                    ).show();
+                                }
+                            })
+            );
         }
 
         return super.onOptionsItemSelected(item);

@@ -115,6 +115,21 @@ public class TweetModel extends BaseTwitterModel {
         });
     }
 
+    public Observable<Status> delete() {
+        return Observable.create(new Observable.OnSubscribe<Status>() {
+            @Override
+            public void call(Subscriber<? super Status> subscriber) {
+                try {
+                    subscriber.onNext(mTwitter.destroyStatus(mTweet.tweetId()));
+                    deleteLocalTweet();
+                    subscriber.onCompleted();
+                } catch (TwitterException e) {
+                    subscriber.onError(e);
+                }
+            }
+        });
+    }
+
     private void updateLocalTweet(Status status) {
         ContentValues values = new ContentValues();
 
@@ -124,6 +139,15 @@ public class TweetModel extends BaseTwitterModel {
 
         Inject.contentResolver()
                 .update(TweetContract.CONTENT_URI, values,
+                        String.format("%s=%d AND %s=%d",
+                                TweetContract.ACCOUNT_ID, mAccount.id(),
+                                TweetContract.TWEET_ID, mTweet.tweetId()),
+                        null);
+    }
+
+    private void deleteLocalTweet() {
+        Inject.contentResolver()
+                .delete(TweetContract.CONTENT_URI,
                         String.format("%s=%d AND %s=%d",
                                 TweetContract.ACCOUNT_ID, mAccount.id(),
                                 TweetContract.TWEET_ID, mTweet.tweetId()),

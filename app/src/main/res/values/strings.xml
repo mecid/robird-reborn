@@ -39,5 +39,6 @@
     <string name="hashtag">Hashtag</string>
     <string name="search">Search</string>
     <string name="users">Users</string>
+    <string name="delete">Delete</string>
 
 </resources>
