@@ -3,10 +3,12 @@ package com.aaplab.robird.ui.activity;
 
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ShareCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -28,6 +30,7 @@ import com.aaplab.robird.util.NavigationUtils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
@@ -109,6 +112,24 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                             }
                         })
         );
+
+        final ShareCompat.IntentReader reader = ShareCompat.IntentReader.from(this);
+        if (reader.isShareIntent()) {
+            if (reader.getStreamCount() > 0) {
+                ComposeFragment
+                        .share(new ArrayList<Uri>() {
+                            {
+                                for (int i = 0; i < reader.getStreamCount(); ++i)
+                                    add(reader.getStream(i));
+                            }
+                        })
+                        .show(getSupportFragmentManager(), ComposeFragment.TAG_SHARE);
+            } else {
+                ComposeFragment
+                        .share(reader.getText().toString())
+                        .show(getSupportFragmentManager(), ComposeFragment.TAG_SHARE);
+            }
+        }
     }
 
     @Override

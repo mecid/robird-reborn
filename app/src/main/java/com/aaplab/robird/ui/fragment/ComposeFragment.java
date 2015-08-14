@@ -29,6 +29,7 @@ import android.widget.Toast;
 import com.aaplab.robird.R;
 import com.aaplab.robird.data.entity.Account;
 import com.aaplab.robird.data.entity.Tweet;
+import com.aaplab.robird.data.model.AccountModel;
 import com.aaplab.robird.data.model.ComposeModel;
 import com.aaplab.robird.ui.activity.BaseActivity;
 import com.aaplab.robird.util.DefaultObserver;
@@ -62,6 +63,7 @@ public class ComposeFragment extends DialogFragment implements Toolbar.OnMenuIte
 
     public static final String TAG_COMPOSE = "compose";
     public static final String TAG_REPLY = "reply";
+    public static final String TAG_SHARE = "share";
 
     private static final int SELECT_PICTURE = 1743;
 
@@ -78,6 +80,24 @@ public class ComposeFragment extends DialogFragment implements Toolbar.OnMenuIte
         Bundle args = new Bundle();
         args.putParcelable("account", account);
         args.putParcelable("tweet", tweet);
+
+        ComposeFragment fragment = new ComposeFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    public static ComposeFragment share(String text) {
+        Bundle args = new Bundle();
+        args.putString("text", text);
+
+        ComposeFragment fragment = new ComposeFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    public static ComposeFragment share(ArrayList<Uri> images) {
+        Bundle args = new Bundle();
+        args.putParcelableArrayList("images", images);
 
         ComposeFragment fragment = new ComposeFragment();
         fragment.setArguments(args);
@@ -122,6 +142,7 @@ public class ComposeFragment extends DialogFragment implements Toolbar.OnMenuIte
         Icepick.restoreInstanceState(this, savedInstanceState);
         mAttachedImages = mAttachedImages == null ? new ArrayList<String>() : mAttachedImages;
         mAccount = getArguments().getParcelable("account");
+        mAccount = mAccount != null ? mAccount : new AccountModel().accounts().toBlocking().first().get(0);
         mTweet = getArguments().getParcelable("tweet");
         mComposeModel = new ComposeModel(mAccount);
         mTweetValidator = new Validator();
@@ -137,6 +158,7 @@ public class ComposeFragment extends DialogFragment implements Toolbar.OnMenuIte
         mToolbar.inflateMenu(R.menu.compose);
         mToolbar.setOnMenuItemClickListener(this);
         mEditText.addTextChangedListener(this);
+        mEditText.setText(getArguments().getString("text"));
 
         if (mTweet != null) {
             mEditText.setText(
@@ -145,6 +167,13 @@ public class ComposeFragment extends DialogFragment implements Toolbar.OnMenuIte
                             .trim().concat(" ")
             );
             mEditText.setSelection(mEditText.getText().length());
+        }
+
+        final ArrayList<Uri> images = getArguments().getParcelableArrayList("images");
+        if (images != null) {
+            for (Uri image : images)
+                mAttachedImages.add(image.toString());
+            previewImages();
         }
     }
 
