@@ -1,7 +1,6 @@
 package com.aaplab.robird.data.model;
 
 import android.content.ContentValues;
-import android.support.annotation.IntDef;
 
 import com.aaplab.robird.data.MapFunctions;
 import com.aaplab.robird.data.SqlBriteContentProvider;
@@ -10,8 +9,6 @@ import com.aaplab.robird.data.entity.Tweet;
 import com.aaplab.robird.data.provider.contract.TweetContract;
 import com.aaplab.robird.inject.Inject;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,34 +25,29 @@ import twitter4j.TwitterException;
  */
 public class TimelineModel extends BaseTwitterModel {
 
-    public static final int TIMELINE_HOME = 0;
-    public static final int TIMELINE_MENTIONS = 1;
-    public static final int TIMELINE_RETWEETS = 2;
-    public static final int TIMELINE_FAVORITES = 3;
-
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({TIMELINE_HOME, TIMELINE_MENTIONS, TIMELINE_RETWEETS, TIMELINE_FAVORITES})
-    public @interface Type {
-    }
+    public static final long HOME_ID = 1;
+    public static final long MENTIONS_ID = 2;
+    public static final long RETWEETS_ID = 3;
+    public static final long FAVORITES_ID = 4;
 
     private final SqlBriteContentProvider mSqlBriteContentProvider =
             SqlBriteContentProvider.create(Inject.contentResolver());
-    private final int mType;
+    private final long mTimelineId;
 
-    public TimelineModel(Account account, int type) {
+    public TimelineModel(Account account, long timelineId) {
         super(account);
-        mType = type;
+        mTimelineId = timelineId;
     }
 
     public void saveTimelinePosition(long position) {
         Inject.preferences().edit().putLong(
-                String.format("%s#type#%d", mAccount.screenName(), mType),
+                String.format("%s#type#%d", mAccount.screenName(), mTimelineId),
                 position).apply();
     }
 
     public long timelinePosition() {
         return Inject.preferences().getLong(
-                String.format("%s#type#%d", mAccount.screenName(), mType)
+                String.format("%s#type#%d", mAccount.screenName(), mTimelineId)
                 , 0);
     }
 
@@ -64,7 +56,7 @@ public class TimelineModel extends BaseTwitterModel {
                 TweetContract.CONTENT_URI, TweetContract.PROJECTION,
                 String.format("%s=%d AND %s=%d",
                         TweetContract.ACCOUNT_ID, mAccount.id(),
-                        TweetContract.TIMELINE_TYPE, mType
+                        TweetContract.TIMELINE_ID, mTimelineId
                 ),
                 null, TweetContract.TWEET_ID + " DESC", false)
                 .map(MapFunctions.TWEET_LIST);
@@ -81,7 +73,7 @@ public class TimelineModel extends BaseTwitterModel {
                         return downloadTimeline(paging);
                     }
                 })
-                .doOnNext(new TimelinePersister(mAccount, mType))
+                .doOnNext(new TimelinePersister(mAccount, mTimelineId))
                 .map(new Func1<List<Status>, Integer>() {
                     @Override
                     public Integer call(List<Status> statuses) {
@@ -90,7 +82,7 @@ public class TimelineModel extends BaseTwitterModel {
                 });
     }
 
-    public Observable<Integer> makeOld() {
+    public Observable<Integer> old() {
         return timeline()
                 .take(1)
                 .flatMap(new Func1<List<Tweet>, Observable<List<Status>>>() {
@@ -110,7 +102,7 @@ public class TimelineModel extends BaseTwitterModel {
                         return filtered;
                     }
                 })
-                .doOnNext(new TimelinePersister(mAccount, mType))
+                .doOnNext(new TimelinePersister(mAccount, mTimelineId))
                 .map(new Func1<List<Status>, Integer>() {
                     @Override
                     public Integer call(List<Status> statuses) {
@@ -124,14 +116,16 @@ public class TimelineModel extends BaseTwitterModel {
             @Override
             public void call(Subscriber<? super List<Status>> subscriber) {
                 try {
-                    if (mType == TIMELINE_HOME) {
+                    if (mTimelineId == HOME_ID) {
                         subscriber.onNext(mTwitter.getHomeTimeline(paging));
-                    } else if (mType == TIMELINE_MENTIONS) {
+                    } else if (mTimelineId == MENTIONS_ID) {
                         subscriber.onNext(mTwitter.getMentionsTimeline(paging));
-                    } else if (mType == TIMELINE_RETWEETS) {
+                    } else if (mTimelineId == RETWEETS_ID) {
                         subscriber.onNext(mTwitter.getRetweetsOfMe(paging));
-                    } else if (mType == TIMELINE_FAVORITES) {
+                    } else if (mTimelineId == FAVORITES_ID) {
                         subscriber.onNext(mTwitter.getFavorites(paging));
+                    } else {
+                        subscriber.onNext(mTwitter.getUserListStatuses(mTimelineId, paging));
                     }
 
                     subscriber.onCompleted();
@@ -143,12 +137,12 @@ public class TimelineModel extends BaseTwitterModel {
     }
 
     private static final class TimelinePersister implements Action1<List<Status>> {
-        private Account account;
-        private int type;
+        private final Account account;
+        private final long timelineId;
 
-        public TimelinePersister(Account account, int type) {
+        public TimelinePersister(Account account, long timelineId) {
             this.account = account;
-            this.type = type;
+            this.timelineId = timelineId;
         }
 
         @Override
@@ -164,7 +158,7 @@ public class TimelineModel extends BaseTwitterModel {
             for (Tweet tweet : tweets) {
                 ContentValues cv = tweet.toContentValues();
                 cv.put(TweetContract.ACCOUNT_ID, account.id());
-                cv.put(TweetContract.TIMELINE_TYPE, type);
+                cv.put(TweetContract.TIMELINE_ID, timelineId);
                 values.add(cv);
             }
 
