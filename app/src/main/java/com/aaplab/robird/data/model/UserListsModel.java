@@ -61,6 +61,20 @@ public class UserListsModel extends BaseTwitterModel {
 
     }
 
+    public Observable<twitter4j.UserList> addUser(final long listId, final long userId) {
+        return Observable.create(new Observable.OnSubscribe<twitter4j.UserList>() {
+            @Override
+            public void call(Subscriber<? super twitter4j.UserList> subscriber) {
+                try {
+                    subscriber.onNext(mTwitter.createUserListMember(listId, userId));
+                    subscriber.onCompleted();
+                } catch (TwitterException e) {
+                    subscriber.onError(e);
+                }
+            }
+        });
+    }
+
     private static final class UserListsPersister implements Action1<List<twitter4j.UserList>> {
         private final Account account;
 
