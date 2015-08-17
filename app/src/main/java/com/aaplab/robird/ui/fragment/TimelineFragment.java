@@ -19,9 +19,9 @@ import rx.schedulers.Schedulers;
  */
 public class TimelineFragment extends BaseTimelineFragment {
 
-    public static TimelineFragment create(Account account, @TimelineModel.Type int type) {
+    public static TimelineFragment create(Account account, long timelineId) {
         Bundle args = new Bundle();
-        args.putInt("type", type);
+        args.putLong("timeline_id", timelineId);
         args.putParcelable("account", account);
 
         TimelineFragment fragment = new TimelineFragment();
@@ -36,7 +36,7 @@ public class TimelineFragment extends BaseTimelineFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mTimelineModel = new TimelineModel(mAccount,
-                getArguments().getInt("type", TimelineModel.TIMELINE_HOME));
+                getArguments().getLong("timeline_id", TimelineModel.HOME_ID));
 
         mSubscriptions.add(
                 mTimelineModel
@@ -80,7 +80,7 @@ public class TimelineFragment extends BaseTimelineFragment {
     public void startBottomLoading() {
         mSubscriptions.add(
                 mTimelineModel
-                        .makeOld()
+                        .old()
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeOn(Schedulers.io())
                         .subscribe(new DefaultObserver<Integer>() {

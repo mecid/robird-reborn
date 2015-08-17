@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -17,13 +18,16 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.aaplab.robird.R;
 import com.aaplab.robird.data.entity.Account;
+import com.aaplab.robird.data.entity.UserList;
 import com.aaplab.robird.data.model.AccountModel;
+import com.aaplab.robird.data.model.UserListsModel;
 import com.aaplab.robird.data.model.UserModel;
 import com.aaplab.robird.ui.fragment.UserFriendsFragment;
 import com.aaplab.robird.ui.fragment.UserTimelineFragment;
@@ -32,6 +36,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
+
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -82,6 +88,7 @@ public class UserProfileActivity extends BaseActivity {
     @Icicle
     Relationship mRelationship;
 
+    private UserListsModel mUserListsModel;
     private UserModel mUserModel;
     private String mScreenName;
     private Account mAccount;
@@ -102,6 +109,7 @@ public class UserProfileActivity extends BaseActivity {
             mAccount = new AccountModel().accounts().toBlocking().first().get(0);
         }
 
+        mUserListsModel = new UserListsModel(mAccount);
         mUserModel = new UserModel(mAccount, mScreenName);
         mViewPager.setAdapter(new UserProfilePagerAdapter(getSupportFragmentManager()));
 
@@ -144,6 +152,14 @@ public class UserProfileActivity extends BaseActivity {
             menu.findItem(R.id.menu_follow).setVisible(false);
         }
 
+        List<UserList> userLists = mUserListsModel.lists().toBlocking().first();
+        if (!userLists.isEmpty()) {
+            final SubMenu listSubMenu = menu.addSubMenu(R.string.add_to_list);
+            for (UserList userList : userLists) {
+                listSubMenu.add(0, (int) userList.listId(), Menu.NONE, userList.name());
+            }
+        }
+
         if (mRelationship != null) {
             boolean isFollowing = mRelationship.isSourceFollowingTarget();
             boolean isBlocking = mRelationship.isSourceBlockingTarget();
@@ -160,7 +176,7 @@ public class UserProfileActivity extends BaseActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         if (item.getItemId() == R.id.menu_follow) {
             mSubscriptions.add(
                     mUserModel
@@ -203,6 +219,24 @@ public class UserProfileActivity extends BaseActivity {
                                     super.onNext(relationship);
                                     mRelationship = relationship;
                                     supportInvalidateOptionsMenu();
+                                }
+                            })
+            );
+        } else {
+            mSubscriptions.add(
+                    mUserListsModel
+                            .addUser(item.getItemId(), mUser.getId())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeOn(Schedulers.io())
+                            .subscribe(new DefaultObserver<twitter4j.UserList>() {
+                                @Override
+                                public void onNext(twitter4j.UserList userList) {
+                                    super.onNext(userList);
+                                    Snackbar.make(
+                                            findViewById(R.id.coordinator),
+                                            getString(R.string.user_added_to_list, mUser.getScreenName(), item.getTitle()),
+                                            Snackbar.LENGTH_SHORT
+                                    ).show();
                                 }
                             })
             );

@@ -8,6 +8,7 @@ import android.net.Uri;
 
 import com.aaplab.robird.data.provider.contract.AccountContract;
 import com.aaplab.robird.data.provider.contract.TweetContract;
+import com.aaplab.robird.data.provider.contract.UserListContract;
 import com.tjeannin.provigen.ProviGenOpenHelper;
 import com.tjeannin.provigen.ProviGenProvider;
 import com.tjeannin.provigen.model.Contract;
@@ -21,7 +22,7 @@ public class RobirdContentProvider extends ProviGenProvider {
     public static final String DATABASE = "robird";
 
     public static final Class[] contracts = new Class[]{
-            AccountContract.class, TweetContract.class
+            AccountContract.class, TweetContract.class, UserListContract.class
     };
 
     @Override

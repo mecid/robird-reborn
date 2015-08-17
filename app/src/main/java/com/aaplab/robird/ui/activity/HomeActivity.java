@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.ShareCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -23,8 +24,10 @@ import android.widget.TextView;
 import com.aaplab.robird.R;
 import com.aaplab.robird.data.entity.Account;
 import com.aaplab.robird.data.model.AccountModel;
+import com.aaplab.robird.data.model.TimelineModel;
 import com.aaplab.robird.ui.fragment.ComposeFragment;
 import com.aaplab.robird.ui.fragment.TimelineFragment;
+import com.aaplab.robird.ui.fragment.UserListsFragment;
 import com.aaplab.robird.util.DefaultObserver;
 import com.aaplab.robird.util.NavigationUtils;
 import com.bumptech.glide.Glide;
@@ -162,8 +165,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                     public void run() {
                         getSupportFragmentManager()
                                 .beginTransaction()
-                                .replace(R.id.content,
-                                        TimelineFragment.create(mAccounts.get(0), menuItem.getOrder()))
+                                .replace(R.id.content, fragmentForNavigationItem(menuItem))
                                 .commit();
                     }
                 }, 200);
@@ -222,6 +224,24 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         onNavigationItemSelected(navigationItem == null ?
                 mNavigationView.getMenu().findItem(R.id.navigation_item_home) : navigationItem);
         mNavigationView.setNavigationItemSelectedListener(this);
+    }
+
+    private Fragment fragmentForNavigationItem(MenuItem navigationMenuItem) {
+        if (navigationMenuItem.getItemId() == R.id.navigation_item_home) {
+            return TimelineFragment.create(mAccounts.get(0), TimelineModel.HOME_ID);
+        } else if (navigationMenuItem.getItemId() == R.id.navigation_item_mentions) {
+            return TimelineFragment.create(mAccounts.get(0), TimelineModel.MENTIONS_ID);
+        } else if (navigationMenuItem.getItemId() == R.id.navigation_item_retweets) {
+            return TimelineFragment.create(mAccounts.get(0), TimelineModel.RETWEETS_ID);
+        } else if (navigationMenuItem.getItemId() == R.id.navigation_item_favorites) {
+            return TimelineFragment.create(mAccounts.get(0), TimelineModel.FAVORITES_ID);
+        } else if (navigationMenuItem.getItemId() == R.id.navigation_item_lists) {
+            return UserListsFragment.create(mAccounts.get(0));
+        } else if (navigationMenuItem.getItemId() == R.id.navigation_item_directs) {
+
+        }
+
+        throw new IllegalArgumentException("There is no fragment for this navigation item: " + navigationMenuItem.getTitle());
     }
 
     private void activate(final Account selectedAccount) {

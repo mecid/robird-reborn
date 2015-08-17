@@ -57,7 +57,7 @@ public interface TweetContract extends ProviGenBaseContract {
     public static final String ACCOUNT_ID = "account_id";
 
     @Column(Column.Type.INTEGER)
-    public static final String TIMELINE_TYPE = "timeline_type";
+    public static final String TIMELINE_ID = "timeline_id";
 
     @ContentUri
     public static final Uri CONTENT_URI = Uri.parse(RobirdContentProvider.BASE_URI + TABLE_NAME);

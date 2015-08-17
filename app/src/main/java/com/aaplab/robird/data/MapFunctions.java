@@ -4,6 +4,7 @@ import android.database.Cursor;
 
 import com.aaplab.robird.data.entity.Account;
 import com.aaplab.robird.data.entity.Tweet;
+import com.aaplab.robird.data.entity.UserList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,6 +67,26 @@ public final class MapFunctions {
 
             cursor.close();
             return tweets;
+        }
+    };
+
+    public static Func1<SqlBriteContentProvider.Query, List<UserList>> USER_LISTS = new Func1<SqlBriteContentProvider.Query, List<UserList>>() {
+        @Override
+        public List<UserList> call(SqlBriteContentProvider.Query query) {
+            List<UserList> lists = new ArrayList<>();
+            Cursor cursor = query.run();
+
+            if (cursor.getCount() > 0) {
+                cursor.moveToFirst();
+
+                do {
+                    lists.add(UserList.from(cursor));
+                } while (cursor.moveToNext());
+
+            }
+
+            cursor.close();
+            return lists;
         }
     };
 
