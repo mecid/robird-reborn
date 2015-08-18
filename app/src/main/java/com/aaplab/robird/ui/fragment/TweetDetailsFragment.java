@@ -66,7 +66,7 @@ public class TweetDetailsFragment extends BaseSwipeToRefreshRecyclerFragment {
         mRefreshLayout.setEnabled(false);
         setHasOptionsMenu(true);
 
-        if (savedInstanceState == null) {
+        if (savedInstanceState == null || mConversation == null || mDetailedStatus == null) {
             mSubscriptions.add(
                     mTweetModel
                             .tweet()

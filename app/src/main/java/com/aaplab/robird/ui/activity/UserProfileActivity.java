@@ -113,7 +113,7 @@ public class UserProfileActivity extends BaseActivity {
         mUserModel = new UserModel(mAccount, mScreenName);
         mViewPager.setAdapter(new UserProfilePagerAdapter(getSupportFragmentManager()));
 
-        if (savedInstanceState == null) {
+        if (savedInstanceState == null || mUser == null || mRelationship == null) {
             mSubscriptions.add(
                     Observable.zip(
                             mUserModel.user(),
@@ -286,8 +286,8 @@ public class UserProfileActivity extends BaseActivity {
                         super.onResourceReady(resource, glideAnimation);
 
                         final Palette palette = Palette.from(resource).generate();
-                        final int muted = palette.getMutedColor(R.color.primary);
-                        final int darkMuted = palette.getDarkMutedColor(R.color.primaryDark);
+                        final int muted = palette.getMutedColor(getResources().getColor(R.color.primary));
+                        final int darkMuted = palette.getDarkMutedColor(getResources().getColor(R.color.primaryDark));
 
                         mCollapsingToolbar.setStatusBarScrimColor(darkMuted);
                         mCollapsingToolbar.setContentScrimColor(muted);

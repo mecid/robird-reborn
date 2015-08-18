@@ -42,7 +42,7 @@ public class UserTimelineFragment extends BaseTimelineFragment {
         mUserModel = new UserModel(mAccount, mScreenName);
         mType = getArguments().getInt("type");
 
-        if (savedInstanceState == null) {
+        if (savedInstanceState == null || mTweets.isEmpty()) {
             mRefreshLayout.setRefreshing(true);
             mSubscriptions.add(
                     mUserModel

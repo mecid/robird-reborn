@@ -48,11 +48,11 @@ public class UserSearchFragment extends BaseSwipeToRefreshRecyclerFragment {
         mAccount = getArguments().getParcelable("account");
         mQuery = getArguments().getString("query");
         mSearchModel = new SearchModel(mAccount);
-        mUsers = savedInstanceState == null ? new CopyOnWriteArrayList<User>() : mUsers;
+        mUsers = mUsers == null ? new CopyOnWriteArrayList<User>() : mUsers;
         mAdapter = new UserAdapter(getActivity(), mAccount, mUsers);
         mRecyclerView.setAdapter(mAdapter);
 
-        if (savedInstanceState == null) {
+        if (savedInstanceState == null || mUsers.isEmpty()) {
             mRefreshLayout.setRefreshing(true);
             mSubscriptions.add(
                     mSearchModel

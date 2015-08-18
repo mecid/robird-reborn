@@ -39,7 +39,7 @@ public class TweetSearchFragment extends BaseTimelineFragment {
         mQuery = getArguments().getString("query");
         mSearchModel = new SearchModel(mAccount);
 
-        if (savedInstanceState == null) {
+        if (savedInstanceState == null || mTweets.isEmpty()) {
             mRefreshLayout.setRefreshing(true);
             mSubscriptions.add(
                     mSearchModel

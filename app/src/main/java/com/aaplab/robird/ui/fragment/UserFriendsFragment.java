@@ -50,13 +50,13 @@ public class UserFriendsFragment extends BaseSwipeToRefreshRecyclerFragment {
         super.onActivityCreated(savedInstanceState);
         final Account account = getArguments().getParcelable("account");
         mScreenName = getArguments().getString(UserProfileActivity.SCREEN_NAME);
-        mUsers = savedInstanceState == null ? new CopyOnWriteArrayList<User>() : mUsers;
+        mUsers = mUsers == null ? new CopyOnWriteArrayList<User>() : mUsers;
         mAdapter = new UserAdapter(getActivity(), account, mUsers);
         mUserModel = new UserModel(account, mScreenName);
         mRecyclerView.setAdapter(mAdapter);
         mType = getArguments().getInt("type");
 
-        if (savedInstanceState == null) {
+        if (savedInstanceState == null || mUsers.isEmpty()) {
             mRefreshLayout.setRefreshing(true);
             mSubscriptions.add(
                     mUserModel
