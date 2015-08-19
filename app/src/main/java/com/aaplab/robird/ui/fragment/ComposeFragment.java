@@ -13,6 +13,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -31,6 +32,7 @@ import com.aaplab.robird.data.entity.Account;
 import com.aaplab.robird.data.entity.Tweet;
 import com.aaplab.robird.data.model.AccountModel;
 import com.aaplab.robird.data.model.ComposeModel;
+import com.aaplab.robird.data.model.DirectsModel;
 import com.aaplab.robird.ui.activity.BaseActivity;
 import com.aaplab.robird.util.DefaultObserver;
 import com.aaplab.robird.util.ImageUtils;
@@ -52,6 +54,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
+import twitter4j.DirectMessage;
 import twitter4j.Status;
 import twitter4j.StatusUpdate;
 import twitter4j.UploadedMedia;
@@ -62,6 +65,7 @@ import twitter4j.UploadedMedia;
 public class ComposeFragment extends DialogFragment implements Toolbar.OnMenuItemClickListener, TextWatcher {
 
     public static final String TAG_COMPOSE = "compose";
+    public static final String TAG_DIRECT = "direct";
     public static final String TAG_REPLY = "reply";
     public static final String TAG_SHARE = "share";
 
@@ -83,6 +87,17 @@ public class ComposeFragment extends DialogFragment implements Toolbar.OnMenuIte
 
         ComposeFragment fragment = new ComposeFragment();
         fragment.setArguments(args);
+        return fragment;
+    }
+
+    public static ComposeFragment direct(Account account, String username) {
+        Bundle args = new Bundle();
+        args.putParcelable("account", account);
+        args.putString("username", username);
+
+        ComposeFragment fragment = new ComposeFragment();
+        fragment.setArguments(args);
+
         return fragment;
     }
 
@@ -130,8 +145,10 @@ public class ComposeFragment extends DialogFragment implements Toolbar.OnMenuIte
 
     private Tweet mTweet;
     private Account mAccount;
+    private String mUserName;
     private Validator mTweetValidator;
     private ComposeModel mComposeModel;
+    private DirectsModel mDirectsModel;
     private WeakReference<BaseActivity> mActivityWeak;
     private Uri mCameraImageUri;
 
@@ -144,7 +161,9 @@ public class ComposeFragment extends DialogFragment implements Toolbar.OnMenuIte
         mAccount = getArguments().getParcelable("account");
         mAccount = mAccount != null ? mAccount : new AccountModel().accounts().toBlocking().first().get(0);
         mTweet = getArguments().getParcelable("tweet");
+        mUserName = getArguments().getString("username");
         mComposeModel = new ComposeModel(mAccount);
+        mDirectsModel = new DirectsModel(mAccount);
         mTweetValidator = new Validator();
 
         mScreenNameTextView.setText("@" + mAccount.screenName());
@@ -157,8 +176,14 @@ public class ComposeFragment extends DialogFragment implements Toolbar.OnMenuIte
 
         mToolbar.inflateMenu(R.menu.compose);
         mToolbar.setOnMenuItemClickListener(this);
-        mEditText.addTextChangedListener(this);
-        mEditText.setText(getArguments().getString("text"));
+
+        if (TextUtils.isEmpty(mUserName)) {
+            mEditText.addTextChangedListener(this);
+            mEditText.setText(getArguments().getString("text"));
+        } else {
+            mToolbar.getMenu().findItem(R.id.menu_schedule).setVisible(false);
+            mToolbar.getMenu().findItem(R.id.menu_camera).setVisible(false);
+        }
 
         if (mTweet != null) {
             mEditText.setText(
@@ -205,58 +230,76 @@ public class ComposeFragment extends DialogFragment implements Toolbar.OnMenuIte
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         if (item.getItemId() == R.id.menu_send) {
-            if (mTweetValidator.isValidTweet(mEditText.getText().toString())) {
-                final StatusUpdate statusUpdate = new StatusUpdate(mEditText.getText().toString());
-                statusUpdate.setInReplyToStatusId(mTweet != null ? mTweet.tweetId() : -1L);
+            if (TextUtils.isEmpty(mUserName)) {
+                if (mTweetValidator.isValidTweet(mEditText.getText().toString())) {
+                    final StatusUpdate statusUpdate = new StatusUpdate(mEditText.getText().toString());
+                    statusUpdate.setInReplyToStatusId(mTweet != null ? mTweet.tweetId() : -1L);
 
-                if (mAttachedImages.isEmpty()) {
-                    mActivityWeak.get().compositeSubscription(
-                            mComposeModel
-                                    .tweet(statusUpdate)
-                                    .subscribeOn(Schedulers.io())
-                                    .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribe(new DefaultObserver<Status>() {
-                                        @Override
-                                        public void onNext(Status status) {
-                                            super.onNext(status);
-                                            Snackbar.make(mActivityWeak.get().findViewById(R.id.coordinator),
-                                                    R.string.successfully_tweeted, Snackbar.LENGTH_SHORT).show();
-                                        }
-                                    })
-                    );
+                    if (mAttachedImages.isEmpty()) {
+                        mActivityWeak.get().compositeSubscription(
+                                mComposeModel
+                                        .tweet(statusUpdate)
+                                        .subscribeOn(Schedulers.io())
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .subscribe(new DefaultObserver<Status>() {
+                                            @Override
+                                            public void onNext(Status status) {
+                                                super.onNext(status);
+                                                Snackbar.make(mActivityWeak.get().findViewById(R.id.coordinator),
+                                                        R.string.successfully_tweeted, Snackbar.LENGTH_SHORT).show();
+                                            }
+                                        })
+                        );
+                    } else {
+                        mActivityWeak.get().compositeSubscription(
+                                mComposeModel
+                                        .upload(mAttachedImages)
+                                        .buffer(mAttachedImages.size())
+                                        .flatMap(new Func1<List<UploadedMedia>, Observable<Status>>() {
+                                            @Override
+                                            public Observable<Status> call(List<UploadedMedia> uploadedMedias) {
+                                                long ids[] = new long[uploadedMedias.size()];
+
+                                                for (int i = 0; i < uploadedMedias.size(); ++i)
+                                                    ids[i] = uploadedMedias.get(i).getMediaId();
+
+                                                statusUpdate.setMediaIds(ids);
+                                                return mComposeModel.tweet(statusUpdate);
+                                            }
+                                        })
+                                        .subscribeOn(Schedulers.io())
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .subscribe(new DefaultObserver<Status>() {
+                                            @Override
+                                            public void onNext(Status status) {
+                                                super.onNext(status);
+                                                Snackbar.make(mActivityWeak.get().findViewById(R.id.coordinator),
+                                                        R.string.successfully_tweeted, Snackbar.LENGTH_SHORT).show();
+                                            }
+                                        })
+                        );
+                    }
+
+                    dismiss();
                 } else {
-                    mActivityWeak.get().compositeSubscription(
-                            mComposeModel
-                                    .upload(mAttachedImages)
-                                    .buffer(mAttachedImages.size())
-                                    .flatMap(new Func1<List<UploadedMedia>, Observable<Status>>() {
-                                        @Override
-                                        public Observable<Status> call(List<UploadedMedia> uploadedMedias) {
-                                            long ids[] = new long[uploadedMedias.size()];
-
-                                            for (int i = 0; i < uploadedMedias.size(); ++i)
-                                                ids[i] = uploadedMedias.get(i).getMediaId();
-
-                                            statusUpdate.setMediaIds(ids);
-                                            return mComposeModel.tweet(statusUpdate);
-                                        }
-                                    })
-                                    .subscribeOn(Schedulers.io())
-                                    .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribe(new DefaultObserver<Status>() {
-                                        @Override
-                                        public void onNext(Status status) {
-                                            super.onNext(status);
-                                            Snackbar.make(mActivityWeak.get().findViewById(R.id.coordinator),
-                                                    R.string.successfully_tweeted, Snackbar.LENGTH_SHORT).show();
-                                        }
-                                    })
-                    );
+                    Toast.makeText(mActivityWeak.get(), R.string.tweet_is_too_long, Toast.LENGTH_SHORT).show();
                 }
+            } else {
+                mActivityWeak.get().compositeSubscription(
+                        mDirectsModel
+                                .send(mUserName, mEditText.getText().toString())
+                                .flatMap(new Func1<DirectMessage, Observable<Integer>>() {
+                                    @Override
+                                    public Observable<Integer> call(DirectMessage directMessage) {
+                                        return mDirectsModel.update();
+                                    }
+                                })
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe()
+                );
 
                 dismiss();
-            } else {
-                Toast.makeText(mActivityWeak.get(), R.string.tweet_is_too_long, Toast.LENGTH_SHORT).show();
             }
         } else if (item.getItemId() == R.id.menu_camera) {
             // you can add only 4 images
