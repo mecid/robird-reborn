@@ -3,6 +3,7 @@ package com.aaplab.robird.data;
 import android.database.Cursor;
 
 import com.aaplab.robird.data.entity.Account;
+import com.aaplab.robird.data.entity.Direct;
 import com.aaplab.robird.data.entity.Tweet;
 import com.aaplab.robird.data.entity.UserList;
 
@@ -67,6 +68,26 @@ public final class MapFunctions {
 
             cursor.close();
             return tweets;
+        }
+    };
+
+    public static Func1<SqlBriteContentProvider.Query, List<Direct>> DIRECTS = new Func1<SqlBriteContentProvider.Query, List<Direct>>() {
+        @Override
+        public List<Direct> call(SqlBriteContentProvider.Query query) {
+            List<Direct> directs = new ArrayList<>();
+            Cursor cursor = query.run();
+
+            if (cursor.getCount() > 0) {
+                cursor.moveToFirst();
+
+                do {
+                    directs.add(Direct.from(cursor));
+                } while (cursor.moveToNext());
+
+            }
+
+            cursor.close();
+            return directs;
         }
     };
 
