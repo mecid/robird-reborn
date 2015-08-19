@@ -114,7 +114,8 @@ public class DirectsModel extends BaseTwitterModel {
             }
 
             ContentValues[] values = new ContentValues[directs.size()];
-            Inject.contentResolver().delete(DirectContract.CONTENT_URI, null, null);
+            Inject.contentResolver().delete(DirectContract.CONTENT_URI,
+                    String.format("%s=%d", DirectContract.ACCOUNT_ID, account.id()), null);
             Inject.contentResolver().bulkInsert(DirectContract.CONTENT_URI, contentValues.toArray(values));
         }
     }
