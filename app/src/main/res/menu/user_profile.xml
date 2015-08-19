@@ -8,6 +8,12 @@
         app:showAsAction="ifRoom" />
 
     <item
+        android:id="@+id/menu_reply"
+        android:icon="@drawable/ic_at"
+        android:title="@string/reply"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/menu_direct"
         android:title="@string/direct"
         app:showAsAction="never" />

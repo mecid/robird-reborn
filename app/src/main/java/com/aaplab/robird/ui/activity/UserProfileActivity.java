@@ -226,6 +226,9 @@ public class UserProfileActivity extends BaseActivity {
         } else if (item.getItemId() == R.id.menu_direct) {
             ComposeFragment.direct(mAccount, mUser.getScreenName())
                     .show(getSupportFragmentManager(), ComposeFragment.TAG_DIRECT);
+        } else if (item.getItemId() == R.id.menu_reply) {
+            ComposeFragment.share(String.format("@%s ", mUser.getScreenName()))
+                    .show(getSupportFragmentManager(), ComposeFragment.TAG_REPLY);
         } else {
             mSubscriptions.add(
                     mUserListsModel

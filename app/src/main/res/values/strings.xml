@@ -43,5 +43,6 @@
     <string name="add_to_list">Add to list</string>
     <string name="user_added_to_list">\@%1$s added to %2$s list</string>
     <string name="direct">Direct message</string>
+    <string name="reply">Reply</string>
 
 </resources>
