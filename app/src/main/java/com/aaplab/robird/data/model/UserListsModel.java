@@ -97,7 +97,8 @@ public class UserListsModel extends BaseTwitterModel {
             }
 
             ContentValues[] values = new ContentValues[lists.size()];
-            Inject.contentResolver().delete(UserListContract.CONTENT_URI, null, null);
+            Inject.contentResolver().delete(UserListContract.CONTENT_URI,
+                    String.format("%s=%d", UserListContract.ACCOUNT_ID, account.id()), null);
             Inject.contentResolver().bulkInsert(UserListContract.CONTENT_URI, contentValues.toArray(values));
         }
     }
