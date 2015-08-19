@@ -29,6 +29,7 @@ import com.aaplab.robird.data.entity.UserList;
 import com.aaplab.robird.data.model.AccountModel;
 import com.aaplab.robird.data.model.UserListsModel;
 import com.aaplab.robird.data.model.UserModel;
+import com.aaplab.robird.ui.fragment.ComposeFragment;
 import com.aaplab.robird.ui.fragment.UserFriendsFragment;
 import com.aaplab.robird.ui.fragment.UserTimelineFragment;
 import com.aaplab.robird.util.DefaultObserver;
@@ -222,6 +223,9 @@ public class UserProfileActivity extends BaseActivity {
                                 }
                             })
             );
+        } else if (item.getItemId() == R.id.menu_direct) {
+            ComposeFragment.direct(mAccount, mUser.getScreenName())
+                    .show(getSupportFragmentManager(), ComposeFragment.TAG_DIRECT);
         } else {
             mSubscriptions.add(
                     mUserListsModel
