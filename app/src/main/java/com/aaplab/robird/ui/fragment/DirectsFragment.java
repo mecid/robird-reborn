@@ -9,6 +9,7 @@ import com.aaplab.robird.data.entity.Direct;
 import com.aaplab.robird.data.model.DirectsModel;
 import com.aaplab.robird.ui.adapter.DirectsAdapter;
 import com.aaplab.robird.util.DefaultObserver;
+import com.google.common.collect.Ordering;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -86,6 +87,13 @@ public class DirectsFragment extends BaseSwipeToRefreshRecyclerFragment {
         }
 
         ArrayList<Direct> sortedDirects = new ArrayList<>(map.values());
+        Collections.sort(sortedDirects, new Ordering<Direct>() {
+            @Override
+            public int compare(@Nullable Direct left, @Nullable Direct right) {
+                return Long.valueOf(left.directId()).compareTo(right.directId());
+            }
+        });
+
         Collections.reverse(sortedDirects);
 
         mRecyclerView.setAdapter(new DirectsAdapter(getActivity(), mAccount, sortedDirects, true));
