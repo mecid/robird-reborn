@@ -8,6 +8,11 @@
         app:showAsAction="ifRoom" />
 
     <item
+        android:id="@+id/menu_direct"
+        android:title="@string/direct"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/menu_block"
         android:title="@string/block"
         app:showAsAction="never" />
