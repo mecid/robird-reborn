@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.ShareCompat;
 import android.support.v4.view.GravityCompat;
@@ -15,6 +16,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,6 +26,7 @@ import android.widget.TextView;
 import com.aaplab.robird.R;
 import com.aaplab.robird.data.entity.Account;
 import com.aaplab.robird.data.model.AccountModel;
+import com.aaplab.robird.data.model.BillingModel;
 import com.aaplab.robird.data.model.TimelineModel;
 import com.aaplab.robird.ui.fragment.ComposeFragment;
 import com.aaplab.robird.ui.fragment.DirectsFragment;
@@ -85,6 +88,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     private final Handler mNavigationHandler = new Handler();
     private ActionBarDrawerToggle mDrawerToggle;
     private AccountModel mAccountModel;
+    private BillingModel mBillingModel;
     private List<Account> mAccounts;
 
     @Override
@@ -102,6 +106,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         avatars[1].setOnClickListener(this);
         avatars[2].setOnClickListener(this);
 
+        mBillingModel = new BillingModel(this);
         mAccountModel = new AccountModel();
         mSubscriptions.add(
                 mAccountModel
@@ -181,12 +186,50 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     public void onClick(View v) {
         if (v == mAddAccountImageView) {
-            if (mAccounts.size() < 3) {
-                NavigationUtils.changeDefaultActivityToSignIn(this, true);
-                startActivity(new Intent(this, SignInActivity.class));
-                finish();
-            } else {
-                Timber.d("max account count must be 3");
+            if (mAccounts.size() < 2) {
+                if (mBillingModel.isPurchased(BillingModel.SECOND_ACCOUNT_PRODUCT_ID)) {
+                    NavigationUtils.changeDefaultActivityToSignIn(this, true);
+                    startActivity(new Intent(this, SignInActivity.class));
+                    finish();
+                } else {
+                    mSubscriptions.add(
+                            mBillingModel
+                                    .purchase(BillingModel.SECOND_ACCOUNT_PRODUCT_ID)
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribeOn(AndroidSchedulers.mainThread())
+                                    .subscribe(new DefaultObserver<String>() {
+                                        @Override
+                                        public void onNext(String s) {
+                                            super.onNext(s);
+                                            if (TextUtils.equals(s, BillingModel.SECOND_ACCOUNT_PRODUCT_ID))
+                                                Snackbar.make(findViewById(R.id.coordinator),
+                                                        R.string.purchased, Snackbar.LENGTH_LONG).show();
+                                        }
+                                    })
+                    );
+                }
+            } else if (mAccounts.size() < 3) {
+                if (mBillingModel.isPurchased(BillingModel.THIRD_ACCOUNT_PRODUCT_ID)) {
+                    NavigationUtils.changeDefaultActivityToSignIn(this, true);
+                    startActivity(new Intent(this, SignInActivity.class));
+                    finish();
+                } else {
+                    mSubscriptions.add(
+                            mBillingModel
+                                    .purchase(BillingModel.THIRD_ACCOUNT_PRODUCT_ID)
+                                    .subscribeOn(AndroidSchedulers.mainThread())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe(new DefaultObserver<String>() {
+                                        @Override
+                                        public void onNext(String s) {
+                                            super.onNext(s);
+                                            if (TextUtils.equals(s, BillingModel.THIRD_ACCOUNT_PRODUCT_ID))
+                                                Snackbar.make(findViewById(R.id.coordinator),
+                                                        R.string.purchased, Snackbar.LENGTH_LONG).show();
+                                        }
+                                    })
+                    );
+                }
             }
         } else if (avatars[1] == v) {
             Account selectedAccount = mAccounts.get(1);
@@ -203,6 +246,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     private void setupNavigation(List<Account> accounts) {
         mAccounts = accounts;
         Account activeAccount = mAccounts.get(0);
+        mAddAccountImageView.setVisibility(mAccounts.size() < 3 ? View.VISIBLE : View.GONE);
 
         mScreenNameTextView.setText("@" + activeAccount.screenName());
         mFullNameTextView.setText(activeAccount.fullName());
@@ -256,6 +300,12 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (!mBillingModel.handleActivityResult(requestCode, resultCode, data))
+            super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         mDrawerToggle.onConfigurationChanged(newConfig);
@@ -293,5 +343,11 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     public boolean onQueryTextChange(String newText) {
         return false;
+    }
+
+    @Override
+    protected void onDestroy() {
+        mBillingModel.onDestroy();
+        super.onDestroy();
     }
 }

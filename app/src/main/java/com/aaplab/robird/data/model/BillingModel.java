@@ -16,6 +16,9 @@ import rx.subjects.PublishSubject;
  */
 public final class BillingModel implements BillingProcessor.IBillingHandler {
 
+    public static final String SECOND_ACCOUNT_PRODUCT_ID = "second_account";
+    public static final String THIRD_ACCOUNT_PRODUCT_ID = "third_account";
+
     private BillingProcessor mBillingProcessor;
     private PublishSubject<String> mProductSubject;
     private Activity mActivity;
