@@ -9,7 +9,6 @@ import android.support.v4.app.ActivityCompat;
 import com.aaplab.robird.Config;
 import com.aaplab.robird.R;
 import com.aaplab.robird.data.entity.Account;
-import com.aaplab.robird.data.entity.UserList;
 import com.aaplab.robird.data.model.AccountModel;
 import com.aaplab.robird.data.model.DirectsModel;
 import com.aaplab.robird.data.model.TimelineModel;
@@ -18,8 +17,6 @@ import com.aaplab.robird.data.model.UserModel;
 import com.aaplab.robird.data.provider.contract.AccountContract;
 import com.aaplab.robird.util.DefaultObserver;
 import com.aaplab.robird.util.NavigationUtils;
-
-import java.util.List;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -179,24 +176,6 @@ public class SignInActivity extends BaseActivity {
                         return integer + integer2 + integer3 + integer4 + integer5 + integer6;
                     }
                 }
-        )
-                .flatMap(new Func1<Integer, Observable<List<UserList>>>() {
-                    @Override
-                    public Observable<List<UserList>> call(Integer integer) {
-                        return new UserListsModel(account).lists().take(1);
-                    }
-                })
-                .flatMap(new Func1<List<UserList>, Observable<UserList>>() {
-                    @Override
-                    public Observable<UserList> call(List<UserList> userLists) {
-                        return Observable.from(userLists);
-                    }
-                })
-                .flatMap(new Func1<UserList, Observable<Integer>>() {
-                    @Override
-                    public Observable<Integer> call(UserList userList) {
-                        return new TimelineModel(account, userList.listId()).update();
-                    }
-                });
+        );
     }
 }
