@@ -9,16 +9,23 @@ import android.support.v4.app.ActivityCompat;
 import com.aaplab.robird.Config;
 import com.aaplab.robird.R;
 import com.aaplab.robird.data.entity.Account;
+import com.aaplab.robird.data.entity.UserList;
 import com.aaplab.robird.data.model.AccountModel;
+import com.aaplab.robird.data.model.DirectsModel;
+import com.aaplab.robird.data.model.TimelineModel;
+import com.aaplab.robird.data.model.UserListsModel;
 import com.aaplab.robird.data.model.UserModel;
 import com.aaplab.robird.data.provider.contract.AccountContract;
 import com.aaplab.robird.util.DefaultObserver;
 import com.aaplab.robird.util.NavigationUtils;
 
+import java.util.List;
+
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
+import rx.functions.Func6;
 import rx.schedulers.Schedulers;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -103,12 +110,18 @@ public class SignInActivity extends BaseActivity {
                                                             ));
                                                 }
                                             })
+                                            .flatMap(new Func1<Account, Observable<Integer>>() {
+                                                @Override
+                                                public Observable<Integer> call(Account account) {
+                                                    return cacheData(account);
+                                                }
+                                            })
                                             .observeOn(AndroidSchedulers.mainThread())
                                             .subscribeOn(Schedulers.io())
-                                            .subscribe(new DefaultObserver<Account>() {
+                                            .subscribe(new DefaultObserver<Integer>() {
                                                 @Override
-                                                public void onNext(Account account) {
-                                                    super.onNext(account);
+                                                public void onNext(Integer integer) {
+                                                    super.onNext(integer);
                                                     NavigationUtils.changeDefaultActivityToSignIn(getApplicationContext(), false);
                                                     ActivityCompat.startActivity(SignInActivity.this,
                                                             new Intent(SignInActivity.this, HomeActivity.class), null);
@@ -151,5 +164,39 @@ public class SignInActivity extends BaseActivity {
                 }
             }
         });
+    }
+
+    private Observable<Integer> cacheData(final Account account) {
+        return Observable.zip(
+                new TimelineModel(account, TimelineModel.HOME_ID).update(),
+                new TimelineModel(account, TimelineModel.MENTIONS_ID).update(),
+                new TimelineModel(account, TimelineModel.FAVORITES_ID).update(),
+                new TimelineModel(account, TimelineModel.RETWEETS_ID).update(),
+                new DirectsModel(account).update(), new UserListsModel(account).update(),
+                new Func6<Integer, Integer, Integer, Integer, Integer, Integer, Integer>() {
+                    @Override
+                    public Integer call(Integer integer, Integer integer2, Integer integer3, Integer integer4, Integer integer5, Integer integer6) {
+                        return integer + integer2 + integer3 + integer4 + integer5 + integer6;
+                    }
+                }
+        )
+                .flatMap(new Func1<Integer, Observable<List<UserList>>>() {
+                    @Override
+                    public Observable<List<UserList>> call(Integer integer) {
+                        return new UserListsModel(account).lists().take(1);
+                    }
+                })
+                .flatMap(new Func1<List<UserList>, Observable<UserList>>() {
+                    @Override
+                    public Observable<UserList> call(List<UserList> userLists) {
+                        return Observable.from(userLists);
+                    }
+                })
+                .flatMap(new Func1<UserList, Observable<Integer>>() {
+                    @Override
+                    public Observable<Integer> call(UserList userList) {
+                        return new TimelineModel(account, userList.listId()).update();
+                    }
+                });
     }
 }
