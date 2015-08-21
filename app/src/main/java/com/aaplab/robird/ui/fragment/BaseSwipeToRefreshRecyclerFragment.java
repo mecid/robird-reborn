@@ -93,6 +93,15 @@ public abstract class BaseSwipeToRefreshRecyclerFragment extends BaseFragment im
         }
     }
 
+    protected void setRefreshing(final boolean refreshing) {
+        mRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                mRefreshLayout.setRefreshing(refreshing);
+            }
+        });
+    }
+
     protected void stopBottoLoading(boolean keepOnAppending) {
         mBottomLoading = false;
         mKeepOnAppending = keepOnAppending;

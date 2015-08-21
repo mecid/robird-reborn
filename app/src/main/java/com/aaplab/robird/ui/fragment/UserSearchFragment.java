@@ -53,7 +53,7 @@ public class UserSearchFragment extends BaseSwipeToRefreshRecyclerFragment {
         mRecyclerView.setAdapter(mAdapter);
 
         if (savedInstanceState == null || mUsers.isEmpty()) {
-            mRefreshLayout.setRefreshing(true);
+            setRefreshing(true);
             mSubscriptions.add(
                     mSearchModel
                             .users(mQuery, mPage)
@@ -65,7 +65,7 @@ public class UserSearchFragment extends BaseSwipeToRefreshRecyclerFragment {
                                     super.onNext(users);
                                     mUsers.addAll(users);
                                     mAdapter.notifyDataSetChanged();
-                                    mRefreshLayout.setRefreshing(false);
+                                    setRefreshing(false);
                                 }
                             })
             );
@@ -88,7 +88,7 @@ public class UserSearchFragment extends BaseSwipeToRefreshRecyclerFragment {
                                 mUsers.clear();
                                 mUsers.addAll(users);
                                 mAdapter.notifyDataSetChanged();
-                                mRefreshLayout.setRefreshing(false);
+                                setRefreshing(false);
                             }
                         })
         );

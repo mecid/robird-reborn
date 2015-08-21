@@ -43,7 +43,7 @@ public class UserTimelineFragment extends BaseTimelineFragment {
         mType = getArguments().getInt("type");
 
         if (savedInstanceState == null || mTweets.isEmpty()) {
-            mRefreshLayout.setRefreshing(true);
+            setRefreshing(true);
             mSubscriptions.add(
                     mUserModel
                             .tweets(mType, new Paging().count(50))
@@ -54,7 +54,7 @@ public class UserTimelineFragment extends BaseTimelineFragment {
                                 public void onNext(List<Tweet> tweets) {
                                     super.onNext(tweets);
                                     appendTweetsToTop(tweets);
-                                    mRefreshLayout.setRefreshing(false);
+                                    setRefreshing(false);
                                 }
                             })
             );
@@ -74,7 +74,7 @@ public class UserTimelineFragment extends BaseTimelineFragment {
                             public void onNext(List<Tweet> tweets) {
                                 super.onNext(tweets);
                                 appendTweetsToTop(tweets);
-                                mRefreshLayout.setRefreshing(false);
+                                setRefreshing(false);
                             }
                         })
         );

@@ -70,7 +70,7 @@ public class TimelineFragment extends BaseTimelineFragment {
                             @Override
                             public void onNext(Integer newTweetCount) {
                                 super.onNext(newTweetCount);
-                                mRefreshLayout.setRefreshing(false);
+                                setRefreshing(false);
                             }
                         })
         );

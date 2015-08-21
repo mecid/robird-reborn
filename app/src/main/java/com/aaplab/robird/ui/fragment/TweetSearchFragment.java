@@ -40,7 +40,7 @@ public class TweetSearchFragment extends BaseTimelineFragment {
         mSearchModel = new SearchModel(mAccount);
 
         if (savedInstanceState == null || mTweets.isEmpty()) {
-            mRefreshLayout.setRefreshing(true);
+            setRefreshing(true);
             mSubscriptions.add(
                     mSearchModel
                             .tweets(new Query(mQuery))
@@ -51,7 +51,7 @@ public class TweetSearchFragment extends BaseTimelineFragment {
                                 public void onNext(List<Tweet> tweets) {
                                     super.onNext(tweets);
                                     appendTweetsToTop(tweets);
-                                    mRefreshLayout.setRefreshing(false);
+                                    setRefreshing(false);
                                 }
                             })
             );
@@ -71,7 +71,7 @@ public class TweetSearchFragment extends BaseTimelineFragment {
                             public void onNext(List<Tweet> tweets) {
                                 super.onNext(tweets);
                                 appendTweetsToTop(tweets);
-                                mRefreshLayout.setRefreshing(false);
+                                setRefreshing(false);
                             }
                         })
         );

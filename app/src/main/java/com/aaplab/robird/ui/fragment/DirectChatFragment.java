@@ -68,7 +68,7 @@ public class DirectChatFragment extends BaseSwipeToRefreshRecyclerFragment {
                             @Override
                             public void onNext(Integer integer) {
                                 super.onNext(integer);
-                                mRefreshLayout.setRefreshing(false);
+                                setRefreshing(false);
                             }
                         })
         );

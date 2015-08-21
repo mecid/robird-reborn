@@ -57,7 +57,7 @@ public class UserFriendsFragment extends BaseSwipeToRefreshRecyclerFragment {
         mType = getArguments().getInt("type");
 
         if (savedInstanceState == null || mUsers.isEmpty()) {
-            mRefreshLayout.setRefreshing(true);
+            setRefreshing(true);
             mSubscriptions.add(
                     mUserModel
                             .friends(mType, -1)
@@ -70,7 +70,7 @@ public class UserFriendsFragment extends BaseSwipeToRefreshRecyclerFragment {
                                     mUsers.addAll(users);
                                     mAdapter.notifyDataSetChanged();
                                     mCursor = users.getNextCursor();
-                                    mRefreshLayout.setRefreshing(false);
+                                    setRefreshing(false);
                                 }
                             })
             );
@@ -92,7 +92,7 @@ public class UserFriendsFragment extends BaseSwipeToRefreshRecyclerFragment {
                                 mUsers.addAll(users);
                                 mAdapter.notifyDataSetChanged();
                                 mCursor = users.getNextCursor();
-                                mRefreshLayout.setRefreshing(false);
+                                setRefreshing(false);
                             }
                         })
         );
