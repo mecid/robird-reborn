@@ -48,18 +48,24 @@ public class SignInActivity extends BaseActivity {
         setContentView(R.layout.activity_sign_in);
         mAccountModel = new AccountModel();
 
-        mSubscriptions.add(requestToken()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(new DefaultObserver<RequestToken>() {
-                    @Override
-                    public void onNext(RequestToken requestToken) {
-                        super.onNext(requestToken);
-                        startActivity(new Intent(Intent.ACTION_VIEW,
-                                Uri.parse(requestToken.getAuthorizationURL())));
-                        mRequestToken = requestToken;
-                    }
-                }));
+        final ConfigurationBuilder builder = new ConfigurationBuilder();
+        builder.setOAuthConsumerKey(Config.TWITTER_CONSUMER_KEY);
+        builder.setOAuthConsumerSecret(Config.TWITTER_CONSUMER_SECRET);
+        mTwitter = new TwitterFactory(builder.build()).getInstance();
+
+        mSubscriptions.add(
+                requestToken()
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(Schedulers.io())
+                        .subscribe(new DefaultObserver<RequestToken>() {
+                            @Override
+                            public void onNext(RequestToken requestToken) {
+                                super.onNext(requestToken);
+                                startActivity(new Intent(Intent.ACTION_VIEW,
+                                        Uri.parse(requestToken.getAuthorizationURL())));
+                                mRequestToken = requestToken;
+                            }
+                        }));
     }
 
     @Override
@@ -136,10 +142,6 @@ public class SignInActivity extends BaseActivity {
             @Override
             public void call(Subscriber<? super RequestToken> subscriber) {
                 try {
-                    final ConfigurationBuilder builder = new ConfigurationBuilder();
-                    builder.setOAuthConsumerKey(Config.TWITTER_CONSUMER_KEY);
-                    builder.setOAuthConsumerSecret(Config.TWITTER_CONSUMER_SECRET);
-                    mTwitter = new TwitterFactory(builder.build()).getInstance();
                     subscriber.onNext(mTwitter.getOAuthRequestToken(CALLBACK));
                     subscriber.onCompleted();
                 } catch (TwitterException e) {
