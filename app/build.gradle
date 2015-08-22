@@ -38,7 +38,7 @@ dependencies {
     compile 'com.jonathanfinerty.once:once:0.3.2'
     compile 'org.twitter4j:twitter4j-core:4.0.4'
     compile 'com.twitter:twitter-text:1.12.1'
-    compile 'io.reactivex:rxandroid:1.0.0'
+    compile 'io.reactivex:rxandroid:1.0.1'
     compile 'com.google.guava:guava:18.0'
 
     compile 'com.github.frankiesardo:auto-parcel:0.3.1'
