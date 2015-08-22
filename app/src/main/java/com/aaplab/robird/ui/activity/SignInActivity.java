@@ -38,6 +38,7 @@ import twitter4j.conf.ConfigurationBuilder;
 public class SignInActivity extends BaseActivity {
     public static final String CALLBACK = "robird://auth";
 
+    private Account mAccount;
     private Twitter mTwitter;
     private RequestToken mRequestToken;
     private AccountModel mAccountModel;
@@ -90,47 +91,25 @@ public class SignInActivity extends BaseActivity {
                             .flatMap(new Func1<AccessToken, Observable<Account>>() {
                                 @Override
                                 public Observable<Account> call(AccessToken accessToken) {
-                                    return mAccountModel.add(accessToken);
+                                    return saveAccount(accessToken);
+                                }
+                            })
+                            .flatMap(new Func1<Account, Observable<Integer>>() {
+                                @Override
+                                public Observable<Integer> call(Account account) {
+                                    return cacheData(account);
                                 }
                             })
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribeOn(Schedulers.io())
-                            .subscribe(new DefaultObserver<Account>() {
+                            .subscribe(new DefaultObserver<Integer>() {
                                 @Override
-                                public void onNext(final Account account) {
-                                    super.onNext(account);
-                                    UserModel userModel = new UserModel(account, account.screenName());
-                                    userModel.user()
-                                            .flatMap(new Func1<User, Observable<Account>>() {
-                                                @Override
-                                                public Observable<Account> call(User user) {
-                                                    return mAccountModel.update(
-                                                            account.withMeta(
-                                                                    user.getName(),
-                                                                    user.getScreenName(),
-                                                                    user.getOriginalProfileImageURL(),
-                                                                    user.getProfileBannerMobileRetinaURL()
-                                                            ));
-                                                }
-                                            })
-                                            .flatMap(new Func1<Account, Observable<Integer>>() {
-                                                @Override
-                                                public Observable<Integer> call(Account account) {
-                                                    return cacheData(account);
-                                                }
-                                            })
-                                            .observeOn(AndroidSchedulers.mainThread())
-                                            .subscribeOn(Schedulers.io())
-                                            .subscribe(new DefaultObserver<Integer>() {
-                                                @Override
-                                                public void onCompleted() {
-                                                    super.onCompleted();
-                                                    NavigationUtils.changeDefaultActivityToSignIn(getApplicationContext(), false);
-                                                    ActivityCompat.startActivity(SignInActivity.this,
-                                                            new Intent(SignInActivity.this, HomeActivity.class), null);
-                                                    ActivityCompat.finishAfterTransition(SignInActivity.this);
-                                                }
-                                            });
+                                public void onCompleted() {
+                                    super.onCompleted();
+                                    NavigationUtils.changeDefaultActivityToSignIn(getApplicationContext(), false);
+                                    ActivityCompat.startActivity(SignInActivity.this,
+                                            new Intent(SignInActivity.this, HomeActivity.class), null);
+                                    ActivityCompat.finishAfterTransition(SignInActivity.this);
                                 }
                             })
             );
@@ -163,6 +142,30 @@ public class SignInActivity extends BaseActivity {
                 }
             }
         });
+    }
+
+    private Observable<Account> saveAccount(AccessToken accessToken) {
+        return mAccountModel
+                .add(accessToken)
+                .flatMap(new Func1<Account, Observable<User>>() {
+                    @Override
+                    public Observable<User> call(Account account) {
+                        mAccount = account;
+                        return new UserModel(mAccount, account.screenName()).user();
+                    }
+                })
+                .flatMap(new Func1<User, Observable<Account>>() {
+                    @Override
+                    public Observable<Account> call(User user) {
+                        return mAccountModel.update(
+                                mAccount.withMeta(
+                                        user.getName(),
+                                        user.getScreenName(),
+                                        user.getOriginalProfileImageURL(),
+                                        user.getProfileBannerMobileRetinaURL()
+                                ));
+                    }
+                });
     }
 
     private Observable<Integer> cacheData(final Account account) {
@@ -200,9 +203,7 @@ public class SignInActivity extends BaseActivity {
                 .flatMap(new Func1<Integer, Observable<UserList>>() {
                     @Override
                     public Observable<UserList> call(Integer integer) {
-                        return integer > 0 ?
-                                Observable.from(new UserListsModel(account).lists().toBlocking().first()) :
-                                Observable.<UserList>empty();
+                        return Observable.from(new UserListsModel(account).lists().toBlocking().first());
                     }
                 })
                 .flatMap(new Func1<UserList, Observable<Integer>>() {
