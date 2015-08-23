@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.aaplab.robird.R;
 import com.aaplab.robird.data.entity.Account;
 import com.aaplab.robird.data.entity.Tweet;
+import com.aaplab.robird.ui.activity.ImagesActivity;
 import com.aaplab.robird.ui.activity.TweetDetailsActivity;
 import com.aaplab.robird.ui.activity.UserProfileActivity;
 import com.bumptech.glide.Glide;
@@ -72,12 +73,19 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
         holder.mediaImageView.setVisibility(TextUtils.isEmpty(tweet.media()) ? View.GONE : View.VISIBLE);
 
         if (holder.mediaImageView.getVisibility() == View.VISIBLE) {
-            String[] media = tweet.media().split("\\+\\+\\+");
+            final String[] media = tweet.media().split("\\+\\+\\+\\+\\+");
 
             Glide.with(mActivity)
                     .load(media[0])
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(holder.mediaImageView);
+
+            holder.mediaImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ImagesActivity.start(mActivity, media);
+                }
+            });
         }
 
         Glide.with(mActivity)

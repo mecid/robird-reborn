@@ -72,6 +72,10 @@
             android:label="@string/tweet" />
 
         <activity
+            android:name=".ui.activity.ImagesActivity"
+            android:label="@string/images" />
+
+        <activity
             android:name=".ui.activity.SearchActivity"
             android:label="@string/search">
 
