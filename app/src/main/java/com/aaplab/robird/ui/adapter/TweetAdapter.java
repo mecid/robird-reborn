@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.aaplab.robird.R;
 import com.aaplab.robird.data.entity.Account;
 import com.aaplab.robird.data.entity.Tweet;
+import com.aaplab.robird.ui.activity.ImagesActivity;
 import com.aaplab.robird.ui.activity.TweetDetailsActivity;
 import com.aaplab.robird.ui.activity.UserProfileActivity;
 import com.bumptech.glide.Glide;
@@ -69,15 +70,28 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
 
         holder.infoTextView.setText(information.toString());
         holder.retweetImageView.setVisibility(TextUtils.isEmpty(tweet.retweetedBy()) ? View.GONE : View.VISIBLE);
-        holder.mediaImageView.setVisibility(TextUtils.isEmpty(tweet.media()) ? View.GONE : View.VISIBLE);
 
-        if (holder.mediaImageView.getVisibility() == View.VISIBLE) {
-            String[] media = tweet.media().split("\\+\\+\\+");
+        if (!TextUtils.isEmpty(tweet.media())) {
+            final String[] media = tweet.media().split("\\+\\+\\+\\+\\+");
+
+            holder.mediaCountTextView.setVisibility(media.length > 1 ? View.VISIBLE : View.GONE);
+            holder.mediaCountTextView.setText("" + media.length);
+            holder.mediaImageView.setVisibility(View.VISIBLE);
 
             Glide.with(mActivity)
                     .load(media[0])
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(holder.mediaImageView);
+
+            holder.mediaImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ImagesActivity.start(mActivity, media);
+                }
+            });
+        } else {
+            holder.mediaCountTextView.setVisibility(View.GONE);
+            holder.mediaImageView.setVisibility(View.GONE);
         }
 
         Glide.with(mActivity)
@@ -113,6 +127,9 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
 
         @Bind(R.id.media)
         ImageView mediaImageView;
+
+        @Bind(R.id.count)
+        TextView mediaCountTextView;
 
         @Bind(R.id.retweet)
         ImageView retweetImageView;

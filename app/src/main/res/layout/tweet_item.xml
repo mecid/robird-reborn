@@ -77,6 +77,22 @@
         android:scaleType="centerCrop"
         android:visibility="gone" />
 
+    <TextView
+        android:id="@+id/count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/information"
+        android:layout_marginEnd="@dimen/keyline_1"
+        android:layout_marginRight="@dimen/keyline_1"
+        android:layout_marginTop="@dimen/keyline_1"
+        android:background="@drawable/images_count_bg"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:textColor="@color/accent"
+        android:visibility="gone" />
+
     <View
         android:id="@+id/separator"
         android:layout_width="match_parent"
