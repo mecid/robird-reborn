@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 
+import com.aaplab.robird.Analytics;
 import com.aaplab.robird.inject.Inject;
 import com.squareup.otto.Bus;
 
@@ -38,6 +39,18 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         mBus.register(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Analytics.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        Analytics.onPause(this);
+        super.onPause();
     }
 
     @Override

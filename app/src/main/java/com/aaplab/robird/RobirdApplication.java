@@ -13,9 +13,12 @@ public final class RobirdApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
+        Analytics.setup(this);
         Inject.using(new DefaultDependencyFactory(this));
 
         if (BuildConfig.DEBUG)
             Timber.plant(new Timber.DebugTree());
+        else
+            Timber.plant(new Analytics.YandexMeticaTree());
     }
 }
