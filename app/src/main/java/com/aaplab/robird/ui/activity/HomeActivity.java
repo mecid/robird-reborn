@@ -103,6 +103,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
 
         mFloatingActionButton.setOnClickListener(this);
         mAddAccountImageView.setOnClickListener(this);
+        avatars[0].setOnClickListener(this);
         avatars[1].setOnClickListener(this);
         avatars[2].setOnClickListener(this);
 
@@ -231,6 +232,9 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                     );
                 }
             }
+        } else if (avatars[0] == v) {
+            Account selectedAccount = mAccounts.get(0);
+            UserProfileActivity.start(this, selectedAccount, selectedAccount.screenName());
         } else if (avatars[1] == v) {
             Account selectedAccount = mAccounts.get(1);
             activate(selectedAccount);
