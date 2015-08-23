@@ -53,6 +53,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
     @Override
     public void onBindViewHolder(TweetHolder holder, int position) {
         final Tweet tweet = mTweets.get(position);
+        Glide.clear(holder.mediaImageView);
 
         holder.textView.setText(tweet.text());
         holder.usernameTextView.setText("@" + tweet.username());
