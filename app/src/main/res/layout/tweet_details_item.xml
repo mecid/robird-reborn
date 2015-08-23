@@ -110,6 +110,20 @@
         android:layout_marginTop="@dimen/keyline_1"
         android:scaleType="centerCrop" />
 
+    <TextView
+        android:id="@+id/count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/interactionsInfo"
+        android:layout_marginTop="@dimen/keyline_1"
+        android:background="@drawable/images_count_bg"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:textColor="@color/accent"
+        android:visibility="gone" />
+
     <View
         android:id="@+id/separator"
         android:layout_width="match_parent"
