@@ -27,6 +27,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.aaplab.robird.Analytics;
 import com.aaplab.robird.R;
 import com.aaplab.robird.data.entity.Account;
 import com.aaplab.robird.data.entity.Tweet;
@@ -64,10 +65,10 @@ import twitter4j.UploadedMedia;
  */
 public class ComposeFragment extends DialogFragment implements Toolbar.OnMenuItemClickListener, TextWatcher {
 
-    public static final String TAG_COMPOSE = "compose";
-    public static final String TAG_DIRECT = "direct";
-    public static final String TAG_REPLY = "reply";
-    public static final String TAG_SHARE = "share";
+    public static final String TAG_COMPOSE = "Compose";
+    public static final String TAG_DIRECT = "Direct";
+    public static final String TAG_REPLY = "Reply";
+    public static final String TAG_SHARE = "Share";
 
     private static final int SELECT_PICTURE = 1743;
 
@@ -231,6 +232,7 @@ public class ComposeFragment extends DialogFragment implements Toolbar.OnMenuIte
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         if (item.getItemId() == R.id.menu_send) {
+            Analytics.event(Analytics.SEND);
             if (TextUtils.isEmpty(mUserName)) {
                 if (mTweetValidator.isValidTweet(mEditText.getText().toString())) {
                     final StatusUpdate statusUpdate = new StatusUpdate(mEditText.getText().toString());
@@ -303,6 +305,7 @@ public class ComposeFragment extends DialogFragment implements Toolbar.OnMenuIte
                 dismiss();
             }
         } else if (item.getItemId() == R.id.menu_camera) {
+            Analytics.event(Analytics.ATTACH_IMAGE);
             // you can add only 4 images
             if (mAttachedImages.size() < 4) {
                 try {
