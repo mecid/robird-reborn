@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.aaplab.robird.Analytics;
 import com.aaplab.robird.R;
 import com.aaplab.robird.data.entity.Account;
 import com.aaplab.robird.data.entity.Tweet;
@@ -115,8 +116,8 @@ public class TweetDetailsFragment extends BaseSwipeToRefreshRecyclerFragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         if (item.getItemId() == R.id.menu_retweet) {
+            Analytics.event(Analytics.RETWEET);
             mSubscriptions.add(
                     mTweetModel
                             .retweet()
@@ -135,6 +136,7 @@ public class TweetDetailsFragment extends BaseSwipeToRefreshRecyclerFragment {
                             })
             );
         } else if (item.getItemId() == R.id.menu_star) {
+            Analytics.event(Analytics.FAVORITE);
             mSubscriptions.add(
                     mTweetModel
                             .favorite()
@@ -153,11 +155,13 @@ public class TweetDetailsFragment extends BaseSwipeToRefreshRecyclerFragment {
                             })
             );
         } else if (item.getItemId() == R.id.menu_copy) {
+            Analytics.event(Analytics.COPY);
             ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
             clipboard.setPrimaryClip(ClipData.newPlainText("", mTweet.text()));
             Snackbar.make(getActivity().findViewById(R.id.coordinator),
                     R.string.copied_to_clipboard, Snackbar.LENGTH_SHORT).show();
         } else if (item.getItemId() == R.id.menu_share) {
+            Analytics.event(Analytics.SHARE);
             Intent shareIntent = ShareCompat.IntentBuilder.from(getActivity())
                     .setType("text/plain")
                     .setText(mTweet.text())
@@ -167,6 +171,7 @@ public class TweetDetailsFragment extends BaseSwipeToRefreshRecyclerFragment {
                 startActivity(shareIntent);
             }
         } else if (item.getItemId() == R.id.menu_remove) {
+            Analytics.event(Analytics.DELETE);
             mSubscriptions.add(
                     mTweetModel
                             .delete()

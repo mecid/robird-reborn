@@ -9,6 +9,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
+import com.aaplab.robird.Analytics;
 import com.aaplab.robird.R;
 import com.aaplab.robird.data.entity.Account;
 import com.aaplab.robird.ui.fragment.ComposeFragment;
@@ -60,6 +61,7 @@ public class DirectChatActivity extends BaseActivity implements View.OnClickList
 
     @Override
     public void onClick(View view) {
+        Analytics.event(ComposeFragment.TAG_DIRECT);
         ComposeFragment.direct(mAccount, mUserName)
                 .show(getSupportFragmentManager(), ComposeFragment.TAG_DIRECT);
     }

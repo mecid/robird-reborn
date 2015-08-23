@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.Nullable;
 
+import com.aaplab.robird.Analytics;
 import com.aaplab.robird.Config;
 import com.anjlab.android.iab.v3.BillingProcessor;
 import com.anjlab.android.iab.v3.TransactionDetails;
@@ -49,6 +50,7 @@ public final class BillingModel implements BillingProcessor.IBillingHandler {
 
     @Override
     public void onProductPurchased(String s, TransactionDetails transactionDetails) {
+        Analytics.purchase(s);
         mProductSubject.onNext(s);
     }
 

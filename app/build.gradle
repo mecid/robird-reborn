@@ -46,4 +46,6 @@ dependencies {
 
     compile 'com.github.frankiesardo:icepick:2.3.6'
     apt 'com.github.frankiesardo:icepick-processor:2.3.6'
+
+    compile 'com.yandex.android:mobmetricalib:1.82@aar'
 }

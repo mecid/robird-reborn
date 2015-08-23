@@ -9,6 +9,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
+import com.aaplab.robird.Analytics;
 import com.aaplab.robird.R;
 import com.aaplab.robird.data.entity.Account;
 import com.aaplab.robird.data.entity.Tweet;
@@ -61,6 +62,7 @@ public class TweetDetailsActivity extends BaseActivity implements View.OnClickLi
 
     @Override
     public void onClick(View v) {
+        Analytics.event(ComposeFragment.TAG_REPLY);
         ComposeFragment.reply(mAccount, mTweet)
                 .show(getSupportFragmentManager(), ComposeFragment.TAG_REPLY);
     }

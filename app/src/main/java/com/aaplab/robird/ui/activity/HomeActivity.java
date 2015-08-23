@@ -23,6 +23,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.aaplab.robird.Analytics;
 import com.aaplab.robird.R;
 import com.aaplab.robird.data.entity.Account;
 import com.aaplab.robird.data.model.AccountModel;
@@ -125,6 +126,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
 
         final ShareCompat.IntentReader reader = ShareCompat.IntentReader.from(this);
         if (reader.isShareIntent()) {
+            Analytics.event(Analytics.SHARE_VIA_ROBIRD);
             if (reader.getStreamCount() > 0) {
                 final int count = reader.getStreamCount() > 4 ? 4 : reader.getStreamCount();
                 ComposeFragment
@@ -187,6 +189,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     public void onClick(View v) {
         if (v == mAddAccountImageView) {
+            Analytics.event(Analytics.ADD_ACCOUNT);
             if (mAccounts.size() < 2) {
                 if (mBillingModel.isPurchased(BillingModel.SECOND_ACCOUNT_PRODUCT_ID)) {
                     NavigationUtils.changeDefaultActivityToSignIn(this, true);
@@ -242,6 +245,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
             Account selectedAccount = mAccounts.get(2);
             activate(selectedAccount);
         } else if (mFloatingActionButton == v) {
+            Analytics.event(ComposeFragment.TAG_COMPOSE);
             ComposeFragment.create(mAccounts.get(0))
                     .show(getSupportFragmentManager(), ComposeFragment.TAG_COMPOSE);
         }
@@ -340,6 +344,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     public boolean onQueryTextSubmit(String query) {
+        Analytics.event(Analytics.SEARCH);
         SearchActivity.start(this, mAccounts.get(0), query);
         return true;
     }

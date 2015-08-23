@@ -23,6 +23,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.aaplab.robird.Analytics;
 import com.aaplab.robird.R;
 import com.aaplab.robird.data.entity.Account;
 import com.aaplab.robird.data.entity.UserList;
@@ -179,6 +180,7 @@ public class UserProfileActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
         if (item.getItemId() == R.id.menu_follow) {
+            Analytics.event(Analytics.FOLLOW);
             mSubscriptions.add(
                     mUserModel
                             .follow()
@@ -194,6 +196,7 @@ public class UserProfileActivity extends BaseActivity {
                             })
             );
         } else if (item.getItemId() == R.id.menu_block) {
+            Analytics.event(Analytics.BLOCK);
             mSubscriptions.add(
                     mUserModel
                             .block()
@@ -209,6 +212,7 @@ public class UserProfileActivity extends BaseActivity {
                             })
             );
         } else if (item.getItemId() == R.id.menu_spam) {
+            Analytics.event(Analytics.SPAM);
             mSubscriptions.add(
                     mUserModel
                             .report()
@@ -224,12 +228,15 @@ public class UserProfileActivity extends BaseActivity {
                             })
             );
         } else if (item.getItemId() == R.id.menu_direct) {
+            Analytics.event(ComposeFragment.TAG_DIRECT);
             ComposeFragment.direct(mAccount, mUser.getScreenName())
                     .show(getSupportFragmentManager(), ComposeFragment.TAG_DIRECT);
         } else if (item.getItemId() == R.id.menu_reply) {
+            Analytics.event(ComposeFragment.TAG_REPLY);
             ComposeFragment.share(String.format("@%s ", mUser.getScreenName()))
                     .show(getSupportFragmentManager(), ComposeFragment.TAG_REPLY);
         } else {
+            Analytics.event(Analytics.ADD_TO_LIST);
             mSubscriptions.add(
                     mUserListsModel
                             .addUser(item.getItemId(), mUser.getId())
