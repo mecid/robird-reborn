@@ -30,6 +30,12 @@
             android:id="@+id/navigation_item_lists"
             android:icon="@drawable/ic_list_grey"
             android:title="@string/lists" />
+
+        <item
+            android:id="@+id/navigation_item_world"
+            android:icon="@drawable/ic_language_grey"
+            android:title="@string/trends" />
+
     </group>
 
     <group android:checkableBehavior="none">
