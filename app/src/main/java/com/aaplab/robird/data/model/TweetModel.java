@@ -148,9 +148,7 @@ public class TweetModel extends BaseTwitterModel {
     private void deleteLocalTweet() {
         Inject.contentResolver()
                 .delete(TweetContract.CONTENT_URI,
-                        String.format("%s=%d AND %s=%d",
-                                TweetContract.ACCOUNT_ID, mAccount.id(),
-                                TweetContract.TWEET_ID, mTweet.tweetId()),
+                        String.format("%s=%d", TweetContract.TWEET_ID, mTweet.tweetId()),
                         null);
     }
 
