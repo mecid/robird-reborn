@@ -14,6 +14,7 @@
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:layout_marginLeft="@dimen/keyline_1"
+        android:layout_marginStart="@dimen/keyline_1"
         android:layout_marginTop="@dimen/keyline_2"
         android:background="?selectableItemBackground"
         android:clickable="true" />
@@ -22,7 +23,9 @@
         android:id="@+id/avatar2"
         android:layout_width="40dp"
         android:layout_height="40dp"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
+        android:layout_marginEnd="@dimen/keyline_1"
         android:layout_marginRight="@dimen/keyline_1"
         android:layout_marginTop="@dimen/keyline_2"
         android:background="?selectableItemBackground"
@@ -33,9 +36,11 @@
         android:id="@+id/avatar3"
         android:layout_width="40dp"
         android:layout_height="40dp"
+        android:layout_marginEnd="@dimen/keyline_1"
         android:layout_marginRight="@dimen/keyline_1"
         android:layout_marginTop="@dimen/keyline_2"
         android:layout_toLeftOf="@id/avatar2"
+        android:layout_toStartOf="@id/avatar2"
         android:background="?selectableItemBackground"
         android:clickable="true"
         android:visibility="gone" />
@@ -75,12 +80,11 @@
                 android:textColor="@android:color/white" />
         </LinearLayout>
 
-        <ImageView
+        <ImageButton
             android:id="@+id/add_account_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|right"
-            android:layout_marginRight="@dimen/keyline_1"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center_vertical|end"
             android:background="?selectableItemBackground"
             android:clickable="true"
             android:src="@drawable/ic_person_add" />
