@@ -149,6 +149,8 @@ public class UserProfileActivity extends BaseActivity {
         getMenuInflater().inflate(R.menu.user_profile, menu);
 
         if (mUser != null && TextUtils.equals(mAccount.screenName(), mUser.getScreenName())) {
+            menu.findItem(R.id.menu_direct).setVisible(false);
+            menu.findItem(R.id.menu_reply).setVisible(false);
             menu.findItem(R.id.menu_spam).setVisible(false);
             menu.findItem(R.id.menu_block).setVisible(false);
             menu.findItem(R.id.menu_follow).setVisible(false);
@@ -273,16 +275,22 @@ public class UserProfileActivity extends BaseActivity {
         mFullNameTextView.setText(mUser.getName());
         mScreenNameTextView.setText("@" + mUser.getScreenName());
 
-        mBioTextView.setText(
-                String.format("%s. %s %s %s",
-                        mRelationship.isTargetFollowingSource() ?
-                                getString(R.string.following_you) :
-                                getString(R.string.not_following_you),
+        final StringBuilder bioBuilder = new StringBuilder();
+        if (!TextUtils.equals(mAccount.screenName(), mUser.getScreenName()))
+            bioBuilder.append(
+                    mRelationship.isTargetFollowingSource() ?
+                            getString(R.string.following_you) :
+                            getString(R.string.not_following_you)
+            ).append(". ");
+
+        bioBuilder.append(
+                String.format("%s %s %s",
                         mUser.getDescription(),
                         mUser.getURLEntity().getExpandedURL(),
                         mUser.getLocation()
-                ).trim()
-        );
+                ));
+
+        mBioTextView.setText(bioBuilder.toString().trim());
         mBioTextView.setVisibility(TextUtils.isEmpty(mBioTextView.getText()) ? View.GONE : View.VISIBLE);
 
         Glide.with(this)
