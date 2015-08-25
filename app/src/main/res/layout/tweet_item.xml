@@ -9,6 +9,7 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginLeft="@dimen/keyline_1"
+        android:layout_marginStart="@dimen/keyline_1"
         android:layout_marginTop="@dimen/keyline_1" />
 
     <TextView
@@ -16,7 +17,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/keyline_1"
+        android:layout_marginStart="@dimen/keyline_1"
         android:layout_marginTop="@dimen/keyline_1"
+        android:layout_toEndOf="@id/avatar"
         android:layout_toRightOf="@+id/avatar"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
 
@@ -25,7 +28,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="@dimen/keyline_1"
+        android:layout_toEndOf="@id/full_name"
         android:layout_toRightOf="@id/full_name"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
@@ -36,6 +41,7 @@
         android:layout_below="@id/full_name"
         android:layout_marginLeft="@dimen/keyline_1"
         android:layout_marginRight="@dimen/keyline_1"
+        android:layout_toEndOf="@id/avatar"
         android:layout_toRightOf="@id/avatar"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
@@ -46,6 +52,7 @@
         android:layout_below="@id/text"
         android:layout_marginLeft="@dimen/keyline_1"
         android:layout_marginRight="@dimen/keyline_1"
+        android:layout_toEndOf="@id/avatar"
         android:layout_toRightOf="@id/avatar"
         android:orientation="horizontal">
 
@@ -73,6 +80,7 @@
         android:layout_marginLeft="@dimen/keyline_1"
         android:layout_marginRight="@dimen/keyline_1"
         android:layout_marginTop="@dimen/keyline_1"
+        android:layout_toEndOf="@id/avatar"
         android:layout_toRightOf="@id/avatar"
         android:scaleType="centerCrop"
         android:visibility="gone" />
@@ -99,7 +107,9 @@
         android:layout_height="1dp"
         android:layout_below="@id/media"
         android:layout_marginLeft="@dimen/keyline_1"
+        android:layout_marginStart="@dimen/keyline_1"
         android:layout_marginTop="@dimen/keyline_1"
+        android:layout_toEndOf="@id/avatar"
         android:layout_toRightOf="@id/avatar"
         android:background="#e5e5e5" />
 
