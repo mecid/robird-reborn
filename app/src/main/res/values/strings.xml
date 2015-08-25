@@ -46,5 +46,8 @@
     <string name="reply">Reply</string>
     <string name="purchased">Successfully purchased</string>
     <string name="images">Images</string>
+    <string name="world_trends">World Trends</string>
+    <string name="local_trends">Local Trends</string>
+    <string name="trends">Trends</string>
 
 </resources>

@@ -29,9 +29,11 @@ import com.aaplab.robird.data.entity.Account;
 import com.aaplab.robird.data.model.AccountModel;
 import com.aaplab.robird.data.model.BillingModel;
 import com.aaplab.robird.data.model.TimelineModel;
+import com.aaplab.robird.data.model.TrendsModel;
 import com.aaplab.robird.ui.fragment.ComposeFragment;
 import com.aaplab.robird.ui.fragment.DirectsFragment;
 import com.aaplab.robird.ui.fragment.TimelineFragment;
+import com.aaplab.robird.ui.fragment.TrendsFragment;
 import com.aaplab.robird.ui.fragment.UserListsFragment;
 import com.aaplab.robird.util.DefaultObserver;
 import com.aaplab.robird.util.NavigationUtils;
@@ -292,6 +294,8 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
             return UserListsFragment.create(mAccounts.get(0));
         } else if (navigationMenuItem.getItemId() == R.id.navigation_item_directs) {
             return DirectsFragment.create(mAccounts.get(0));
+        } else if (navigationMenuItem.getItemId() == R.id.navigation_item_world) {
+            return TrendsFragment.create(mAccounts.get(0), TrendsModel.GLOBAL);
         }
 
         throw new IllegalArgumentException("There is no fragment for this navigation item: " + navigationMenuItem.getTitle());
