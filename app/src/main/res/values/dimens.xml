@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="fab_top_margin">-28dp</dimen>
     <dimen name="keyline_1">16dp</dimen>
     <dimen name="keyline_2">32dp</dimen>
     <dimen name="keyline_3">72dp</dimen>
