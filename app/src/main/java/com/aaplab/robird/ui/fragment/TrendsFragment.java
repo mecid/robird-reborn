@@ -1,8 +1,5 @@
 package com.aaplab.robird.ui.fragment;
 
-import android.content.Context;
-import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
@@ -15,12 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import icepick.Icicle;
-import rx.Observable;
-import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
-import twitter4j.GeoLocation;
 import twitter4j.Trend;
 
 /**
@@ -41,7 +34,6 @@ public class TrendsFragment extends BaseSwipeToRefreshRecyclerFragment {
     @Icicle
     ArrayList<Trend> mTrends;
 
-    private LocationManager mLocationManager;
     private TrendsModel mTrendsModel;
     private Account mAccount;
     private int mWoeid;
@@ -49,7 +41,6 @@ public class TrendsFragment extends BaseSwipeToRefreshRecyclerFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         mTrends = mTrends == null ? new ArrayList<Trend>() : mTrends;
         mAccount = getArguments().getParcelable("account");
         mWoeid = getArguments().getInt("woeid");
@@ -58,15 +49,8 @@ public class TrendsFragment extends BaseSwipeToRefreshRecyclerFragment {
         if (savedInstanceState == null || mTrends.isEmpty()) {
             setRefreshing(true);
             mSubscriptions.add(
-                    location()
-                            .flatMap(new Func1<GeoLocation, Observable<List<Trend>>>() {
-                                @Override
-                                public Observable<List<Trend>> call(GeoLocation location) {
-                                    return mWoeid > 0 ?
-                                            mTrendsModel.trends(mWoeid) :
-                                            mTrendsModel.local(location);
-                                }
-                            })
+                    mTrendsModel
+                            .trends(mWoeid)
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(new DefaultObserver<List<Trend>>() {
@@ -87,15 +71,8 @@ public class TrendsFragment extends BaseSwipeToRefreshRecyclerFragment {
     public void onRefresh() {
         super.onRefresh();
         mSubscriptions.add(
-                location()
-                        .flatMap(new Func1<GeoLocation, Observable<List<Trend>>>() {
-                            @Override
-                            public Observable<List<Trend>> call(GeoLocation location) {
-                                return mWoeid > 0 ?
-                                        mTrendsModel.trends(mWoeid) :
-                                        mTrendsModel.local(location);
-                            }
-                        })
+                mTrendsModel
+                        .trends(mWoeid)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new DefaultObserver<List<Trend>>() {
@@ -112,16 +89,5 @@ public class TrendsFragment extends BaseSwipeToRefreshRecyclerFragment {
     private void setupTrends(ArrayList<Trend> trends) {
         mTrends = trends;
         mRecyclerView.setAdapter(new TrendAdapter(getActivity(), mAccount, mTrends));
-    }
-
-    private Observable<GeoLocation> location() {
-        return Observable.create(new Observable.OnSubscribe<GeoLocation>() {
-            @Override
-            public void call(Subscriber<? super GeoLocation> subscriber) {
-                Location location = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                subscriber.onNext(new GeoLocation(location.getLatitude(), location.getLongitude()));
-                subscriber.onCompleted();
-            }
-        });
     }
 }
