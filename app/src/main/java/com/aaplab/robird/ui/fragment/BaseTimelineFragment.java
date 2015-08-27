@@ -10,8 +10,8 @@ import com.aaplab.robird.ui.adapter.TweetAdapter;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import icepick.Icicle;
 
@@ -21,7 +21,7 @@ import icepick.Icicle;
 public abstract class BaseTimelineFragment extends BaseSwipeToRefreshRecyclerFragment {
 
     @Icicle
-    CopyOnWriteArrayList<Tweet> mTweets;
+    ArrayList<Tweet> mTweets;
 
     @Icicle
     long mFirstVisibleTweetPositionId;
@@ -33,8 +33,7 @@ public abstract class BaseTimelineFragment extends BaseSwipeToRefreshRecyclerFra
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mAccount = getArguments().getParcelable("account");
-        mTweets = savedInstanceState == null || mTweets == null ?
-                new CopyOnWriteArrayList<Tweet>() : mTweets;
+        mTweets = mTweets == null ? new ArrayList<Tweet>() : mTweets;
         mAdapter = new TweetAdapter(getActivity(), mAccount, mTweets);
         mRecyclerView.setAdapter(mAdapter);
         setTimelinePosition(mFirstVisibleTweetPositionId, 0);

@@ -9,7 +9,7 @@ import com.aaplab.robird.ui.activity.UserProfileActivity;
 import com.aaplab.robird.ui.adapter.UserAdapter;
 import com.aaplab.robird.util.DefaultObserver;
 
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.ArrayList;
 
 import icepick.Icicle;
 import rx.android.schedulers.AndroidSchedulers;
@@ -35,7 +35,7 @@ public class UserFriendsFragment extends BaseSwipeToRefreshRecyclerFragment {
     }
 
     @Icicle
-    CopyOnWriteArrayList<User> mUsers;
+    ArrayList<User> mUsers;
 
     @Icicle
     long mCursor;
@@ -50,7 +50,7 @@ public class UserFriendsFragment extends BaseSwipeToRefreshRecyclerFragment {
         super.onActivityCreated(savedInstanceState);
         final Account account = getArguments().getParcelable("account");
         mScreenName = getArguments().getString(UserProfileActivity.SCREEN_NAME);
-        mUsers = mUsers == null ? new CopyOnWriteArrayList<User>() : mUsers;
+        mUsers = mUsers == null ? new ArrayList<User>() : mUsers;
         mAdapter = new UserAdapter(getActivity(), account, mUsers);
         mUserModel = new UserModel(account, mScreenName);
         mRecyclerView.setAdapter(mAdapter);

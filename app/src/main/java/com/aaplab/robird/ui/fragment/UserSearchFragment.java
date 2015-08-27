@@ -8,8 +8,8 @@ import com.aaplab.robird.data.model.SearchModel;
 import com.aaplab.robird.ui.adapter.UserAdapter;
 import com.aaplab.robird.util.DefaultObserver;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import icepick.Icicle;
 import rx.android.schedulers.AndroidSchedulers;
@@ -32,7 +32,7 @@ public class UserSearchFragment extends BaseSwipeToRefreshRecyclerFragment {
     }
 
     @Icicle
-    CopyOnWriteArrayList<User> mUsers;
+    ArrayList<User> mUsers;
 
     @Icicle
     int mPage = 1;
@@ -48,7 +48,7 @@ public class UserSearchFragment extends BaseSwipeToRefreshRecyclerFragment {
         mAccount = getArguments().getParcelable("account");
         mQuery = getArguments().getString("query");
         mSearchModel = new SearchModel(mAccount);
-        mUsers = mUsers == null ? new CopyOnWriteArrayList<User>() : mUsers;
+        mUsers = mUsers == null ? new ArrayList<User>() : mUsers;
         mAdapter = new UserAdapter(getActivity(), mAccount, mUsers);
         mRecyclerView.setAdapter(mAdapter);
 
