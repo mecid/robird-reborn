@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <Preference
+        app:key="unlock_all"
+        app:title="@string/unlock_all_features" />
+
+</PreferenceScreen>

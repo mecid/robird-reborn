@@ -19,6 +19,7 @@ public final class BillingModel implements BillingProcessor.IBillingHandler {
 
     public static final String SECOND_ACCOUNT_PRODUCT_ID = "second_account";
     public static final String THIRD_ACCOUNT_PRODUCT_ID = "third_account";
+    public static final String UNLOCK_ALL_PRODUCT_ID = "unlock_all";
 
     private BillingProcessor mBillingProcessor;
     private PublishSubject<String> mProductSubject;
@@ -36,7 +37,7 @@ public final class BillingModel implements BillingProcessor.IBillingHandler {
     }
 
     public boolean isPurchased(String productId) {
-        return mBillingProcessor.isPurchased(productId);
+        return mBillingProcessor.isPurchased(UNLOCK_ALL_PRODUCT_ID) || mBillingProcessor.isPurchased(productId);
     }
 
     public boolean handleActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
