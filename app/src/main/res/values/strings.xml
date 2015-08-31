@@ -49,5 +49,6 @@
     <string name="world_trends">World Trends</string>
     <string name="local_trends">Local Trends</string>
     <string name="trends">Trends</string>
-
+    <string name="unlock_all_features">Unlock all features</string>
+    <string name="already_purchased">Already purchased</string>
 </resources>
