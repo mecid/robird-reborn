@@ -69,6 +69,10 @@
         </activity>
 
         <activity
+            android:name=".ui.activity.SettingsActivity"
+            android:label="@string/settings" />
+
+        <activity
             android:name=".ui.activity.TweetDetailsActivity"
             android:label="@string/tweet" />
 

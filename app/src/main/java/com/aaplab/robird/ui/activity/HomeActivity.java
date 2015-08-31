@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.ShareCompat;
 import android.support.v4.view.GravityCompat;
@@ -182,7 +183,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                 }, 200);
             }
         } else {
-            //TODO start settings activity
+            ActivityCompat.startActivity(this, new Intent(this, SettingsActivity.class), null);
         }
 
         return true;
