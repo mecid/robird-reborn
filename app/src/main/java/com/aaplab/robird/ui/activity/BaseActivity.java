@@ -6,6 +6,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 
 import com.aaplab.robird.Analytics;
+import com.aaplab.robird.R;
+import com.aaplab.robird.data.model.PrefsModel;
 import com.aaplab.robird.inject.Inject;
 import com.squareup.otto.Bus;
 
@@ -23,6 +25,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        setTheme(preferedTheme());
         super.onCreate(savedInstanceState);
         Icepick.restoreInstanceState(this, savedInstanceState);
         mSubscriptions = new CompositeSubscription();
@@ -74,5 +77,22 @@ public abstract class BaseActivity extends AppCompatActivity {
     public boolean onSupportNavigateUp() {
         ActivityCompat.finishAfterTransition(this);
         return true;
+    }
+
+    protected boolean isTransparent() {
+        return false;
+    }
+
+    protected int preferedTheme() {
+        if (isTransparent()) {
+            return new PrefsModel().isDarkTheme() ?
+                    R.style.AppTheme_Transparent :
+                    R.style.AppTheme_Light_Transparent;
+
+        } else {
+            return new PrefsModel().isDarkTheme() ?
+                    R.style.AppTheme :
+                    R.style.AppTheme_Light;
+        }
     }
 }
