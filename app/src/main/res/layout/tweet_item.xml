@@ -111,6 +111,6 @@
         android:layout_marginTop="@dimen/keyline_1"
         android:layout_toEndOf="@id/avatar"
         android:layout_toRightOf="@id/avatar"
-        android:background="#e5e5e5" />
+        android:background="?attr/divider_color" />
 
 </RelativeLayout>
