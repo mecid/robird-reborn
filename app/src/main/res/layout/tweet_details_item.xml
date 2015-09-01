@@ -130,6 +130,6 @@
         android:layout_height="1dp"
         android:layout_below="@id/media"
         android:layout_marginTop="@dimen/keyline_1"
-        android:background="#e5e5e5" />
+        android:background="?attr/divider_color" />
 
 </RelativeLayout>
