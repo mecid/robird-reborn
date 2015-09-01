@@ -1,11 +1,24 @@
 <resources>
-    <!-- Base application theme. -->
-    <style name="AppTheme.Base" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
+    <!-- Light theme-->
+    <style name="AppTheme.Light.Base" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primaryDark</item>
         <item name="colorAccent">@color/accent</item>
         <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+        <item name="divider_color">@color/divider_light</item>
+    </style>
+
+    <style name="AppTheme.Light" parent="AppTheme.Light.Base" />
+
+    <style name="AppTheme.Light.Transparent" parent="AppTheme.Light" />
+
+    <!-- Dark theme-->
+    <style name="AppTheme.Base" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primaryDark</item>
+        <item name="colorAccent">@color/accent</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+        <item name="divider_color">@color/divider_dark</item>
     </style>
 
     <style name="AppTheme" parent="AppTheme.Base" />
