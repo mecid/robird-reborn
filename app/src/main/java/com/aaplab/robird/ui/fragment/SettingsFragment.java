@@ -9,6 +9,7 @@ import android.text.TextUtils;
 
 import com.aaplab.robird.R;
 import com.aaplab.robird.data.model.BillingModel;
+import com.aaplab.robird.data.model.PrefsModel;
 import com.aaplab.robird.util.DefaultObserver;
 
 import rx.android.schedulers.AndroidSchedulers;
@@ -19,10 +20,12 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class SettingsFragment extends PreferenceFragmentCompat implements Preference.OnPreferenceClickListener {
 
-    private BillingModel mBillingModel;
     private CompositeSubscription mSubscriptions;
+    private BillingModel mBillingModel;
 
+    private Preference mThemePreference;
     private Preference mUnlockAllPreference;
+    private Preference mUnlockUiPreference;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -30,8 +33,15 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         mSubscriptions = new CompositeSubscription();
         mBillingModel = new BillingModel(getActivity());
 
-        mUnlockAllPreference = findPreference("unlock_all");
+        mThemePreference = findPreference(PrefsModel.PREFER_DARK_THEME);
+
+        mUnlockAllPreference = findPreference("unlock_all_settings");
         mUnlockAllPreference.setOnPreferenceClickListener(this);
+
+        mUnlockUiPreference = findPreference("unlock_ui_settings");
+        mUnlockUiPreference.setOnPreferenceClickListener(this);
+
+        enablePurchasedSettings();
     }
 
     @Override
@@ -42,29 +52,40 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
     @Override
     public boolean onPreferenceClick(Preference preference) {
         if (mUnlockAllPreference == preference) {
-            if (mBillingModel.isPurchased(BillingModel.UNLOCK_ALL_PRODUCT_ID)) {
-                Snackbar.make(getActivity().findViewById(R.id.coordinator),
-                        R.string.already_purchased, Snackbar.LENGTH_SHORT).show();
-            } else {
-                mSubscriptions.add(
-                        mBillingModel
-                                .purchase(BillingModel.UNLOCK_ALL_PRODUCT_ID)
-                                .subscribeOn(AndroidSchedulers.mainThread())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(new DefaultObserver<String>() {
-                                    @Override
-                                    public void onNext(String s) {
-                                        super.onNext(s);
-                                        if (TextUtils.equals(s, BillingModel.UNLOCK_ALL_PRODUCT_ID))
-                                            Snackbar.make(getActivity().findViewById(R.id.coordinator),
-                                                    R.string.purchased, Snackbar.LENGTH_SHORT).show();
-                                    }
-                                })
-                );
-            }
+            unlock(BillingModel.UNLOCK_ALL_PRODUCT_ID);
+        } else if (mUnlockUiPreference == preference) {
+            unlock(BillingModel.UNLOCK_UI_PRODUCT_ID);
         }
 
         return true;
+    }
+
+    private void enablePurchasedSettings() {
+        mThemePreference.setEnabled(mBillingModel.isPurchased(BillingModel.UNLOCK_UI_PRODUCT_ID));
+    }
+
+    private void unlock(final String productId) {
+        if (mBillingModel.isPurchased(productId)) {
+            Snackbar.make(getActivity().findViewById(R.id.coordinator),
+                    R.string.already_purchased, Snackbar.LENGTH_SHORT).show();
+        } else {
+            mSubscriptions.add(
+                    mBillingModel
+                            .purchase(productId)
+                            .subscribeOn(AndroidSchedulers.mainThread())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new DefaultObserver<String>() {
+                                @Override
+                                public void onNext(String s) {
+                                    super.onNext(s);
+                                    enablePurchasedSettings();
+                                    if (TextUtils.equals(s, productId))
+                                        Snackbar.make(getActivity().findViewById(R.id.coordinator),
+                                                R.string.purchased, Snackbar.LENGTH_SHORT).show();
+                                }
+                            })
+            );
+        }
     }
 
     @Override

@@ -360,6 +360,11 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     @Override
+    protected boolean isTransparent() {
+        return true;
+    }
+
+    @Override
     protected void onDestroy() {
         mBillingModel.onDestroy();
         super.onDestroy();

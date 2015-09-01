@@ -1,8 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <Preference
-        app:key="unlock_all"
-        app:title="@string/unlock_all_features" />
+    <PreferenceCategory app:title="@string/ui_category_settings">
+
+        <Preference
+            app:key="unlock_ui_settings"
+            app:title="@string/unlock_ui_settings" />
+
+        <SwitchPreferenceCompat
+            app:key="prefer_dark_theme"
+            app:title="@string/prefer_dark_theme" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="@string/other_settings">
+        <Preference
+            app:key="unlock_all_settings"
+            app:title="@string/unlock_all_features" />
+    </PreferenceCategory>
 
 </PreferenceScreen>
