@@ -14,6 +14,7 @@ import java.util.List;
 
 import rx.Observable;
 import rx.Subscriber;
+import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import twitter4j.Paging;
@@ -30,6 +31,9 @@ public class TimelineModel extends BaseTwitterModel {
     public static final long RETWEETS_ID = 3;
     public static final long FAVORITES_ID = 4;
 
+    private static final String REFRESHING = "refreshing?account=%s&type=%d";
+    private static final String POSITION = "position?account=%s&type=%d";
+
     private final SqlBriteContentProvider mSqlBriteContentProvider =
             SqlBriteContentProvider.create(Inject.contentResolver());
     private final long mTimelineId;
@@ -41,13 +45,13 @@ public class TimelineModel extends BaseTwitterModel {
 
     public void saveTimelinePosition(long position) {
         Inject.preferences().edit().putLong(
-                String.format("%s#type#%d", mAccount.screenName(), mTimelineId),
+                String.format(POSITION, mAccount.screenName(), mTimelineId),
                 position).apply();
     }
 
     public long timelinePosition() {
         return Inject.preferences().getLong(
-                String.format("%s#type#%d", mAccount.screenName(), mTimelineId)
+                String.format(POSITION, mAccount.screenName(), mTimelineId)
                 , 0);
     }
 
@@ -63,6 +67,10 @@ public class TimelineModel extends BaseTwitterModel {
     }
 
     public Observable<Integer> update() {
+        if (isRefreshing())
+            return Observable.just(0);
+
+        setRefreshing(true);
         return timeline()
                 .take(1)
                 .flatMap(new Func1<List<Tweet>, Observable<List<Status>>>() {
@@ -74,6 +82,12 @@ public class TimelineModel extends BaseTwitterModel {
                     }
                 })
                 .doOnNext(new TimelinePersister(mAccount, mTimelineId))
+                .doOnTerminate(new Action0() {
+                    @Override
+                    public void call() {
+                        setRefreshing(false);
+                    }
+                })
                 .map(new Func1<List<Status>, Integer>() {
                     @Override
                     public Integer call(List<Status> statuses) {
@@ -83,6 +97,10 @@ public class TimelineModel extends BaseTwitterModel {
     }
 
     public Observable<Integer> old() {
+        if (isRefreshing())
+            return Observable.just(0);
+
+        setRefreshing(true);
         return timeline()
                 .take(1)
                 .flatMap(new Func1<List<Tweet>, Observable<List<Status>>>() {
@@ -103,6 +121,12 @@ public class TimelineModel extends BaseTwitterModel {
                     }
                 })
                 .doOnNext(new TimelinePersister(mAccount, mTimelineId))
+                .doOnTerminate(new Action0() {
+                    @Override
+                    public void call() {
+                        setRefreshing(false);
+                    }
+                })
                 .map(new Func1<List<Status>, Integer>() {
                     @Override
                     public Integer call(List<Status> statuses) {
@@ -134,6 +158,21 @@ public class TimelineModel extends BaseTwitterModel {
                 }
             }
         });
+    }
+
+    private boolean isRefreshing() {
+        return Inject.preferences()
+                .getBoolean(
+                        String.format(REFRESHING, mAccount.screenName(), mTimelineId), false
+                );
+    }
+
+    private void setRefreshing(boolean refreshing) {
+        Inject.preferences()
+                .edit()
+                .putBoolean(
+                        String.format(REFRESHING, mAccount.screenName(), mTimelineId), refreshing
+                ).apply();
     }
 
     private static final class TimelinePersister implements Action1<List<Status>> {
