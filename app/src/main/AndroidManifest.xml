@@ -2,9 +2,9 @@
     package="com.aaplab.robird">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="com.android.vending.BILLING" />
 
     <application
@@ -115,6 +115,14 @@
 
         <activity android:name=".ui.activity.UserListActivity" />
         <activity android:name=".ui.activity.DirectChatActivity" />
+
+        <service android:name=".UpdateService" />
+
+        <receiver android:name=".UpdateReceiver">
+            <intent-filter>
+                <action android:name="ANDROID.INTENT.ACTION.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
 
         <provider
             android:name=".data.provider.RobirdContentProvider"
