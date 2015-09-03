@@ -157,7 +157,7 @@ public class UserProfileActivity extends BaseActivity {
         }
 
         List<UserList> userLists = mUserListsModel.lists().toBlocking().first();
-        if (!userLists.isEmpty()) {
+        if (mUser != null && !userLists.isEmpty()) {
             final SubMenu listSubMenu = menu.addSubMenu(R.string.add_to_list);
             for (UserList userList : userLists) {
                 listSubMenu.add(0, (int) userList.listId(), Menu.NONE, userList.name());
@@ -231,11 +231,11 @@ public class UserProfileActivity extends BaseActivity {
             );
         } else if (item.getItemId() == R.id.menu_direct) {
             Analytics.event(ComposeFragment.TAG_DIRECT);
-            ComposeFragment.direct(mAccount, mUser.getScreenName())
+            ComposeFragment.direct(mAccount, mScreenName)
                     .show(getSupportFragmentManager(), ComposeFragment.TAG_DIRECT);
         } else if (item.getItemId() == R.id.menu_reply) {
             Analytics.event(ComposeFragment.TAG_REPLY);
-            ComposeFragment.share(String.format("@%s ", mUser.getScreenName()))
+            ComposeFragment.share(String.format("@%s ", mScreenName))
                     .show(getSupportFragmentManager(), ComposeFragment.TAG_REPLY);
         } else {
             Analytics.event(Analytics.ADD_TO_LIST);
