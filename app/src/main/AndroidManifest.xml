@@ -120,7 +120,7 @@
 
         <receiver android:name=".UpdateReceiver">
             <intent-filter>
-                <action android:name="ANDROID.INTENT.ACTION.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
