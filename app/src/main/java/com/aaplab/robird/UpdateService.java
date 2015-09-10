@@ -25,16 +25,16 @@ public final class UpdateService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         for (Account account : new AccountModel().accounts().toBlocking().first()) {
-            new TimelineModel(account, TimelineModel.HOME_ID).update().toBlocking().first();
-            new TimelineModel(account, TimelineModel.MENTIONS_ID).update().toBlocking().first();
-            new TimelineModel(account, TimelineModel.RETWEETS_ID).update().toBlocking().first();
-            new TimelineModel(account, TimelineModel.FAVORITES_ID).update().toBlocking().first();
-            new UserListsModel(account).update().toBlocking().first();
-            new DirectsModel(account).update().toBlocking().first();
+            new TimelineModel(account, TimelineModel.HOME_ID).update().subscribe();
+            new TimelineModel(account, TimelineModel.MENTIONS_ID).update().subscribe();
+            new TimelineModel(account, TimelineModel.RETWEETS_ID).update().subscribe();
+            new TimelineModel(account, TimelineModel.FAVORITES_ID).update().subscribe();
+            new UserListsModel(account).update().subscribe();
+            new DirectsModel(account).update().subscribe();
 
             List<UserList> userLists = new UserListsModel(account).lists().toBlocking().first();
             for (UserList userList : userLists)
-                new TimelineModel(account, userList.listId()).update().toBlocking().first();
+                new TimelineModel(account, userList.listId()).update().subscribe();
         }
     }
 }

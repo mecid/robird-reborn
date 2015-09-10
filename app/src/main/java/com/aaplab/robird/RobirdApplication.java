@@ -5,6 +5,7 @@ import android.app.Application;
 import com.aaplab.robird.inject.DefaultDependencyFactory;
 import com.aaplab.robird.inject.Inject;
 
+import jonathanfinerty.once.Once;
 import timber.log.Timber;
 
 public final class RobirdApplication extends Application {
@@ -14,6 +15,7 @@ public final class RobirdApplication extends Application {
         super.onCreate();
 
         Analytics.setup(this);
+        Once.initialise(this);
         Inject.using(new DefaultDependencyFactory(this));
 
         if (BuildConfig.DEBUG)
