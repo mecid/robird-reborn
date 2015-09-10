@@ -26,6 +26,7 @@ import android.widget.TextView;
 
 import com.aaplab.robird.Analytics;
 import com.aaplab.robird.R;
+import com.aaplab.robird.UpdateReceiver;
 import com.aaplab.robird.data.entity.Account;
 import com.aaplab.robird.data.model.AccountModel;
 import com.aaplab.robird.data.model.BillingModel;
@@ -47,6 +48,7 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import icepick.Icicle;
+import jonathanfinerty.once.Once;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
@@ -145,6 +147,11 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                         .share(reader.getText().toString())
                         .show(getSupportFragmentManager(), ComposeFragment.TAG_SHARE);
             }
+        }
+
+        if (!Once.beenDone(Once.THIS_APP_VERSION, "update_receiver")) {
+            sendBroadcast(new Intent(this, UpdateReceiver.class));
+            Once.markDone("update_receiver");
         }
     }
 
