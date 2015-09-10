@@ -13,6 +13,7 @@
         android:layout_marginTop="@dimen/keyline_1" />
 
     <TextView
+        android:singleLine="true"
         android:id="@+id/full_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -24,6 +25,7 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
 
     <TextView
+        android:singleLine="true"
         android:id="@+id/screen_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
