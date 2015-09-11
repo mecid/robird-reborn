@@ -1,6 +1,7 @@
 package com.aaplab.robird.ui.adapter;
 
 import android.app.Activity;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,6 +55,13 @@ public class TweetDetailsAdapter extends TweetAdapter {
 
             LinkifyUtils.linkifyTextView(holder.textView, true);
         }
+    }
+
+    @Override
+    protected void bindFonts(TweetHolder holder, int position) {
+        super.bindFonts(holder, position);
+        if (position == 0)
+            holder.textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, mPrefsModel.fontSize() + 2);
     }
 
     @Override
