@@ -11,6 +11,14 @@
             app:key="prefer_dark_theme"
             app:title="@string/prefer_dark_theme" />
 
+        <ListPreference
+            app:defaultValue="14"
+            app:entries="@array/timeline_font_size"
+            app:entryValues="@array/timeline_font_size"
+            app:key="font_size"
+            app:summary="14"
+            app:title="@string/timeline_font_size" />
+
     </PreferenceCategory>
 
     <PreferenceCategory app:title="@string/other_settings">
