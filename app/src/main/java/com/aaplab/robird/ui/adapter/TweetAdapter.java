@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 import com.aaplab.robird.R;
 import com.aaplab.robird.data.entity.Account;
 import com.aaplab.robird.data.entity.Tweet;
+import com.aaplab.robird.data.model.PrefsModel;
 import com.aaplab.robird.ui.activity.ImagesActivity;
 import com.aaplab.robird.ui.activity.TweetDetailsActivity;
 import com.aaplab.robird.ui.activity.UserProfileActivity;
@@ -28,7 +30,7 @@ import butterknife.ButterKnife;
  * Created by majid on 19.01.15.
  */
 public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder> {
-    public static final String IMAGE_LOADING_TAG = "tweet";
+    protected final PrefsModel mPrefsModel = new PrefsModel();
 
     protected List<Tweet> mTweets;
     protected Activity mActivity;
@@ -55,6 +57,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
     public void onBindViewHolder(TweetHolder holder, int position) {
         final Tweet tweet = mTweets.get(position);
         Glide.clear(holder.mediaImageView);
+        bindFonts(holder, position);
 
         holder.textView.setText(tweet.text());
         holder.usernameTextView.setText("@" + tweet.username());
@@ -112,6 +115,12 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
                 TweetDetailsActivity.start(mActivity, mAccount, tweet);
             }
         });
+    }
+
+    protected void bindFonts(TweetHolder holder, int position) {
+        holder.usernameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, mPrefsModel.fontSize());
+        holder.fullNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, mPrefsModel.fontSize());
+        holder.textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, mPrefsModel.fontSize());
     }
 
     static class TweetHolder extends RecyclerView.ViewHolder {
