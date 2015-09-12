@@ -17,8 +17,6 @@ import twitter4j.TwitterException;
  * Created by majid on 25.08.15.
  */
 public class TrendsModel extends BaseTwitterModel {
-    public static final int GLOBAL = 1;
-    public static final int LOCAL = -1;
 
     public TrendsModel(Account account) {
         super(account);

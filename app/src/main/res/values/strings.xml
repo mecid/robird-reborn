@@ -55,4 +55,5 @@
     <string name="prefer_dark_theme">Prefer dark theme</string>
     <string name="other_settings">Other Settings</string>
     <string name="unlock_ui_settings">Unlock UI Settings</string>
+    <string name="timeline_font_size">Timeline font size</string>
 </resources>

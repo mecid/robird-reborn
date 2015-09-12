@@ -3,6 +3,7 @@ package com.aaplab.robird.ui.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.text.TextUtils;
@@ -18,7 +19,7 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * Created by majid on 28.08.15.
  */
-public class SettingsFragment extends PreferenceFragmentCompat implements Preference.OnPreferenceClickListener {
+public class SettingsFragment extends PreferenceFragmentCompat implements Preference.OnPreferenceClickListener, Preference.OnPreferenceChangeListener {
 
     private CompositeSubscription mSubscriptions;
     private BillingModel mBillingModel;
@@ -26,14 +27,21 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
     private Preference mThemePreference;
     private Preference mUnlockAllPreference;
     private Preference mUnlockUiPreference;
+    private ListPreference mTimelineFontSizePreference;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        final PrefsModel prefsModel = new PrefsModel();
         mSubscriptions = new CompositeSubscription();
         mBillingModel = new BillingModel(getActivity());
 
         mThemePreference = findPreference(PrefsModel.PREFER_DARK_THEME);
+        mThemePreference.setOnPreferenceChangeListener(this);
+
+        mTimelineFontSizePreference = (ListPreference) findPreference(PrefsModel.TIMELINE_FONT_SIZE);
+        mTimelineFontSizePreference.setOnPreferenceChangeListener(this);
+        mTimelineFontSizePreference.setSummary("" + prefsModel.fontSize());
 
         mUnlockAllPreference = findPreference("unlock_all_settings");
         mUnlockAllPreference.setOnPreferenceClickListener(this);
@@ -60,8 +68,20 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         return true;
     }
 
+    @Override
+    public boolean onPreferenceChange(Preference preference, Object o) {
+        if (preference == mTimelineFontSizePreference) {
+            preference.setSummary((String) o);
+        } else if (preference == mThemePreference) {
+            getActivity().recreate();
+        }
+
+        return true;
+    }
+
     private void enablePurchasedSettings() {
         mThemePreference.setEnabled(mBillingModel.isPurchased(BillingModel.UNLOCK_UI_PRODUCT_ID));
+        mTimelineFontSizePreference.setEnabled(mBillingModel.isPurchased(BillingModel.UNLOCK_UI_PRODUCT_ID));
     }
 
     private void unlock(final String productId) {
