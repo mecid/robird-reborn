@@ -28,6 +28,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
     private Preference mUnlockAllPreference;
     private Preference mUnlockUiPreference;
     private ListPreference mTimelineFontSizePreference;
+    private Preference mHideMediaPreference;
+    private Preference mHideAvatarsPreference;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -35,6 +37,9 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         final PrefsModel prefsModel = new PrefsModel();
         mSubscriptions = new CompositeSubscription();
         mBillingModel = new BillingModel(getActivity());
+
+        mHideAvatarsPreference = findPreference(PrefsModel.HIDE_AVATARS);
+        mHideMediaPreference = findPreference(PrefsModel.HIDE_MEDIA);
 
         mThemePreference = findPreference(PrefsModel.PREFER_DARK_THEME);
         mThemePreference.setOnPreferenceChangeListener(this);
@@ -82,6 +87,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
     private void enablePurchasedSettings() {
         mThemePreference.setEnabled(mBillingModel.isPurchased(BillingModel.UNLOCK_UI_PRODUCT_ID));
         mTimelineFontSizePreference.setEnabled(mBillingModel.isPurchased(BillingModel.UNLOCK_UI_PRODUCT_ID));
+        mHideAvatarsPreference.setEnabled(mBillingModel.isPurchased(BillingModel.UNLOCK_UI_PRODUCT_ID));
+        mHideMediaPreference.setEnabled(mBillingModel.isPurchased(BillingModel.UNLOCK_UI_PRODUCT_ID));
     }
 
     private void unlock(final String productId) {

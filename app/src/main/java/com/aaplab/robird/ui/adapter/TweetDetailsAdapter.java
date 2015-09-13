@@ -61,7 +61,14 @@ public class TweetDetailsAdapter extends TweetAdapter {
     protected void bindFonts(TweetHolder holder, int position) {
         super.bindFonts(holder, position);
         if (position == 0)
-            holder.textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, mPrefsModel.fontSize() + 2);
+            holder.textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, mFontSize + 2);
+    }
+
+    @Override
+    protected void readPrefs() {
+        super.readPrefs();
+        mIsMediaHidden = false;
+        mIsAvatarHidden = false;
     }
 
     @Override

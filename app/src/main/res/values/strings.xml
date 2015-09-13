@@ -56,4 +56,6 @@
     <string name="other_settings">Other Settings</string>
     <string name="unlock_ui_settings">Unlock UI Settings</string>
     <string name="timeline_font_size">Timeline font size</string>
+    <string name="hide_avatars">Hide avatars on mobile connection</string>
+    <string name="hide_image_preview">Hide previews on mobile connection</string>
 </resources>
