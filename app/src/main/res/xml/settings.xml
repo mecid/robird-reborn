@@ -19,6 +19,14 @@
             app:summary="14"
             app:title="@string/timeline_font_size" />
 
+        <SwitchPreferenceCompat
+            app:key="hide_media"
+            app:title="@string/hide_image_preview" />
+
+        <SwitchPreferenceCompat
+            app:key="hide_avatars"
+            app:title="@string/hide_avatars" />
+
     </PreferenceCategory>
 
     <PreferenceCategory app:title="@string/other_settings">
