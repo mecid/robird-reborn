@@ -18,6 +18,7 @@ import com.aaplab.robird.data.model.PrefsModel;
 import com.aaplab.robird.ui.activity.ImagesActivity;
 import com.aaplab.robird.ui.activity.TweetDetailsActivity;
 import com.aaplab.robird.ui.activity.UserProfileActivity;
+import com.aaplab.robird.util.NetworkUtils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
@@ -36,11 +37,15 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
     protected Activity mActivity;
     protected Account mAccount;
 
+    protected boolean mIsMediaHidden;
+    protected boolean mIsAvatarHidden;
+    protected int mFontSize;
+
     public TweetAdapter(Activity activity, Account account, List<Tweet> tweets) {
-        super();
         mActivity = activity;
         mAccount = account;
         mTweets = tweets;
+        readPrefs();
     }
 
     @Override
@@ -74,7 +79,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
         holder.infoTextView.setText(information.toString());
         holder.retweetImageView.setVisibility(TextUtils.isEmpty(tweet.retweetedBy()) ? View.GONE : View.VISIBLE);
 
-        if (!TextUtils.isEmpty(tweet.media())) {
+        if (!TextUtils.isEmpty(tweet.media()) && !mIsMediaHidden) {
             final String[] media = tweet.media().split("\\+\\+\\+\\+\\+");
 
             holder.mediaCountTextView.setVisibility(media.length > 1 ? View.VISIBLE : View.GONE);
@@ -97,10 +102,15 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
             holder.mediaImageView.setVisibility(View.GONE);
         }
 
-        Glide.with(mActivity)
-                .load(tweet.avatar())
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(holder.avatarImageView);
+        if (!mIsAvatarHidden) {
+            holder.avatarImageView.setVisibility(View.VISIBLE);
+            Glide.with(mActivity)
+                    .load(tweet.avatar())
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(holder.avatarImageView);
+        } else {
+            holder.avatarImageView.setVisibility(View.GONE);
+        }
 
         holder.avatarImageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -118,9 +128,15 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
     }
 
     protected void bindFonts(TweetHolder holder, int position) {
-        holder.usernameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, mPrefsModel.fontSize());
-        holder.fullNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, mPrefsModel.fontSize());
-        holder.textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, mPrefsModel.fontSize());
+        holder.usernameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, mFontSize);
+        holder.fullNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, mFontSize);
+        holder.textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, mFontSize);
+    }
+
+    protected void readPrefs() {
+        mFontSize = mPrefsModel.fontSize();
+        mIsAvatarHidden = mPrefsModel.hideAvatarOnMobileConnection() && NetworkUtils.isMobile(mActivity);
+        mIsMediaHidden = mPrefsModel.hideMediaOnMobileConnection() && NetworkUtils.isMobile(mActivity);
     }
 
     static class TweetHolder extends RecyclerView.ViewHolder {

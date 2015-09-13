@@ -22,4 +22,12 @@ public final class PrefsModel {
     public int fontSize() {
         return Integer.parseInt(mPreferences.getString(TIMELINE_FONT_SIZE, "14"));
     }
+
+    public boolean hideAvatarOnMobileConnection() {
+        return mPreferences.getBoolean(HIDE_AVATARS, false);
+    }
+
+    public boolean hideMediaOnMobileConnection() {
+        return mPreferences.getBoolean(HIDE_MEDIA, false);
+    }
 }
