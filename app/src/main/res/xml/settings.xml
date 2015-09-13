@@ -29,6 +29,22 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory app:title="@string/browser">
+
+        <Preference
+            app:key="unlock_browser"
+            app:title="@string/unlock_browser" />
+
+        <SwitchPreferenceCompat
+            app:key="use_in_app_browser"
+            app:title="@string/enable_in_app_browser" />
+
+        <SwitchPreferenceCompat
+            app:key="in_app_browser_mobile"
+            app:title="@string/enable_mobile_view" />
+
+    </PreferenceCategory>
+
     <PreferenceCategory app:title="@string/other_settings">
         <Preference
             app:key="unlock_all_settings"
