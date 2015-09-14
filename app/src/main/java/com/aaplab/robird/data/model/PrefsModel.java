@@ -14,6 +14,7 @@ public final class PrefsModel {
     public static final String HIDE_MEDIA = "hide_media";
     public static final String USE_IN_APP_BROWSER = "use_in_app_browser";
     public static final String USE_MOBILE_VIEW_BROWSER = "in_app_browser_mobile";
+    public static final String HIGHLIGHT_TIMELINE_LINKS = "highlight_timeline_links";
 
     private final SharedPreferences mPreferences = Inject.preferences();
 
@@ -39,5 +40,9 @@ public final class PrefsModel {
 
     public boolean isInAppBrowserUseMobileView() {
         return mPreferences.getBoolean(USE_MOBILE_VIEW_BROWSER, false);
+    }
+
+    public boolean highlightTimelineLinks() {
+        return mPreferences.getBoolean(HIGHLIGHT_TIMELINE_LINKS, false);
     }
 }
