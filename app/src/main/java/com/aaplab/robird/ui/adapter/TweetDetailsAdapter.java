@@ -10,7 +10,7 @@ import android.widget.TextView;
 import com.aaplab.robird.R;
 import com.aaplab.robird.data.entity.Account;
 import com.aaplab.robird.data.entity.Tweet;
-import com.aaplab.robird.util.LinkifyUtils;
+import com.aaplab.robird.util.LinkUtils;
 import com.google.common.collect.Lists;
 
 import java.util.List;
@@ -53,7 +53,7 @@ public class TweetDetailsAdapter extends TweetAdapter {
                 tweetDetailsHolder.retweetsCountTextView.setText(mDetailedStatus.getRetweetCount() + " ");
             }
 
-            LinkifyUtils.linkifyTextView(holder.textView, true);
+            LinkUtils.highlight(mActivity, holder.textView, true);
         }
     }
 

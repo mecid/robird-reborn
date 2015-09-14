@@ -58,4 +58,9 @@
     <string name="timeline_font_size">Timeline font size</string>
     <string name="hide_avatars">Hide avatars on mobile connection</string>
     <string name="hide_image_preview">Hide previews on mobile connection</string>
+    <string name="chrome_needed">Latest version of Chrome needed</string>
+    <string name="enable_in_app_browser">Enable In-App Browser</string>
+    <string name="enable_mobile_view">Enable mobile view</string>
+    <string name="unlock_browser">Unlock In-App Browser</string>
+    <string name="browser">In-App Browser</string>
 </resources>
