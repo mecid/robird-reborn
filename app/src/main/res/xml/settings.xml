@@ -37,6 +37,7 @@
 
         <SwitchPreferenceCompat
             app:key="use_in_app_browser"
+            app:summary="@string/chrome_needed"
             app:title="@string/enable_in_app_browser" />
 
         <SwitchPreferenceCompat
