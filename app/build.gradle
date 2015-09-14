@@ -9,8 +9,8 @@ android {
         applicationId "com.aaplab.robird"
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode 19
-        versionName "0.5.1"
+        versionCode 20
+        versionName "0.6.0"
 
         resConfigs "en", "ru"
         resConfigs "nodpi", "xhdpi", "xxhdpi", "xxxhdpi"
@@ -27,6 +27,7 @@ dependencies {
     compile 'com.android.support:preference-v7:23.0.1'
     compile 'com.android.support:preference-v14:23.0.1'
     compile 'com.android.support:palette-v7:23.0.1'
+    compile 'com.android.support:customtabs:23.0.1'
     compile 'com.android.support:design:23.0.1'
     compile 'de.hdodenhof:circleimageview:1.3.0'
 

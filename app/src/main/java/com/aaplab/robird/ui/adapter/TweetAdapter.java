@@ -18,6 +18,7 @@ import com.aaplab.robird.data.model.PrefsModel;
 import com.aaplab.robird.ui.activity.ImagesActivity;
 import com.aaplab.robird.ui.activity.TweetDetailsActivity;
 import com.aaplab.robird.ui.activity.UserProfileActivity;
+import com.aaplab.robird.util.LinkUtils;
 import com.aaplab.robird.util.NetworkUtils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -39,6 +40,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
 
     protected boolean mIsMediaHidden;
     protected boolean mIsAvatarHidden;
+    protected boolean mHighlightLinks;
     protected int mFontSize;
 
     public TweetAdapter(Activity activity, Account account, List<Tweet> tweets) {
@@ -78,6 +80,9 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
 
         holder.infoTextView.setText(information.toString());
         holder.retweetImageView.setVisibility(TextUtils.isEmpty(tweet.retweetedBy()) ? View.GONE : View.VISIBLE);
+
+        if (mHighlightLinks)
+            LinkUtils.highlight(mActivity, holder.textView, false);
 
         if (!TextUtils.isEmpty(tweet.media()) && !mIsMediaHidden) {
             final String[] media = tweet.media().split("\\+\\+\\+\\+\\+");
@@ -135,6 +140,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
 
     protected void readPrefs() {
         mFontSize = mPrefsModel.fontSize();
+        mHighlightLinks = mPrefsModel.highlightTimelineLinks();
         mIsAvatarHidden = mPrefsModel.hideAvatarOnMobileConnection() && NetworkUtils.isMobile(mActivity);
         mIsMediaHidden = mPrefsModel.hideMediaOnMobileConnection() && NetworkUtils.isMobile(mActivity);
     }

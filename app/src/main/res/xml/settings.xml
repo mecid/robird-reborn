@@ -11,6 +11,10 @@
             app:key="prefer_dark_theme"
             app:title="@string/prefer_dark_theme" />
 
+        <SwitchPreferenceCompat
+            app:key="highlight_timeline_links"
+            app:title="@string/highlight_timeline_links" />
+
         <ListPreference
             app:defaultValue="14"
             app:entries="@array/timeline_font_size"
@@ -26,6 +30,23 @@
         <SwitchPreferenceCompat
             app:key="hide_avatars"
             app:title="@string/hide_avatars" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="@string/browser">
+
+        <Preference
+            app:key="unlock_browser"
+            app:title="@string/unlock_browser" />
+
+        <SwitchPreferenceCompat
+            app:key="use_in_app_browser"
+            app:summary="@string/chrome_needed"
+            app:title="@string/enable_in_app_browser" />
+
+        <SwitchPreferenceCompat
+            app:key="in_app_browser_mobile"
+            app:title="@string/enable_mobile_view" />
 
     </PreferenceCategory>
 

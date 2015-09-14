@@ -17,6 +17,7 @@ import rx.subjects.PublishSubject;
  */
 public final class BillingModel implements BillingProcessor.IBillingHandler {
 
+    public static final String UNLOCK_IN_APP_BROWSER = "unlock_in_app_browser";
     public static final String SECOND_ACCOUNT_PRODUCT_ID = "second_account";
     public static final String THIRD_ACCOUNT_PRODUCT_ID = "third_account";
     public static final String UNLOCK_ALL_PRODUCT_ID = "unlock_all";

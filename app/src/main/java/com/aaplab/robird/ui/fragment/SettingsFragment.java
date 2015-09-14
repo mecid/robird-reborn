@@ -27,9 +27,13 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
     private Preference mThemePreference;
     private Preference mUnlockAllPreference;
     private Preference mUnlockUiPreference;
-    private ListPreference mTimelineFontSizePreference;
     private Preference mHideMediaPreference;
     private Preference mHideAvatarsPreference;
+    private Preference mUseInAppBrowserPreference;
+    private Preference mUseMobileViewInAppBrowserPreference;
+    private ListPreference mTimelineFontSizePreference;
+    private Preference mUnlockInAppBrowserPreference;
+    private Preference mHighlightTimelineLinksPreference;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -37,6 +41,11 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         final PrefsModel prefsModel = new PrefsModel();
         mSubscriptions = new CompositeSubscription();
         mBillingModel = new BillingModel(getActivity());
+
+        mUnlockInAppBrowserPreference = findPreference("unlock_browser");
+        mUnlockInAppBrowserPreference.setOnPreferenceClickListener(this);
+        mUseInAppBrowserPreference = findPreference(PrefsModel.USE_IN_APP_BROWSER);
+        mUseMobileViewInAppBrowserPreference = findPreference(PrefsModel.USE_MOBILE_VIEW_BROWSER);
 
         mHideAvatarsPreference = findPreference(PrefsModel.HIDE_AVATARS);
         mHideMediaPreference = findPreference(PrefsModel.HIDE_MEDIA);
@@ -54,6 +63,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         mUnlockUiPreference = findPreference("unlock_ui_settings");
         mUnlockUiPreference.setOnPreferenceClickListener(this);
 
+        mHighlightTimelineLinksPreference = findPreference(PrefsModel.HIGHLIGHT_TIMELINE_LINKS);
+
         enablePurchasedSettings();
     }
 
@@ -68,6 +79,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
             unlock(BillingModel.UNLOCK_ALL_PRODUCT_ID);
         } else if (mUnlockUiPreference == preference) {
             unlock(BillingModel.UNLOCK_UI_PRODUCT_ID);
+        } else if (mUnlockInAppBrowserPreference == preference) {
+            unlock(BillingModel.UNLOCK_IN_APP_BROWSER);
         }
 
         return true;
@@ -86,9 +99,12 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
 
     private void enablePurchasedSettings() {
         mThemePreference.setEnabled(mBillingModel.isPurchased(BillingModel.UNLOCK_UI_PRODUCT_ID));
+        mHighlightTimelineLinksPreference.setEnabled(mBillingModel.isPurchased(BillingModel.UNLOCK_UI_PRODUCT_ID));
         mTimelineFontSizePreference.setEnabled(mBillingModel.isPurchased(BillingModel.UNLOCK_UI_PRODUCT_ID));
         mHideAvatarsPreference.setEnabled(mBillingModel.isPurchased(BillingModel.UNLOCK_UI_PRODUCT_ID));
         mHideMediaPreference.setEnabled(mBillingModel.isPurchased(BillingModel.UNLOCK_UI_PRODUCT_ID));
+        mUseInAppBrowserPreference.setEnabled(mBillingModel.isPurchased(BillingModel.UNLOCK_IN_APP_BROWSER));
+        mUseMobileViewInAppBrowserPreference.setEnabled(mBillingModel.isPurchased(BillingModel.UNLOCK_IN_APP_BROWSER));
     }
 
     private void unlock(final String productId) {
