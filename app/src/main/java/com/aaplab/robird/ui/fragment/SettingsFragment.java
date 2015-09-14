@@ -33,6 +33,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
     private Preference mUseMobileViewInAppBrowserPreference;
     private ListPreference mTimelineFontSizePreference;
     private Preference mUnlockInAppBrowserPreference;
+    private Preference mHighlightTimelineLinksPreference;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -61,6 +62,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
 
         mUnlockUiPreference = findPreference("unlock_ui_settings");
         mUnlockUiPreference.setOnPreferenceClickListener(this);
+
+        mHighlightTimelineLinksPreference = findPreference(PrefsModel.HIGHLIGHT_TIMELINE_LINKS);
 
         enablePurchasedSettings();
     }
@@ -96,6 +99,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
 
     private void enablePurchasedSettings() {
         mThemePreference.setEnabled(mBillingModel.isPurchased(BillingModel.UNLOCK_UI_PRODUCT_ID));
+        mHighlightTimelineLinksPreference.setEnabled(mBillingModel.isPurchased(BillingModel.UNLOCK_UI_PRODUCT_ID));
         mTimelineFontSizePreference.setEnabled(mBillingModel.isPurchased(BillingModel.UNLOCK_UI_PRODUCT_ID));
         mHideAvatarsPreference.setEnabled(mBillingModel.isPurchased(BillingModel.UNLOCK_UI_PRODUCT_ID));
         mHideMediaPreference.setEnabled(mBillingModel.isPurchased(BillingModel.UNLOCK_UI_PRODUCT_ID));

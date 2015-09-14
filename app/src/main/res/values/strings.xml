@@ -63,4 +63,5 @@
     <string name="enable_mobile_view">Enable mobile view</string>
     <string name="unlock_browser">Unlock In-App Browser</string>
     <string name="browser">In-App Browser</string>
+    <string name="highlight_timeline_links">Highlight timeline links</string>
 </resources>
