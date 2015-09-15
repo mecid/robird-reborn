@@ -5,10 +5,12 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+
+import it.sephiroth.android.library.imagezoom.ImageViewTouch;
+import it.sephiroth.android.library.imagezoom.ImageViewTouchBase;
 
 /**
  * Created by majid on 23.08.15.
@@ -25,7 +27,7 @@ public class ImageFragment extends BaseFragment {
         return fragment;
     }
 
-    private ImageView mImageView;
+    private ImageViewTouch mImageView;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -41,8 +43,10 @@ public class ImageFragment extends BaseFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        mImageView = new ImageView(getActivity());
-        mImageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        mImageView = new ImageViewTouch(getActivity(), null);
+        mImageView.setDisplayType(ImageViewTouchBase.DisplayType.FIT_TO_SCREEN);
+        mImageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT));
         return mImageView;
     }
 }

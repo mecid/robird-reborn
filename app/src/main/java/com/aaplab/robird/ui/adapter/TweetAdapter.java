@@ -82,7 +82,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
         holder.retweetImageView.setVisibility(TextUtils.isEmpty(tweet.retweetedBy()) ? View.GONE : View.VISIBLE);
 
         if (mHighlightLinks)
-            LinkUtils.highlight(mActivity, holder.textView, false);
+            LinkUtils.activate(mActivity, holder.textView);
 
         if (!TextUtils.isEmpty(tweet.media()) && !mIsMediaHidden) {
             final String[] media = tweet.media().split("\\+\\+\\+\\+\\+");
@@ -121,6 +121,13 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
             @Override
             public void onClick(View v) {
                 UserProfileActivity.start(mActivity, mAccount, tweet.username());
+            }
+        });
+
+        holder.textView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                TweetDetailsActivity.start(mActivity, mAccount, tweet);
             }
         });
 
