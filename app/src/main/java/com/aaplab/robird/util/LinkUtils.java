@@ -25,7 +25,7 @@ public class LinkUtils {
     public static final String MENTION_SCHEME = "robird://profile?username=";
     public static final String HASHTAG_SCHEME = "robird://hashtag?name=";
 
-    public static void highlight(Activity activity, TextView textView, boolean clickable) {
+    public static void activate(Activity activity, TextView textView) {
 
         Linkify.addLinks(textView, Linkify.WEB_URLS);
         Linkify.addLinks(textView, Pattern.compile("@([A-Za-z0-9_-]+)"), MENTION_SCHEME);
@@ -35,9 +35,6 @@ public class LinkUtils {
         // which use Custom Tabs for web links handling,
         // if In-App browser enabled in the settings.
         addCustomTabUrlHandler(activity, textView);
-
-        if (!clickable)
-            textView.setMovementMethod(null);
     }
 
     private static void addCustomTabUrlHandler(Activity activity, TextView textView) {

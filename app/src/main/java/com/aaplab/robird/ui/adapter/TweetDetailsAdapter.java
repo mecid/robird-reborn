@@ -53,7 +53,7 @@ public class TweetDetailsAdapter extends TweetAdapter {
                 tweetDetailsHolder.retweetsCountTextView.setText(mDetailedStatus.getRetweetCount() + " ");
             }
 
-            LinkUtils.highlight(mActivity, holder.textView, true);
+            LinkUtils.activate(mActivity, holder.textView);
         }
     }
 
