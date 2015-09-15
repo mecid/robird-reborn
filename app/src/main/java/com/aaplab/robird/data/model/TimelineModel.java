@@ -33,6 +33,7 @@ public class TimelineModel extends BaseTwitterModel {
 
     private static final String REFRESHING = "refreshing?account=%s&type=%d";
     private static final String POSITION = "position?account=%s&type=%d";
+    private static final String UNREAD = "unread?account=%s&type=%d";
 
     private final SqlBriteContentProvider mSqlBriteContentProvider =
             SqlBriteContentProvider.create(Inject.contentResolver());
@@ -43,16 +44,28 @@ public class TimelineModel extends BaseTwitterModel {
         mTimelineId = timelineId;
     }
 
+    public void saveLastUnread(long id) {
+        Inject.preferences().edit().putLong(
+                String.format(UNREAD, mAccount.screenName(), mTimelineId), id
+        ).apply();
+    }
+
+    public long lastUnread() {
+        return Inject.preferences().getLong(
+                String.format(UNREAD, mAccount.screenName(), mTimelineId), 0
+        );
+    }
+
     public void saveTimelinePosition(long position) {
         Inject.preferences().edit().putLong(
-                String.format(POSITION, mAccount.screenName(), mTimelineId),
-                position).apply();
+                String.format(POSITION, mAccount.screenName(), mTimelineId), position
+        ).apply();
     }
 
     public long timelinePosition() {
         return Inject.preferences().getLong(
-                String.format(POSITION, mAccount.screenName(), mTimelineId)
-                , 0);
+                String.format(POSITION, mAccount.screenName(), mTimelineId), 0
+        );
     }
 
     public Observable<List<Tweet>> timeline() {
