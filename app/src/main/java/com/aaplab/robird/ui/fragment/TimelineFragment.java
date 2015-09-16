@@ -154,7 +154,7 @@ public class TimelineFragment extends BaseTimelineFragment {
             super.onScrolled(recyclerView, dx, dy);
             final int firstVisiblePosition = mLayoutManager.findFirstCompletelyVisibleItemPosition();
 
-            if (firstVisiblePosition >= 0) {
+            if (firstVisiblePosition >= 0 && mUnreadCountTextView != null) {
                 final Tweet tweet = mTweets.get(firstVisiblePosition);
 
                 if (tweet.tweetId() >= mLastUnread) {
