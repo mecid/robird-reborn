@@ -54,6 +54,7 @@ public final class PrefsModel {
     }
 
     public long backgroundUpdateInterval() {
-        return mPreferences.getLong(BACKGROUND_UPDATE_INTERVAL, AlarmManager.INTERVAL_HALF_HOUR);
+        return Long.valueOf(mPreferences.getString(BACKGROUND_UPDATE_INTERVAL,
+                String.valueOf(AlarmManager.INTERVAL_HALF_HOUR)));
     }
 }

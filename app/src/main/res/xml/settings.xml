@@ -57,6 +57,7 @@
             app:title="@string/background_update_service" />
 
         <ListPreference
+            app:defaultValue="1800000"
             app:entries="@array/background_update_period_entries"
             app:entryValues="@array/background_update_period_values"
             app:key="background_updates_interval"
