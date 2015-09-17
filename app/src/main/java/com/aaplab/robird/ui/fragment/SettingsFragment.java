@@ -3,7 +3,6 @@ package com.aaplab.robird.ui.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.text.TextUtils;
@@ -31,7 +30,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
     private Preference mHideAvatarsPreference;
     private Preference mUseInAppBrowserPreference;
     private Preference mUseMobileViewInAppBrowserPreference;
-    private ListPreference mTimelineFontSizePreference;
+    private Preference mTimelineFontSizePreference;
     private Preference mUnlockInAppBrowserPreference;
     private Preference mHighlightTimelineLinksPreference;
 
@@ -53,7 +52,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         mThemePreference = findPreference(PrefsModel.PREFER_DARK_THEME);
         mThemePreference.setOnPreferenceChangeListener(this);
 
-        mTimelineFontSizePreference = (ListPreference) findPreference(PrefsModel.TIMELINE_FONT_SIZE);
+        mTimelineFontSizePreference = findPreference(PrefsModel.TIMELINE_FONT_SIZE);
         mTimelineFontSizePreference.setOnPreferenceChangeListener(this);
         mTimelineFontSizePreference.setSummary("" + prefsModel.fontSize());
 
