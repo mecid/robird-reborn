@@ -69,4 +69,5 @@
     <string name="notification_settings">Notification Settings</string>
     <string name="background_update_period">Background update interval</string>
     <string name="notifications">Notifications</string>
+    <string name="new_mentions">You have %d unread mentions</string>
 </resources>
