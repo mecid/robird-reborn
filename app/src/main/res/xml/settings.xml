@@ -52,8 +52,30 @@
 
     <PreferenceCategory app:title="@string/other_settings">
         <Preference
-            app:key="unlock_all_settings"
-            app:title="@string/unlock_all_features" />
+            app:key="unlock_other_settings"
+            app:title="@string/unlock_browser" />
+
+        <SwitchPreferenceCompat
+            app:defaultValue="true"
+            app:key="background_update_service"
+            app:title="@string/background_update_service" />
+
+        <ListPreference
+            app:defaultValue="1800000"
+            app:dependency="background_update_service"
+            app:entries="@array/background_update_period_entries"
+            app:entryValues="@array/background_update_period_values"
+            app:key="background_updates_interval"
+            app:title="@string/background_update_period" />
+
+        <SwitchPreferenceCompat
+            app:defaultValue="true"
+            app:dependency="background_update_service"
+            app:key="notifications"
+            app:title="@string/notifications" />
     </PreferenceCategory>
 
+    <Preference
+        app:key="unlock_all_settings"
+        app:title="@string/unlock_all_features" />
 </PreferenceScreen>

@@ -3,12 +3,12 @@ package com.aaplab.robird.ui.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.text.TextUtils;
 
 import com.aaplab.robird.R;
+import com.aaplab.robird.UpdateReceiver;
 import com.aaplab.robird.data.model.BillingModel;
 import com.aaplab.robird.data.model.PrefsModel;
 import com.aaplab.robird.util.DefaultObserver;
@@ -31,9 +31,12 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
     private Preference mHideAvatarsPreference;
     private Preference mUseInAppBrowserPreference;
     private Preference mUseMobileViewInAppBrowserPreference;
-    private ListPreference mTimelineFontSizePreference;
+    private Preference mTimelineFontSizePreference;
     private Preference mUnlockInAppBrowserPreference;
     private Preference mHighlightTimelineLinksPreference;
+    private Preference mBackgroundUpdatePreference;
+    private Preference mBackgroundUpdateIntervalPreference;
+    private Preference mUnlockOtherPreference;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -53,7 +56,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         mThemePreference = findPreference(PrefsModel.PREFER_DARK_THEME);
         mThemePreference.setOnPreferenceChangeListener(this);
 
-        mTimelineFontSizePreference = (ListPreference) findPreference(PrefsModel.TIMELINE_FONT_SIZE);
+        mTimelineFontSizePreference = findPreference(PrefsModel.TIMELINE_FONT_SIZE);
         mTimelineFontSizePreference.setOnPreferenceChangeListener(this);
         mTimelineFontSizePreference.setSummary("" + prefsModel.fontSize());
 
@@ -64,6 +67,12 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         mUnlockUiPreference.setOnPreferenceClickListener(this);
 
         mHighlightTimelineLinksPreference = findPreference(PrefsModel.HIGHLIGHT_TIMELINE_LINKS);
+
+        mUnlockOtherPreference = findPreference("unlock_other_settings");
+        mUnlockOtherPreference.setOnPreferenceClickListener(this);
+
+        mBackgroundUpdateIntervalPreference = findPreference(PrefsModel.BACKGROUND_UPDATE_INTERVAL);
+        mBackgroundUpdatePreference = findPreference(PrefsModel.BACKGROUND_UPDATE_SERVICE);
 
         enablePurchasedSettings();
     }
@@ -81,6 +90,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
             unlock(BillingModel.UNLOCK_UI_PRODUCT_ID);
         } else if (mUnlockInAppBrowserPreference == preference) {
             unlock(BillingModel.UNLOCK_IN_APP_BROWSER);
+        } else if (mUnlockOtherPreference == preference) {
+            unlock(BillingModel.UNLOCK_OTHER_PRODUCT_ID);
         }
 
         return true;
@@ -92,6 +103,9 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
             preference.setSummary((String) o);
         } else if (preference == mThemePreference) {
             getActivity().recreate();
+        } else if (preference == mBackgroundUpdatePreference ||
+                preference == mBackgroundUpdateIntervalPreference) {
+            getActivity().sendBroadcast(new Intent(getActivity(), UpdateReceiver.class));
         }
 
         return true;
@@ -105,6 +119,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         mHideMediaPreference.setEnabled(mBillingModel.isPurchased(BillingModel.UNLOCK_UI_PRODUCT_ID));
         mUseInAppBrowserPreference.setEnabled(mBillingModel.isPurchased(BillingModel.UNLOCK_IN_APP_BROWSER));
         mUseMobileViewInAppBrowserPreference.setEnabled(mBillingModel.isPurchased(BillingModel.UNLOCK_IN_APP_BROWSER));
+        mBackgroundUpdatePreference.setEnabled(mBillingModel.isPurchased(BillingModel.UNLOCK_OTHER_PRODUCT_ID));
     }
 
     private void unlock(final String productId) {

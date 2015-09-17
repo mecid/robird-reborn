@@ -6,16 +6,22 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import com.aaplab.robird.data.model.PrefsModel;
+
 /**
  * Created by majid on 02.09.15.
  */
 public final class UpdateReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        final PrefsModel prefsModel = new PrefsModel();
+        final AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         PendingIntent pendingIntent = PendingIntent.getService(context, 0,
                 new Intent(context, UpdateService.class), 0);
-        am.setInexactRepeating(AlarmManager.ELAPSED_REALTIME, AlarmManager.INTERVAL_FIFTEEN_MINUTES,
-                AlarmManager.INTERVAL_FIFTEEN_MINUTES, pendingIntent);
+
+        if (prefsModel.isBackgroundUpdateServiceEnabled()) {
+            am.setInexactRepeating(AlarmManager.ELAPSED_REALTIME, prefsModel.backgroundUpdateInterval(),
+                    prefsModel.backgroundUpdateInterval(), pendingIntent);
+        }
     }
 }

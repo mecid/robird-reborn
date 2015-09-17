@@ -48,14 +48,16 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import icepick.Icicle;
 import jonathanfinerty.once.Once;
+import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
-import timber.log.Timber;
 
 /**
  * Created by majid on 07.05.15.
  */
-public class HomeActivity extends BaseActivity implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener, SearchView.OnQueryTextListener {
+public class HomeActivity extends BaseActivity implements View.OnClickListener,
+        NavigationView.OnNavigationItemSelectedListener, SearchView.OnQueryTextListener {
 
     @Bind(R.id.fab)
     FloatingActionButton mFloatingActionButton;
@@ -115,8 +117,24 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         mBillingModel = new BillingModel(this);
         mAccountModel = new AccountModel();
         mSubscriptions.add(
-                mAccountModel
-                        .accounts()
+                Observable
+                        .just(getIntent().<Account>getParcelableExtra("account"))
+                        .flatMap(new Func1<Account, Observable<Integer>>() {
+                            @Override
+                            public Observable<Integer> call(Account account) {
+                                if (account == null)
+                                    return Observable.just(0);
+
+                                mSelectedNavigationMenuId = R.id.navigation_item_mentions;
+                                return mAccountModel.activate(account);
+                            }
+                        })
+                        .flatMap(new Func1<Integer, Observable<List<Account>>>() {
+                            @Override
+                            public Observable<List<Account>> call(Integer integer) {
+                                return mAccountModel.accounts();
+                            }
+                        })
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeOn(Schedulers.io())
                         .subscribe(new DefaultObserver<List<Account>>() {
@@ -130,24 +148,13 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
 
         final ShareCompat.IntentReader reader = ShareCompat.IntentReader.from(this);
         if (reader.isShareIntent()) {
-            Analytics.event(Analytics.SHARE_VIA_ROBIRD);
-            if (reader.getStreamCount() > 0) {
-                final int count = reader.getStreamCount() > 4 ? 4 : reader.getStreamCount();
-                ComposeFragment
-                        .share(new ArrayList<Uri>() {
-                            {
-                                for (int i = 0; i < count; ++i)
-                                    add(reader.getStream(i));
-                            }
-                        })
-                        .show(getSupportFragmentManager(), ComposeFragment.TAG_SHARE);
-            } else {
-                ComposeFragment
-                        .share(reader.getText().toString())
-                        .show(getSupportFragmentManager(), ComposeFragment.TAG_SHARE);
-            }
+            handleShareIntent(reader);
         }
+    }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
         if (!Once.beenDone(Once.THIS_APP_VERSION, "update_receiver")) {
             sendBroadcast(new Intent(this, UpdateReceiver.class));
             Once.markDone("update_receiver");
@@ -167,7 +174,6 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     public boolean onNavigationItemSelected(final MenuItem menuItem) {
         if (menuItem.getItemId() != R.id.navigation_item_settings) {
-            Timber.d("on navigation item selected: %s", menuItem.getTitle());
             setTitle(menuItem.getTitle());
             menuItem.setChecked(true);
             mDrawerLayout.closeDrawers();
@@ -201,47 +207,15 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
             Analytics.event(Analytics.ADD_ACCOUNT);
             if (mAccounts.size() < 2) {
                 if (mBillingModel.isPurchased(BillingModel.SECOND_ACCOUNT_PRODUCT_ID)) {
-                    NavigationUtils.changeDefaultActivityToSignIn(this, true);
-                    startActivity(new Intent(this, SignInActivity.class));
-                    finish();
+                    startSignIn();
                 } else {
-                    mSubscriptions.add(
-                            mBillingModel
-                                    .purchase(BillingModel.SECOND_ACCOUNT_PRODUCT_ID)
-                                    .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribeOn(AndroidSchedulers.mainThread())
-                                    .subscribe(new DefaultObserver<String>() {
-                                        @Override
-                                        public void onNext(String s) {
-                                            super.onNext(s);
-                                            if (TextUtils.equals(s, BillingModel.SECOND_ACCOUNT_PRODUCT_ID))
-                                                Snackbar.make(findViewById(R.id.coordinator),
-                                                        R.string.purchased, Snackbar.LENGTH_LONG).show();
-                                        }
-                                    })
-                    );
+                    unlockNextAccount(BillingModel.SECOND_ACCOUNT_PRODUCT_ID);
                 }
             } else if (mAccounts.size() < 3) {
                 if (mBillingModel.isPurchased(BillingModel.THIRD_ACCOUNT_PRODUCT_ID)) {
-                    NavigationUtils.changeDefaultActivityToSignIn(this, true);
-                    startActivity(new Intent(this, SignInActivity.class));
-                    finish();
+                    startSignIn();
                 } else {
-                    mSubscriptions.add(
-                            mBillingModel
-                                    .purchase(BillingModel.THIRD_ACCOUNT_PRODUCT_ID)
-                                    .subscribeOn(AndroidSchedulers.mainThread())
-                                    .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribe(new DefaultObserver<String>() {
-                                        @Override
-                                        public void onNext(String s) {
-                                            super.onNext(s);
-                                            if (TextUtils.equals(s, BillingModel.THIRD_ACCOUNT_PRODUCT_ID))
-                                                Snackbar.make(findViewById(R.id.coordinator),
-                                                        R.string.purchased, Snackbar.LENGTH_LONG).show();
-                                        }
-                                    })
-                    );
+                    unlockNextAccount(BillingModel.THIRD_ACCOUNT_PRODUCT_ID);
                 }
             }
         } else if (avatars[0] == v) {
@@ -305,7 +279,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
             return TrendsFragment.create(mAccounts.get(0));
         }
 
-        throw new IllegalArgumentException("There is no fragment for this navigation item: " + navigationMenuItem.getTitle());
+        throw new IllegalArgumentException("There is no fragment for " + navigationMenuItem.getTitle());
     }
 
     private void activate(final Account selectedAccount) {
@@ -316,6 +290,49 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                         .subscribeOn(Schedulers.io())
                         .subscribe()
         );
+    }
+
+    private void unlockNextAccount(final String productId) {
+        mSubscriptions.add(
+                mBillingModel
+                        .purchase(productId)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new DefaultObserver<String>() {
+                            @Override
+                            public void onNext(String s) {
+                                super.onNext(s);
+                                if (TextUtils.equals(s, productId))
+                                    Snackbar.make(findViewById(R.id.coordinator),
+                                            R.string.purchased, Snackbar.LENGTH_LONG).show();
+                            }
+                        })
+        );
+    }
+
+    private void handleShareIntent(final ShareCompat.IntentReader reader) {
+        Analytics.event(Analytics.SHARE_VIA_ROBIRD);
+        if (reader.getStreamCount() > 0) {
+            final int count = reader.getStreamCount() > 4 ? 4 : reader.getStreamCount();
+            ComposeFragment
+                    .share(new ArrayList<Uri>() {
+                        {
+                            for (int i = 0; i < count; ++i)
+                                add(reader.getStream(i));
+                        }
+                    })
+                    .show(getSupportFragmentManager(), ComposeFragment.TAG_SHARE);
+        } else {
+            ComposeFragment
+                    .share(reader.getText().toString())
+                    .show(getSupportFragmentManager(), ComposeFragment.TAG_SHARE);
+        }
+    }
+
+    private void startSignIn() {
+        NavigationUtils.changeDefaultActivityToSignIn(this, true);
+        startActivity(new Intent(this, SignInActivity.class));
+        finish();
     }
 
     @Override
