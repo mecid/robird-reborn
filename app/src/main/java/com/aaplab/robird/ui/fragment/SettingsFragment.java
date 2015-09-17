@@ -8,6 +8,7 @@ import android.support.v7.preference.PreferenceFragmentCompat;
 import android.text.TextUtils;
 
 import com.aaplab.robird.R;
+import com.aaplab.robird.UpdateReceiver;
 import com.aaplab.robird.data.model.BillingModel;
 import com.aaplab.robird.data.model.PrefsModel;
 import com.aaplab.robird.util.DefaultObserver;
@@ -33,6 +34,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
     private Preference mTimelineFontSizePreference;
     private Preference mUnlockInAppBrowserPreference;
     private Preference mHighlightTimelineLinksPreference;
+    private Preference mBackgroundUpdatePreference;
+    private Preference mBackgroundUpdateIntervalPreference;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -64,6 +67,9 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
 
         mHighlightTimelineLinksPreference = findPreference(PrefsModel.HIGHLIGHT_TIMELINE_LINKS);
 
+        mBackgroundUpdateIntervalPreference = findPreference(PrefsModel.BACKGROUND_UPDATE_INTERVAL);
+        mBackgroundUpdatePreference = findPreference(PrefsModel.BACKGROUND_UPDATE_SERVICE);
+
         enablePurchasedSettings();
     }
 
@@ -91,6 +97,9 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
             preference.setSummary((String) o);
         } else if (preference == mThemePreference) {
             getActivity().recreate();
+        } else if (preference == mBackgroundUpdatePreference ||
+                preference == mBackgroundUpdateIntervalPreference) {
+            getActivity().sendBroadcast(new Intent(getActivity(), UpdateReceiver.class));
         }
 
         return true;
