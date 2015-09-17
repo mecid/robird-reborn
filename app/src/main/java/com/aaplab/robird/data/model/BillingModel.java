@@ -22,6 +22,7 @@ public final class BillingModel implements BillingProcessor.IBillingHandler {
     public static final String THIRD_ACCOUNT_PRODUCT_ID = "third_account";
     public static final String UNLOCK_ALL_PRODUCT_ID = "unlock_all";
     public static final String UNLOCK_UI_PRODUCT_ID = "unlock_ui";
+    public static final String UNLOCK_OTHER_PRODUCT_ID = "unlock_other";
 
     private BillingProcessor mBillingProcessor;
     private PublishSubject<String> mProductSubject;

@@ -50,7 +50,11 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="@string/notification_settings">
+    <PreferenceCategory app:title="@string/other_settings">
+        <Preference
+            app:key="unlock_other_settings"
+            app:title="@string/unlock_browser" />
+
         <SwitchPreferenceCompat
             app:defaultValue="true"
             app:key="background_update_service"
