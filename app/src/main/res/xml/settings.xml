@@ -58,10 +58,17 @@
 
         <ListPreference
             app:defaultValue="1800000"
+            app:dependency="background_update_service"
             app:entries="@array/background_update_period_entries"
             app:entryValues="@array/background_update_period_values"
             app:key="background_updates_interval"
             app:title="@string/background_update_period" />
+
+        <SwitchPreferenceCompat
+            app:defaultValue="true"
+            app:dependency="background_update_service"
+            app:key="notifications"
+            app:title="@string/notifications" />
     </PreferenceCategory>
 
     <Preference
