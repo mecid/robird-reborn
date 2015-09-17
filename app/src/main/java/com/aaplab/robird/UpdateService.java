@@ -76,6 +76,7 @@ public final class UpdateService extends IntentService {
         builder.setContentText(getString(R.string.new_mentions, count));
         builder.setContentTitle(getString(R.string.app_name));
         builder.setSmallIcon(R.drawable.ic_at);
+        builder.setAutoCancel(true);
 
         Glide.with(this).load(account.avatar()).asBitmap().into(new SimpleTarget<Bitmap>() {
             @Override
