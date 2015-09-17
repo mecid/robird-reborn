@@ -18,6 +18,7 @@ public final class PrefsModel {
     public static final String HIGHLIGHT_TIMELINE_LINKS = "highlight_timeline_links";
     public static final String BACKGROUND_UPDATE_SERVICE = "background_update_service";
     public static final String BACKGROUND_UPDATE_INTERVAL = "background_updates_interval";
+    public static final String NOTIFICATIONS = "notifications";
 
     private final SharedPreferences mPreferences = Inject.preferences();
 
@@ -56,5 +57,9 @@ public final class PrefsModel {
     public long backgroundUpdateInterval() {
         return Long.valueOf(mPreferences.getString(BACKGROUND_UPDATE_INTERVAL,
                 String.valueOf(AlarmManager.INTERVAL_HALF_HOUR)));
+    }
+
+    public boolean isNotificationsEnabled() {
+        return mPreferences.getBoolean(NOTIFICATIONS, true);
     }
 }
