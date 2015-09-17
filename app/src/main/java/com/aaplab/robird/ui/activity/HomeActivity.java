@@ -48,13 +48,16 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import icepick.Icicle;
 import jonathanfinerty.once.Once;
+import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
  * Created by majid on 07.05.15.
  */
-public class HomeActivity extends BaseActivity implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener, SearchView.OnQueryTextListener {
+public class HomeActivity extends BaseActivity implements View.OnClickListener,
+        NavigationView.OnNavigationItemSelectedListener, SearchView.OnQueryTextListener {
 
     @Bind(R.id.fab)
     FloatingActionButton mFloatingActionButton;
@@ -114,8 +117,24 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         mBillingModel = new BillingModel(this);
         mAccountModel = new AccountModel();
         mSubscriptions.add(
-                mAccountModel
-                        .accounts()
+                Observable
+                        .just(getIntent().<Account>getParcelableExtra("account"))
+                        .flatMap(new Func1<Account, Observable<Integer>>() {
+                            @Override
+                            public Observable<Integer> call(Account account) {
+                                if (account == null)
+                                    return Observable.just(0);
+
+                                mSelectedNavigationMenuId = R.id.navigation_item_mentions;
+                                return mAccountModel.activate(account);
+                            }
+                        })
+                        .flatMap(new Func1<Integer, Observable<List<Account>>>() {
+                            @Override
+                            public Observable<List<Account>> call(Integer integer) {
+                                return mAccountModel.accounts();
+                            }
+                        })
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeOn(Schedulers.io())
                         .subscribe(new DefaultObserver<List<Account>>() {
@@ -260,7 +279,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
             return TrendsFragment.create(mAccounts.get(0));
         }
 
-        throw new IllegalArgumentException("There is no fragment for this navigation item: " + navigationMenuItem.getTitle());
+        throw new IllegalArgumentException("There is no fragment for " + navigationMenuItem.getTitle());
     }
 
     private void activate(final Account selectedAccount) {
