@@ -15,6 +15,8 @@ import com.aaplab.robird.data.entity.Account;
 import com.aaplab.robird.data.entity.Tweet;
 import com.aaplab.robird.data.model.TimelineModel;
 import com.aaplab.robird.util.DefaultObserver;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 
 import java.util.List;
 
@@ -160,6 +162,14 @@ public class TimelineFragment extends BaseTimelineFragment {
                 if (tweet.tweetId() >= mLastUnread) {
                     mUnreadCountTextView.setText("" + firstVisiblePosition);
                     mLastUnread = tweet.tweetId();
+                } else {
+                    int index = Iterables.indexOf(mTweets, new Predicate<Tweet>() {
+                        @Override
+                        public boolean apply(@Nullable Tweet input) {
+                            return input.tweetId() == mLastUnread;
+                        }
+                    });
+                    mUnreadCountTextView.setText("" + index);
                 }
             }
         }
