@@ -47,7 +47,6 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import icepick.Icicle;
-import jonathanfinerty.once.Once;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
@@ -147,11 +146,18 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                         .show(getSupportFragmentManager(), ComposeFragment.TAG_SHARE);
             }
         }
+    }
 
-        if (!Once.beenDone(Once.THIS_APP_VERSION, "update_receiver")) {
-            sendBroadcast(new Intent(this, UpdateReceiver.class));
-            Once.markDone("update_receiver");
-        }
+    @Override
+    protected void onStart() {
+        super.onStart();
+        sendBroadcast(new Intent(this, UpdateReceiver.class).putExtra("cancel", true));
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        sendBroadcast(new Intent(this, UpdateReceiver.class));
     }
 
     @Override
