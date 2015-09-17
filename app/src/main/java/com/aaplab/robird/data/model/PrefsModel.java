@@ -1,5 +1,6 @@
 package com.aaplab.robird.data.model;
 
+import android.app.AlarmManager;
 import android.content.SharedPreferences;
 
 import com.aaplab.robird.inject.Inject;
@@ -15,6 +16,8 @@ public final class PrefsModel {
     public static final String USE_IN_APP_BROWSER = "use_in_app_browser";
     public static final String USE_MOBILE_VIEW_BROWSER = "in_app_browser_mobile";
     public static final String HIGHLIGHT_TIMELINE_LINKS = "highlight_timeline_links";
+    public static final String BACKGROUND_UPDATE_SERVICE = "background_update_service";
+    public static final String BACKGROUND_UPDATE_INTERVAL = "background_updates_interval";
 
     private final SharedPreferences mPreferences = Inject.preferences();
 
@@ -44,5 +47,14 @@ public final class PrefsModel {
 
     public boolean highlightTimelineLinks() {
         return mPreferences.getBoolean(HIGHLIGHT_TIMELINE_LINKS, false);
+    }
+
+    public boolean isBackgroundUpdateServiceEnabled() {
+        return mPreferences.getBoolean(BACKGROUND_UPDATE_SERVICE, true);
+    }
+
+    public long backgroundUpdateInterval() {
+        return Long.valueOf(mPreferences.getString(BACKGROUND_UPDATE_INTERVAL,
+                String.valueOf(AlarmManager.INTERVAL_HALF_HOUR)));
     }
 }

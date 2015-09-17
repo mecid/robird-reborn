@@ -7,4 +7,20 @@
         <item>20</item>
         <item>22</item>
     </string-array>
+
+    <string-array name="background_update_period_entries">
+        <item>15 minutes</item>
+        <item>Half hour</item>
+        <item>Hour</item>
+        <item>Half day</item>
+        <item>Day</item>
+    </string-array>
+
+    <string-array name="background_update_period_values">
+        <item>900000</item>
+        <item>1800000</item>
+        <item>3600000</item>
+        <item>43200000</item>
+        <item>86400000</item>
+    </string-array>
 </resources>
