@@ -19,9 +19,7 @@ public final class UpdateReceiver extends BroadcastReceiver {
         PendingIntent pendingIntent = PendingIntent.getService(context, 0,
                 new Intent(context, UpdateService.class), 0);
 
-        if (intent.hasExtra("cancel")) {
-            am.cancel(pendingIntent);
-        } else if (prefsModel.isBackgroundUpdateServiceEnabled()) {
+        if (prefsModel.isBackgroundUpdateServiceEnabled()) {
             am.setInexactRepeating(AlarmManager.ELAPSED_REALTIME, prefsModel.backgroundUpdateInterval(),
                     prefsModel.backgroundUpdateInterval(), pendingIntent);
         }
