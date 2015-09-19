@@ -46,7 +46,9 @@ public class TweetDetailsAdapter extends TweetAdapter {
 
         if (getItemViewType(position) == TWEET_DETAILS_TYPE) {
             TweetDetailsHolder tweetDetailsHolder = (TweetDetailsHolder) holder;
+
             tweetDetailsHolder.itemView.setOnClickListener(null);
+            tweetDetailsHolder.textView.setOnClickListener(null);
 
             if (mDetailedStatus != null) {
                 tweetDetailsHolder.favoritesCountTextView.setText(mDetailedStatus.getFavoriteCount() + " ");
