@@ -15,8 +15,6 @@ import com.aaplab.robird.data.entity.Account;
 import com.aaplab.robird.data.entity.Tweet;
 import com.aaplab.robird.data.model.TimelineModel;
 import com.aaplab.robird.util.DefaultObserver;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
 
 import java.util.List;
 
@@ -76,6 +74,8 @@ public class TimelineFragment extends BaseTimelineFragment {
         MenuItem unreadMenuItem = menu.findItem(R.id.menu_unread);
         final View actionView = MenuItemCompat.getActionView(unreadMenuItem);
         mUnreadCountTextView = ButterKnife.findById(actionView, R.id.unread);
+        final int unreadCount = findPosition(mLastUnread);
+        mUnreadCountTextView.setText("" + (unreadCount == -1 ? 0 : unreadCount));
         actionView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -162,14 +162,6 @@ public class TimelineFragment extends BaseTimelineFragment {
                 if (tweet.tweetId() >= mLastUnread) {
                     mUnreadCountTextView.setText("" + firstVisiblePosition);
                     mLastUnread = tweet.tweetId();
-                } else {
-                    int index = Iterables.indexOf(mTweets, new Predicate<Tweet>() {
-                        @Override
-                        public boolean apply(@Nullable Tweet input) {
-                            return input.tweetId() == mLastUnread;
-                        }
-                    });
-                    mUnreadCountTextView.setText("" + index);
                 }
             }
         }

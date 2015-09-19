@@ -74,13 +74,15 @@ public abstract class BaseTimelineFragment extends BaseSwipeToRefreshRecyclerFra
     }
 
     protected void setTimelinePosition(final long tweetId, int top) {
-        int index = Iterables.indexOf(mTweets, new Predicate<Tweet>() {
+        mLayoutManager.scrollToPositionWithOffset(findPosition(tweetId), top);
+    }
+
+    protected int findPosition(final long tweetId) {
+        return Iterables.indexOf(mTweets, new Predicate<Tweet>() {
             @Override
             public boolean apply(Tweet input) {
                 return tweetId == input.tweetId();
             }
         });
-
-        mLayoutManager.scrollToPositionWithOffset(index, top);
     }
 }
