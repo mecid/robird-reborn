@@ -22,6 +22,8 @@ public final class UpdateReceiver extends BroadcastReceiver {
         if (prefsModel.isBackgroundUpdateServiceEnabled()) {
             am.setInexactRepeating(AlarmManager.ELAPSED_REALTIME, prefsModel.backgroundUpdateInterval(),
                     prefsModel.backgroundUpdateInterval(), pendingIntent);
+        } else {
+            am.cancel(pendingIntent);
         }
     }
 }

@@ -72,7 +72,10 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         mUnlockOtherPreference.setOnPreferenceClickListener(this);
 
         mBackgroundUpdateIntervalPreference = findPreference(PrefsModel.BACKGROUND_UPDATE_INTERVAL);
+        mBackgroundUpdateIntervalPreference.setOnPreferenceChangeListener(this);
+
         mBackgroundUpdatePreference = findPreference(PrefsModel.BACKGROUND_UPDATE_SERVICE);
+        mBackgroundUpdatePreference.setOnPreferenceChangeListener(this);
 
         enablePurchasedSettings();
     }
