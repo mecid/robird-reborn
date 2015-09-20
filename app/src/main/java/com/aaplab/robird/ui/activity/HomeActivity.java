@@ -190,7 +190,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener,
                         getSupportFragmentManager()
                                 .beginTransaction()
                                 .replace(R.id.content, fragmentForNavigationItem(menuItem))
-                                .commit();
+                                .commitAllowingStateLoss();
                     }
                 }, 200);
             }
