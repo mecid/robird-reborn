@@ -19,6 +19,7 @@ public final class PrefsModel {
     public static final String BACKGROUND_UPDATE_SERVICE = "background_update_service";
     public static final String BACKGROUND_UPDATE_INTERVAL = "background_updates_interval";
     public static final String NOTIFICATIONS = "notifications";
+    public static final String TWEETMARKER = "tweetmarker";
 
     private final SharedPreferences mPreferences = Inject.preferences();
 
@@ -61,5 +62,9 @@ public final class PrefsModel {
 
     public boolean isNotificationsEnabled() {
         return mPreferences.getBoolean(NOTIFICATIONS, true);
+    }
+
+    public boolean isTweetMarkerEnabled() {
+        return mPreferences.getBoolean(TWEETMARKER, false);
     }
 }
