@@ -8,18 +8,23 @@ import com.aaplab.robird.data.entity.Account;
 import com.aaplab.robird.data.entity.Tweet;
 import com.aaplab.robird.data.provider.contract.TweetContract;
 import com.aaplab.robird.inject.Inject;
+import com.aaplab.robird.util.DefaultObserver;
+import com.aaplab.robird.util.TweetMarkerUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import rx.Observable;
 import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 import twitter4j.Paging;
 import twitter4j.Status;
 import twitter4j.TwitterException;
+import twitter4j.auth.OAuthAuthorization;
 
 /**
  * Created by majid on 13.05.15.
@@ -37,6 +42,7 @@ public class TimelineModel extends BaseTwitterModel {
 
     private final SqlBriteContentProvider mSqlBriteContentProvider =
             SqlBriteContentProvider.create(Inject.contentResolver());
+    private final PrefsModel mPrefsModel = new PrefsModel();
     private final long mTimelineId;
 
     public TimelineModel(Account account, long timelineId) {
@@ -60,6 +66,12 @@ public class TimelineModel extends BaseTwitterModel {
         Inject.preferences().edit().putLong(
                 String.format(POSITION, mAccount.screenName(), mTimelineId), position
         ).apply();
+
+        if (mPrefsModel.isTweetMarkerEnabled())
+            saveTweetMarker(position)
+                    .subscribeOn(Schedulers.io())
+                    .subscribe(new DefaultObserver<Long>() {
+                    });
     }
 
     public long timelinePosition() {
@@ -112,6 +124,18 @@ public class TimelineModel extends BaseTwitterModel {
     public Observable<Integer> old() {
         if (isRefreshing())
             return Observable.just(0);
+
+        if (mPrefsModel.isTweetMarkerEnabled())
+            getTweetMarker()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new DefaultObserver<Long>() {
+                        @Override
+                        public void onNext(Long position) {
+                            super.onNext(position);
+                            saveTimelinePosition(position);
+                        }
+                    });
 
         setRefreshing(true);
         return timeline()
@@ -186,6 +210,46 @@ public class TimelineModel extends BaseTwitterModel {
                 .putBoolean(
                         String.format(REFRESHING, mAccount.screenName(), mTimelineId), refreshing
                 ).apply();
+    }
+
+    private Observable<Long> saveTweetMarker(final long tweetId) {
+        return Observable.create(new Observable.OnSubscribe<Long>() {
+            @Override
+            public void call(Subscriber<? super Long> subscriber) {
+                TweetMarkerUtils.save(tweetMarkerCollection(), tweetId, mAccount.screenName(),
+                        (OAuthAuthorization) mTwitter.getAuthorization());
+                subscriber.onNext(tweetId);
+                subscriber.onCompleted();
+            }
+        });
+    }
+
+    private Observable<Long> getTweetMarker() {
+        return Observable.create(new Observable.OnSubscribe<Long>() {
+            @Override
+            public void call(Subscriber<? super Long> subscriber) {
+                subscriber.onNext(TweetMarkerUtils.get(tweetMarkerCollection(), mAccount.screenName()));
+                subscriber.onCompleted();
+            }
+        });
+    }
+
+    private String tweetMarkerCollection() {
+        String collection;
+
+        if (mTimelineId == HOME_ID) {
+            collection = TweetMarkerUtils.TIMELINE;
+        } else if (mTimelineId == MENTIONS_ID) {
+            collection = TweetMarkerUtils.MENTIONS;
+        } else if (mTimelineId == FAVORITES_ID) {
+            collection = TweetMarkerUtils.FAVORITES;
+        } else if (mTimelineId == RETWEETS_ID) {
+            collection = TweetMarkerUtils.RETWEETS;
+        } else {
+            collection = String.valueOf(mTimelineId);
+        }
+
+        return collection;
     }
 
     private static final class TimelinePersister implements Action1<List<Status>> {

@@ -73,6 +73,11 @@
             app:dependency="background_update_service"
             app:key="notifications"
             app:title="@string/notifications" />
+
+        <SwitchPreferenceCompat
+            app:dependency="background_update_service"
+            app:key="tweetmarker"
+            app:title="@string/tweetmarker" />
     </PreferenceCategory>
 
     <Preference
