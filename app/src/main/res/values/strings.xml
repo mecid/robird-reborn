@@ -70,4 +70,6 @@
     <string name="notifications">Notifications</string>
     <string name="new_mentions">You have %d unread mentions</string>
     <string name="tweetmarker">TweetMarker</string>
+    <string name="native_retweet">Native</string>
+    <string name="quote_retweet">Quote</string>
 </resources>
