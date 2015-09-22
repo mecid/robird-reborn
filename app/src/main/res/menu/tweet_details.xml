@@ -6,7 +6,18 @@
         android:id="@+id/menu_retweet"
         android:icon="@drawable/ic_repeat"
         android:title="@string/retweet"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="ifRoom">
+
+        <menu>
+            <item
+                android:id="@+id/menu_native_retweet"
+                android:title="@string/native_retweet" />
+            <item
+                android:id="@+id/menu_quote_retweet"
+                android:title="@string/quote_retweet" />
+        </menu>
+
+    </item>
 
     <item
         android:id="@+id/menu_star"

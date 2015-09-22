@@ -67,6 +67,7 @@ public class ComposeFragment extends DialogFragment implements Toolbar.OnMenuIte
 
     public static final String TAG_COMPOSE = "Compose";
     public static final String TAG_DIRECT = "Direct";
+    public static final String TAG_QUOTE = "Quote";
     public static final String TAG_REPLY = "Reply";
     public static final String TAG_SHARE = "Share";
 
@@ -181,7 +182,8 @@ public class ComposeFragment extends DialogFragment implements Toolbar.OnMenuIte
         if (TextUtils.isEmpty(mUserName)) {
             mEditText.addTextChangedListener(this);
             mEditText.setText(getArguments().getString("text"));
-            mEditText.setSelection(mEditText.length());
+            mEditText.getText().insert(0, " ");
+            mEditText.setSelection(0);
         } else {
             mToolbar.getMenu().findItem(R.id.menu_schedule).setVisible(false);
             mToolbar.getMenu().findItem(R.id.menu_camera).setVisible(false);
