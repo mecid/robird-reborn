@@ -116,14 +116,14 @@ public class TweetDetailsFragment extends BaseSwipeToRefreshRecyclerFragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.menu_quote_retweet) {
+        if (item.getItemId() == R.id.menu_quote) {
             Analytics.event(Analytics.QUOTE);
 
             ComposeFragment
                     .share(String.format("https://twitter.com/%s/status/%d", mTweet.username(), mTweet.tweetId()))
                     .show(getFragmentManager(), ComposeFragment.TAG_QUOTE);
 
-        } else if (item.getItemId() == R.id.menu_native_retweet) {
+        } else if (item.getItemId() == R.id.menu_retweet) {
             Analytics.event(Analytics.RETWEET);
             mSubscriptions.add(
                     mTweetModel
