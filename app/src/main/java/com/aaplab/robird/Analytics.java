@@ -23,6 +23,7 @@ public final class Analytics {
     public static final String ADD_TO_LIST = "Add to list";
 
     public static final String SEND = "Send";
+    public static final String QUOTE = "Quote";
     public static final String RETWEET = "Retweet";
     public static final String FAVORITE = "Favorite";
     public static final String SHARE = "Share";
