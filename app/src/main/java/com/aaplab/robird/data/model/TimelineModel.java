@@ -12,12 +12,14 @@ import com.aaplab.robird.util.DefaultObserver;
 import com.aaplab.robird.util.TweetMarkerUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
@@ -39,6 +41,8 @@ public class TimelineModel extends BaseTwitterModel {
     private static final String REFRESHING = "refreshing?account=%s&type=%d";
     private static final String POSITION = "position?account=%s&type=%d";
     private static final String UNREAD = "unread?account=%s&type=%d";
+
+    private static final Set<String> refreshingSet = Collections.synchronizedSet(new HashSet<String>());
 
     private final SqlBriteContentProvider mSqlBriteContentProvider =
             SqlBriteContentProvider.create(Inject.contentResolver());
@@ -107,12 +111,6 @@ public class TimelineModel extends BaseTwitterModel {
                     }
                 })
                 .doOnNext(new TimelinePersister(mAccount, mTimelineId))
-                .doOnTerminate(new Action0() {
-                    @Override
-                    public void call() {
-                        setRefreshing(false);
-                    }
-                })
                 .map(new Func1<List<Status>, Integer>() {
                     @Override
                     public Integer call(List<Status> statuses) {
@@ -158,12 +156,6 @@ public class TimelineModel extends BaseTwitterModel {
                     }
                 })
                 .doOnNext(new TimelinePersister(mAccount, mTimelineId))
-                .doOnTerminate(new Action0() {
-                    @Override
-                    public void call() {
-                        setRefreshing(false);
-                    }
-                })
                 .map(new Func1<List<Status>, Integer>() {
                     @Override
                     public Integer call(List<Status> statuses) {
@@ -192,24 +184,22 @@ public class TimelineModel extends BaseTwitterModel {
                     subscriber.onCompleted();
                 } catch (TwitterException e) {
                     subscriber.onError(e);
+                } finally {
+                    setRefreshing(false);
                 }
             }
         });
     }
 
     private boolean isRefreshing() {
-        return Inject.preferences()
-                .getBoolean(
-                        String.format(REFRESHING, mAccount.screenName(), mTimelineId), false
-                );
+        return refreshingSet.contains(String.format(REFRESHING, mAccount.screenName(), mTimelineId));
     }
 
     private void setRefreshing(boolean refreshing) {
-        Inject.preferences()
-                .edit()
-                .putBoolean(
-                        String.format(REFRESHING, mAccount.screenName(), mTimelineId), refreshing
-                ).apply();
+        if (refreshing)
+            refreshingSet.add(String.format(REFRESHING, mAccount.screenName(), mTimelineId));
+        else
+            refreshingSet.remove(String.format(REFRESHING, mAccount.screenName(), mTimelineId));
     }
 
     private Observable<Long> saveTweetMarker(final long tweetId) {
