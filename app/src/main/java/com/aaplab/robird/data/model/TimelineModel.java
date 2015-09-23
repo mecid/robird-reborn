@@ -99,6 +99,18 @@ public class TimelineModel extends BaseTwitterModel {
         if (isRefreshing())
             return Observable.just(0);
 
+        if (mPrefsModel.isTweetMarkerEnabled())
+            getTweetMarker()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new DefaultObserver<Long>() {
+                        @Override
+                        public void onNext(Long position) {
+                            super.onNext(position);
+                            saveTimelinePosition(position);
+                        }
+                    });
+
         setRefreshing(true);
         return timeline()
                 .take(1)
@@ -122,18 +134,6 @@ public class TimelineModel extends BaseTwitterModel {
     public Observable<Integer> old() {
         if (isRefreshing())
             return Observable.just(0);
-
-        if (mPrefsModel.isTweetMarkerEnabled())
-            getTweetMarker()
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new DefaultObserver<Long>() {
-                        @Override
-                        public void onNext(Long position) {
-                            super.onNext(position);
-                            saveTimelinePosition(position);
-                        }
-                    });
 
         setRefreshing(true);
         return timeline()
