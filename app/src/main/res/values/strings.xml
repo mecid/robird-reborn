@@ -72,4 +72,6 @@
     <string name="tweetmarker">TweetMarker</string>
     <string name="native_retweet">Native</string>
     <string name="quote_retweet">Quote</string>
+    <string name="save">Save</string>
+    <string name="image_saved">Image saved</string>
 </resources>
