@@ -182,8 +182,6 @@ public class ComposeFragment extends DialogFragment implements Toolbar.OnMenuIte
         if (TextUtils.isEmpty(mUserName)) {
             mEditText.addTextChangedListener(this);
             mEditText.setText(getArguments().getString("text"));
-            mEditText.getText().insert(0, " ");
-            mEditText.setSelection(0);
         } else {
             mToolbar.getMenu().findItem(R.id.menu_schedule).setVisible(false);
             mToolbar.getMenu().findItem(R.id.menu_camera).setVisible(false);
@@ -362,11 +360,25 @@ public class ComposeFragment extends DialogFragment implements Toolbar.OnMenuIte
     private void previewImages() {
         mImagesLayout.setVisibility(mAttachedImages.isEmpty() ? View.GONE : View.VISIBLE);
 
+        for (ImageView imageView : mImageViews) {
+            imageView.setImageDrawable(null);
+        }
+
         for (int i = 0; i < mAttachedImages.size(); ++i) {
             Glide.with(this)
                     .load(mAttachedImages.get(i))
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(mImageViews[i]);
+
+            final int finalI = i;
+            mImageViews[i].setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    mAttachedImages.remove(finalI);
+                    previewImages();
+                    return true;
+                }
+            });
         }
     }
 
