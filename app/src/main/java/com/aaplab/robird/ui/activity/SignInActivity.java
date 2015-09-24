@@ -23,6 +23,7 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
+import rx.functions.Func6;
 import rx.schedulers.Schedulers;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -169,37 +170,20 @@ public class SignInActivity extends BaseActivity {
     }
 
     private Observable<Integer> cacheData(final Account account) {
-        return new DirectsModel(account).update()
-                .flatMap(new Func1<Integer, Observable<Integer>>() {
+        return Observable.zip(
+                new DirectsModel(account).update(),
+                new TimelineModel(account, TimelineModel.HOME_ID).update(),
+                new TimelineModel(account, TimelineModel.MENTIONS_ID).update(),
+                new TimelineModel(account, TimelineModel.FAVORITES_ID).update(),
+                new TimelineModel(account, TimelineModel.RETWEETS_ID).update(),
+                new UserListsModel(account).update(),
+                new Func6<Integer, Integer, Integer, Integer, Integer, Integer, Integer>() {
                     @Override
-                    public Observable<Integer> call(Integer integer) {
-                        return new TimelineModel(account, TimelineModel.HOME_ID).update();
+                    public Integer call(Integer integer, Integer integer2, Integer integer3, Integer integer4, Integer integer5, Integer integer6) {
+                        return integer + integer2 + integer3 + integer4 + integer5 + integer6;
                     }
-                })
-                .flatMap(new Func1<Integer, Observable<Integer>>() {
-                    @Override
-                    public Observable<Integer> call(Integer integer) {
-                        return new TimelineModel(account, TimelineModel.MENTIONS_ID).update();
-                    }
-                })
-                .flatMap(new Func1<Integer, Observable<Integer>>() {
-                    @Override
-                    public Observable<Integer> call(Integer integer) {
-                        return new TimelineModel(account, TimelineModel.FAVORITES_ID).update();
-                    }
-                })
-                .flatMap(new Func1<Integer, Observable<Integer>>() {
-                    @Override
-                    public Observable<Integer> call(Integer integer) {
-                        return new TimelineModel(account, TimelineModel.RETWEETS_ID).update();
-                    }
-                })
-                .flatMap(new Func1<Integer, Observable<Integer>>() {
-                    @Override
-                    public Observable<Integer> call(Integer integer) {
-                        return new UserListsModel(account).update();
-                    }
-                })
+                }
+        )
                 .flatMap(new Func1<Integer, Observable<UserList>>() {
                     @Override
                     public Observable<UserList> call(Integer integer) {
