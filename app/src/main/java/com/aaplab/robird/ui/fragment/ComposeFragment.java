@@ -182,6 +182,7 @@ public class ComposeFragment extends DialogFragment implements Toolbar.OnMenuIte
         if (TextUtils.isEmpty(mUserName)) {
             mEditText.addTextChangedListener(this);
             mEditText.setText(getArguments().getString("text"));
+            mEditText.setSelection(TextUtils.equals(getTag(), TAG_QUOTE) ? 0 : mEditText.length());
         } else {
             mToolbar.getMenu().findItem(R.id.menu_schedule).setVisible(false);
             mToolbar.getMenu().findItem(R.id.menu_camera).setVisible(false);

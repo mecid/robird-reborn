@@ -23,7 +23,7 @@
     <string name="successfully_unretweeted">Successfully unretweeted</string>
     <string name="copied_to_clipboard">Copied to clipboard</string>
     <string name="share">Share</string>
-    <string name="friends">Friends</string>
+    <string name="friends">Following</string>
     <string name="followers">Followers</string>
     <string name="follow">Follow</string>
     <string name="block">Block</string>
