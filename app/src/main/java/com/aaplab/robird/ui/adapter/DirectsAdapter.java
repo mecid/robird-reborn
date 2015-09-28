@@ -14,6 +14,7 @@ import com.aaplab.robird.R;
 import com.aaplab.robird.data.entity.Account;
 import com.aaplab.robird.data.entity.Direct;
 import com.aaplab.robird.ui.activity.DirectChatActivity;
+import com.aaplab.robird.util.LinkUtils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
@@ -73,7 +74,7 @@ public class DirectsAdapter extends RecyclerView.Adapter<DirectsAdapter.DirectHo
         holder.fullNameTextView.setText(fullName);
         holder.textView.setText(direct.text());
 
-        if (clickable)
+        if (clickable) {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -82,6 +83,9 @@ public class DirectsAdapter extends RecyclerView.Adapter<DirectsAdapter.DirectHo
                     DirectChatActivity.start(activity, account, username);
                 }
             });
+        } else {
+            LinkUtils.activate(activity, holder.textView);
+        }
     }
 
     @Override
