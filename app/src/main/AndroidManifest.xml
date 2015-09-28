@@ -115,6 +115,22 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".ui.activity.TwitterLinkHandlerActivity">
+            <intent-filter>
+                <data
+                    android:host="twitter.com"
+                    android:scheme="http" />
+                <data
+                    android:host="twitter.com"
+                    android:scheme="https" />
+
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
         <activity android:name=".ui.activity.UserListActivity" />
         <activity android:name=".ui.activity.DirectChatActivity" />
 
