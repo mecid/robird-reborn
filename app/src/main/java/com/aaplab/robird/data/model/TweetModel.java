@@ -13,6 +13,7 @@ import java.util.List;
 
 import rx.Observable;
 import rx.Subscriber;
+import rx.functions.Func1;
 import twitter4j.Status;
 import twitter4j.TwitterException;
 
@@ -21,11 +22,11 @@ import twitter4j.TwitterException;
  */
 public class TweetModel extends BaseTwitterModel {
 
-    private Tweet mTweet;
+    private final long mTweetId;
 
-    public TweetModel(Account account, Tweet tweet) {
+    public TweetModel(Account account, long tweetId) {
         super(account);
-        mTweet = tweet;
+        mTweetId = tweetId;
     }
 
     public Observable<Status> tweet() {
@@ -33,7 +34,7 @@ public class TweetModel extends BaseTwitterModel {
             @Override
             public void call(Subscriber<? super Status> subscriber) {
                 try {
-                    subscriber.onNext(mTwitter.showStatus(mTweet.tweetId()));
+                    subscriber.onNext(mTwitter.showStatus(mTweetId));
                     subscriber.onCompleted();
                 } catch (TwitterException e) {
                     subscriber.onError(e);
@@ -47,7 +48,7 @@ public class TweetModel extends BaseTwitterModel {
             @Override
             public void call(Subscriber<? super Status> subscriber) {
                 try {
-                    Status status = mTwitter.retweetStatus(mTweet.tweetId());
+                    Status status = mTwitter.retweetStatus(mTweetId);
 //                    Status status = mTwitter.showStatus(mTweet.tweetId);
 //                    TODO is retweeted by me working only for tweet from my timeline
 //                    if (status.isRetweetedByMe()) {
@@ -71,7 +72,7 @@ public class TweetModel extends BaseTwitterModel {
             @Override
             public void call(Subscriber<? super Status> subscriber) {
                 try {
-                    Status status = mTwitter.showStatus(mTweet.tweetId());
+                    Status status = mTwitter.showStatus(mTweetId);
 
                     if (status.isFavorited())
                         status = mTwitter.destroyFavorite(status.getId());
@@ -89,30 +90,56 @@ public class TweetModel extends BaseTwitterModel {
     }
 
     public Observable<List<Tweet>> conversation() {
-        return Observable.create(new Observable.OnSubscribe<List<Tweet>>() {
+        return Observable.create(new Observable.OnSubscribe<Tweet>() {
             @Override
-            public void call(Subscriber<? super List<Tweet>> subscriber) {
-                List<Tweet> conversation = new ArrayList<>();
-                long inReplyToStatus = mTweet.inReplyToStatus();
-
-                try {
-                    while (inReplyToStatus > 0) {
-                        Tweet temp = findTweetById(inReplyToStatus);
-                        if (temp == null) {
-                            temp = Tweet.from(mTwitter.showStatus(inReplyToStatus));
-                        }
-
-                        conversation.add(temp);
-                        inReplyToStatus = temp.inReplyToStatus();
-                    }
-
-                    subscriber.onNext(conversation);
-                    subscriber.onCompleted();
-                } catch (TwitterException e) {
-                    subscriber.onError(e);
-                }
+            public void call(Subscriber<? super Tweet> subscriber) {
+                subscriber.onNext(findTweetById(mTweetId));
+                subscriber.onCompleted();
             }
-        });
+        })
+                .flatMap(new Func1<Tweet, Observable<Tweet>>() {
+                    @Override
+                    public Observable<Tweet> call(Tweet tweet) {
+                        return tweet != null ?
+                                Observable.just(tweet) :
+                                tweet()
+                                        .map(new Func1<Status, Tweet>() {
+                                            @Override
+                                            public Tweet call(Status status) {
+                                                return Tweet.from(status);
+                                            }
+                                        });
+                    }
+                })
+                .flatMap(new Func1<Tweet, Observable<List<Tweet>>>() {
+                    @Override
+                    public Observable<List<Tweet>> call(final Tweet tweet) {
+                        return Observable.create(new Observable.OnSubscribe<List<Tweet>>() {
+                            @Override
+                            public void call(Subscriber<? super List<Tweet>> subscriber) {
+                                List<Tweet> conversation = new ArrayList<>();
+                                long inReplyToStatus = tweet.inReplyToStatus();
+
+                                try {
+                                    while (inReplyToStatus > 0) {
+                                        Tweet temp = findTweetById(inReplyToStatus);
+                                        if (temp == null) {
+                                            temp = Tweet.from(mTwitter.showStatus(inReplyToStatus));
+                                        }
+
+                                        conversation.add(temp);
+                                        inReplyToStatus = temp.inReplyToStatus();
+                                    }
+
+                                    subscriber.onNext(conversation);
+                                    subscriber.onCompleted();
+                                } catch (TwitterException e) {
+                                    subscriber.onError(e);
+                                }
+                            }
+                        });
+                    }
+                });
     }
 
     public Observable<Status> delete() {
@@ -120,7 +147,7 @@ public class TweetModel extends BaseTwitterModel {
             @Override
             public void call(Subscriber<? super Status> subscriber) {
                 try {
-                    subscriber.onNext(mTwitter.destroyStatus(mTweet.tweetId()));
+                    subscriber.onNext(mTwitter.destroyStatus(mTweetId));
                     deleteLocalTweet();
                     subscriber.onCompleted();
                 } catch (TwitterException e) {
@@ -141,14 +168,14 @@ public class TweetModel extends BaseTwitterModel {
                 .update(TweetContract.CONTENT_URI, values,
                         String.format("%s=%d AND %s=%d",
                                 TweetContract.ACCOUNT_ID, mAccount.id(),
-                                TweetContract.TWEET_ID, mTweet.tweetId()),
+                                TweetContract.TWEET_ID, mTweetId),
                         null);
     }
 
     private void deleteLocalTweet() {
         Inject.contentResolver()
                 .delete(TweetContract.CONTENT_URI,
-                        String.format("%s=%d", TweetContract.TWEET_ID, mTweet.tweetId()),
+                        String.format("%s=%d", TweetContract.TWEET_ID, mTweetId),
                         null);
     }
 
