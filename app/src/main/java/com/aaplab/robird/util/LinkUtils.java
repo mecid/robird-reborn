@@ -1,12 +1,16 @@
 package com.aaplab.robird.util;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.customtabs.CustomTabsIntent;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextPaint;
+import android.text.TextUtils;
 import android.text.style.URLSpan;
 import android.text.util.Linkify;
 import android.view.View;
@@ -15,6 +19,7 @@ import android.widget.TextView;
 import com.aaplab.robird.R;
 import com.aaplab.robird.data.model.PrefsModel;
 
+import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -51,6 +56,19 @@ public class LinkUtils {
         textView.setText(s);
     }
 
+    private static boolean canHandleByApp(Activity activity, String url) {
+        final PackageManager pm = activity.getPackageManager();
+        List<ResolveInfo> resolveInfos = pm.queryIntentActivities(new Intent(Intent.ACTION_VIEW, Uri.parse(url)),
+                PackageManager.MATCH_DEFAULT_ONLY);
+
+        for (ResolveInfo resolveInfo : resolveInfos) {
+            if (TextUtils.equals(resolveInfo.resolvePackageName, activity.getPackageName()))
+                return true;
+        }
+
+        return false;
+    }
+
     private static class CustomTabUrlSpan extends URLSpan {
         private PrefsModel mPrefsModel;
         private Activity mActivity;
@@ -69,9 +87,7 @@ public class LinkUtils {
 
         @Override
         public void onClick(@NonNull View widget) {
-            if (mPrefsModel.isInAppBrowserEnabled() &&
-                    !getURL().matches("@([A-Za-z0-9_-]+)") &&
-                    !getURL().matches("#([A-Za-z0-9_-]+)")) {
+            if (mPrefsModel.isInAppBrowserEnabled() && !canHandleByApp(mActivity, getURL())) {
                 new CustomTabsIntent.Builder()
                         .setToolbarColor(mActivity.getResources().getColor(R.color.primary))
                         .build().launchUrl(mActivity, Uri.parse(getURL()));
