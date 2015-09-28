@@ -61,7 +61,7 @@ public class TweetDetailsFragment extends BaseSwipeToRefreshRecyclerFragment {
         super.onActivityCreated(savedInstanceState);
         mAccount = getArguments().getParcelable("account");
         mTweet = getArguments().getParcelable("tweet");
-        mTweetModel = new TweetModel(mAccount, mTweet);
+        mTweetModel = new TweetModel(mAccount, mTweet.tweetId());
         mTweetDetailsAdapter = new TweetDetailsAdapter(getActivity(), mAccount, mTweet);
         mRecyclerView.setAdapter(mTweetDetailsAdapter);
         mRefreshLayout.setEnabled(false);
