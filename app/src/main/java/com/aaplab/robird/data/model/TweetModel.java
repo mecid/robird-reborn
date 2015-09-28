@@ -90,15 +90,35 @@ public class TweetModel extends BaseTwitterModel {
     }
 
     public Observable<List<Tweet>> conversation() {
-        return tweet()
-                .flatMap(new Func1<Status, Observable<List<Tweet>>>() {
+        return Observable.create(new Observable.OnSubscribe<Tweet>() {
+            @Override
+            public void call(Subscriber<? super Tweet> subscriber) {
+                subscriber.onNext(findTweetById(mTweetId));
+                subscriber.onCompleted();
+            }
+        })
+                .flatMap(new Func1<Tweet, Observable<Tweet>>() {
                     @Override
-                    public Observable<List<Tweet>> call(final Status status) {
+                    public Observable<Tweet> call(Tweet tweet) {
+                        return tweet != null ?
+                                Observable.just(tweet) :
+                                tweet()
+                                        .map(new Func1<Status, Tweet>() {
+                                            @Override
+                                            public Tweet call(Status status) {
+                                                return Tweet.from(status);
+                                            }
+                                        });
+                    }
+                })
+                .flatMap(new Func1<Tweet, Observable<List<Tweet>>>() {
+                    @Override
+                    public Observable<List<Tweet>> call(final Tweet tweet) {
                         return Observable.create(new Observable.OnSubscribe<List<Tweet>>() {
                             @Override
                             public void call(Subscriber<? super List<Tweet>> subscriber) {
                                 List<Tweet> conversation = new ArrayList<>();
-                                long inReplyToStatus = status.getInReplyToStatusId();
+                                long inReplyToStatus = tweet.inReplyToStatus();
 
                                 try {
                                     while (inReplyToStatus > 0) {
