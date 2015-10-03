@@ -237,7 +237,7 @@ public class UserProfileActivity extends BaseActivity {
             Analytics.event(ComposeFragment.TAG_REPLY);
             ComposeFragment.share(String.format("@%s ", mScreenName))
                     .show(getSupportFragmentManager(), ComposeFragment.TAG_REPLY);
-        } else {
+        } else if (item.getItemId() != android.R.id.home) {
             Analytics.event(Analytics.ADD_TO_LIST);
             mSubscriptions.add(
                     mUserListsModel
