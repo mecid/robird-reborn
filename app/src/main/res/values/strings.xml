@@ -75,4 +75,5 @@
     <string name="quote_retweet">Quote</string>
     <string name="save">Save</string>
     <string name="image_saved">Image saved</string>
+    <string name="type_something">Type something</string>
 </resources>
