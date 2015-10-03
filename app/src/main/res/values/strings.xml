@@ -74,6 +74,7 @@
     <string name="native_retweet">Native</string>
     <string name="quote_retweet">Quote</string>
     <string name="save">Save</string>
+    <string name="show_client_name">Show client name in timeline</string>
     <string name="image_saved">Image saved</string>
     <string name="type_something">Type something</string>
 </resources>

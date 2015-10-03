@@ -28,6 +28,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
     private Preference mUnlockAllPreference;
     private Preference mUnlockUiPreference;
     private Preference mHideMediaPreference;
+    private Preference mShowClientNameInTimelinePreference;
     private Preference mHideAvatarsPreference;
     private Preference mUseInAppBrowserPreference;
     private Preference mUseMobileViewInAppBrowserPreference;
@@ -50,6 +51,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         mUseInAppBrowserPreference = findPreference(PrefsModel.USE_IN_APP_BROWSER);
         mUseMobileViewInAppBrowserPreference = findPreference(PrefsModel.USE_MOBILE_VIEW_BROWSER);
 
+        mShowClientNameInTimelinePreference = findPreference(PrefsModel.SHOW_CLIENT_NAME_IN_TIMELINE);
         mHideAvatarsPreference = findPreference(PrefsModel.HIDE_AVATARS);
         mHideMediaPreference = findPreference(PrefsModel.HIDE_MEDIA);
 
@@ -121,6 +123,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         mUnlockInAppBrowserPreference.setEnabled(!mBillingModel.isPurchased(BillingModel.UNLOCK_IN_APP_BROWSER));
 
         mThemePreference.setEnabled(mBillingModel.isPurchased(BillingModel.UNLOCK_UI_PRODUCT_ID));
+        mShowClientNameInTimelinePreference.setEnabled(mBillingModel.isPurchased(BillingModel.UNLOCK_UI_PRODUCT_ID));
         mHighlightTimelineLinksPreference.setEnabled(mBillingModel.isPurchased(BillingModel.UNLOCK_UI_PRODUCT_ID));
         mTimelineFontSizePreference.setEnabled(mBillingModel.isPurchased(BillingModel.UNLOCK_UI_PRODUCT_ID));
         mHideAvatarsPreference.setEnabled(mBillingModel.isPurchased(BillingModel.UNLOCK_UI_PRODUCT_ID));

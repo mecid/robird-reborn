@@ -10,6 +10,7 @@ import com.aaplab.robird.inject.Inject;
  */
 public final class PrefsModel {
     public static final String PREFER_DARK_THEME = "prefer_dark_theme";
+    public static final String SHOW_CLIENT_NAME_IN_TIMELINE = "client_name";
     public static final String TIMELINE_FONT_SIZE = "font_size";
     public static final String HIDE_AVATARS = "hide_avatars";
     public static final String HIDE_MEDIA = "hide_media";
@@ -49,6 +50,10 @@ public final class PrefsModel {
 
     public boolean highlightTimelineLinks() {
         return mPreferences.getBoolean(HIGHLIGHT_TIMELINE_LINKS, false);
+    }
+
+    public boolean showClientNameInTimeline() {
+        return mPreferences.getBoolean(SHOW_CLIENT_NAME_IN_TIMELINE, false);
     }
 
     public boolean isBackgroundUpdateServiceEnabled() {
