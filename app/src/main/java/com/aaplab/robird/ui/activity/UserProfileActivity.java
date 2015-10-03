@@ -293,6 +293,13 @@ public class UserProfileActivity extends BaseActivity {
         mBioTextView.setText(bioBuilder.toString().trim());
         mBioTextView.setVisibility(TextUtils.isEmpty(mBioTextView.getText()) ? View.GONE : View.VISIBLE);
 
+        mAvatarImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ImagesActivity.start(UserProfileActivity.this, new String[]{mUser.getOriginalProfileImageURL()});
+            }
+        });
+
         Glide.with(this)
                 .load(mUser.getOriginalProfileImageURL())
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
