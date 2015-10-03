@@ -15,6 +15,10 @@
             app:key="highlight_timeline_links"
             app:title="@string/highlight_timeline_links" />
 
+        <SwitchPreferenceCompat
+            app:key="client_name"
+            app:title="@string/show_client_name" />
+
         <ListPreference
             app:defaultValue="14"
             app:entries="@array/timeline_font_size"
@@ -53,7 +57,7 @@
     <PreferenceCategory app:title="@string/other_settings">
         <Preference
             app:key="unlock_other_settings"
-            app:title="@string/unlock_browser" />
+            app:title="@string/unlock_other_settings" />
 
         <SwitchPreferenceCompat
             app:defaultValue="true"

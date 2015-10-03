@@ -237,7 +237,7 @@ public class UserProfileActivity extends BaseActivity {
             Analytics.event(ComposeFragment.TAG_REPLY);
             ComposeFragment.share(String.format("@%s ", mScreenName))
                     .show(getSupportFragmentManager(), ComposeFragment.TAG_REPLY);
-        } else {
+        } else if (item.getItemId() != android.R.id.home) {
             Analytics.event(Analytics.ADD_TO_LIST);
             mSubscriptions.add(
                     mUserListsModel
@@ -292,6 +292,13 @@ public class UserProfileActivity extends BaseActivity {
 
         mBioTextView.setText(bioBuilder.toString().trim());
         mBioTextView.setVisibility(TextUtils.isEmpty(mBioTextView.getText()) ? View.GONE : View.VISIBLE);
+
+        mAvatarImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ImagesActivity.start(UserProfileActivity.this, new String[]{mUser.getOriginalProfileImageURL()});
+            }
+        });
 
         Glide.with(this)
                 .load(mUser.getOriginalProfileImageURL())

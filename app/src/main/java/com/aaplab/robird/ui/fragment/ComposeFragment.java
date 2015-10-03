@@ -235,59 +235,65 @@ public class ComposeFragment extends DialogFragment implements Toolbar.OnMenuIte
         if (item.getItemId() == R.id.menu_send) {
             Analytics.event(Analytics.SEND);
             if (TextUtils.isEmpty(mUserName)) {
-                if (mTweetValidator.isValidTweet(mEditText.getText().toString())) {
-                    final StatusUpdate statusUpdate = new StatusUpdate(mEditText.getText().toString());
-                    statusUpdate.setInReplyToStatusId(mTweet != null ? mTweet.tweetId() : -1L);
-
-                    if (mAttachedImages.isEmpty()) {
-                        mActivityWeak.get().compositeSubscription(
-                                mComposeModel
-                                        .tweet(statusUpdate)
-                                        .subscribeOn(Schedulers.io())
-                                        .observeOn(AndroidSchedulers.mainThread())
-                                        .subscribe(new DefaultObserver<Status>() {
-                                            @Override
-                                            public void onNext(Status status) {
-                                                super.onNext(status);
-                                                Snackbar.make(mActivityWeak.get().findViewById(R.id.coordinator),
-                                                        R.string.successfully_tweeted, Snackbar.LENGTH_SHORT).show();
-                                            }
-                                        })
-                        );
-                    } else {
-                        mActivityWeak.get().compositeSubscription(
-                                mComposeModel
-                                        .upload(mAttachedImages)
-                                        .buffer(mAttachedImages.size())
-                                        .flatMap(new Func1<List<UploadedMedia>, Observable<Status>>() {
-                                            @Override
-                                            public Observable<Status> call(List<UploadedMedia> uploadedMedias) {
-                                                long ids[] = new long[uploadedMedias.size()];
-
-                                                for (int i = 0; i < uploadedMedias.size(); ++i)
-                                                    ids[i] = uploadedMedias.get(i).getMediaId();
-
-                                                statusUpdate.setMediaIds(ids);
-                                                return mComposeModel.tweet(statusUpdate);
-                                            }
-                                        })
-                                        .subscribeOn(Schedulers.io())
-                                        .observeOn(AndroidSchedulers.mainThread())
-                                        .subscribe(new DefaultObserver<Status>() {
-                                            @Override
-                                            public void onNext(Status status) {
-                                                super.onNext(status);
-                                                Snackbar.make(mActivityWeak.get().findViewById(R.id.coordinator),
-                                                        R.string.successfully_tweeted, Snackbar.LENGTH_SHORT).show();
-                                            }
-                                        })
-                        );
-                    }
-
-                    dismiss();
-                } else {
-                    Toast.makeText(mActivityWeak.get(), R.string.tweet_is_too_long, Toast.LENGTH_SHORT).show();
+                if (mTweetValidator.getTweetLength(mEditText.getText().toString()) == 0) {
+                    Toast.makeText(getActivity(), R.string.type_something, Toast.LENGTH_SHORT).show();
+                    return true;
                 }
+
+                if (!mTweetValidator.isValidTweet(mEditText.getText().toString())) {
+                    Toast.makeText(getActivity(), R.string.tweet_is_too_long, Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+
+                final StatusUpdate statusUpdate = new StatusUpdate(mEditText.getText().toString());
+                statusUpdate.setInReplyToStatusId(mTweet != null ? mTweet.tweetId() : -1L);
+
+                if (mAttachedImages.isEmpty()) {
+                    mActivityWeak.get().compositeSubscription(
+                            mComposeModel
+                                    .tweet(statusUpdate)
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe(new DefaultObserver<Status>() {
+                                        @Override
+                                        public void onNext(Status status) {
+                                            super.onNext(status);
+                                            Snackbar.make(mActivityWeak.get().findViewById(R.id.coordinator),
+                                                    R.string.successfully_tweeted, Snackbar.LENGTH_SHORT).show();
+                                        }
+                                    })
+                    );
+                } else {
+                    mActivityWeak.get().compositeSubscription(
+                            mComposeModel
+                                    .upload(mAttachedImages)
+                                    .buffer(mAttachedImages.size())
+                                    .flatMap(new Func1<List<UploadedMedia>, Observable<Status>>() {
+                                        @Override
+                                        public Observable<Status> call(List<UploadedMedia> uploadedMedias) {
+                                            long ids[] = new long[uploadedMedias.size()];
+
+                                            for (int i = 0; i < uploadedMedias.size(); ++i)
+                                                ids[i] = uploadedMedias.get(i).getMediaId();
+
+                                            statusUpdate.setMediaIds(ids);
+                                            return mComposeModel.tweet(statusUpdate);
+                                        }
+                                    })
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe(new DefaultObserver<Status>() {
+                                        @Override
+                                        public void onNext(Status status) {
+                                            super.onNext(status);
+                                            Snackbar.make(mActivityWeak.get().findViewById(R.id.coordinator),
+                                                    R.string.successfully_tweeted, Snackbar.LENGTH_SHORT).show();
+                                        }
+                                    })
+                    );
+                }
+
+                dismiss();
             } else {
                 mActivityWeak.get().compositeSubscription(
                         mDirectsModel

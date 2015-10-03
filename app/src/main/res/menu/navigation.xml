@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <group android:checkableBehavior="single">
-        <item
+    <group
+        android:id="@+id/navigation_primary"
+        android:checkableBehavior="single">
+
+    <item
             android:id="@+id/navigation_item_home"
             android:icon="@drawable/ic_home_grey"
             android:title="@string/home" />
@@ -38,10 +41,12 @@
 
     </group>
 
-    <group android:checkableBehavior="none">
-        <item
+    <group
+        android:id="@+id/navigation_secondary"
+        android:checkableBehavior="none">
+
+    <item
             android:id="@+id/navigation_item_settings"
-            android:icon="@drawable/ic_settings_grey"
             android:title="@string/settings" />
     </group>
 </menu>

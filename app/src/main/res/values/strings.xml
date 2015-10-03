@@ -7,7 +7,7 @@
     <string name="mentions">Mentions</string>
     <string name="retweets">Retweets</string>
     <string name="favorites">Favorites</string>
-    <string name="directs">Directs</string>
+    <string name="directs">Direct Messages</string>
     <string name="lists">Lists</string>
     <string name="whats">What\'s happening?</string>
     <string name="compose">Compose</string>
@@ -62,6 +62,7 @@
     <string name="enable_in_app_browser">Enable In-App Browser</string>
     <string name="enable_mobile_view">Enable mobile view</string>
     <string name="unlock_browser">Unlock In-App Browser</string>
+    <string name="unlock_other_settings">Unlock Other Settings</string>
     <string name="browser">In-App Browser</string>
     <string name="highlight_timeline_links">Highlight timeline links</string>
     <string name="background_update_service">Enable background updates</string>
@@ -73,5 +74,7 @@
     <string name="native_retweet">Native</string>
     <string name="quote_retweet">Quote</string>
     <string name="save">Save</string>
+    <string name="show_client_name">Show client name in timeline</string>
     <string name="image_saved">Image saved</string>
+    <string name="type_something">Type something</string>
 </resources>
