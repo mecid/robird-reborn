@@ -62,6 +62,7 @@
     <string name="enable_in_app_browser">Enable In-App Browser</string>
     <string name="enable_mobile_view">Enable mobile view</string>
     <string name="unlock_browser">Unlock In-App Browser</string>
+    <string name="unlock_other_settings">Unlock Other Settings</string>
     <string name="browser">In-App Browser</string>
     <string name="highlight_timeline_links">Highlight timeline links</string>
     <string name="background_update_service">Enable background updates</string>

@@ -53,7 +53,7 @@
     <PreferenceCategory app:title="@string/other_settings">
         <Preference
             app:key="unlock_other_settings"
-            app:title="@string/unlock_browser" />
+            app:title="@string/unlock_other_settings" />
 
         <SwitchPreferenceCompat
             app:defaultValue="true"
