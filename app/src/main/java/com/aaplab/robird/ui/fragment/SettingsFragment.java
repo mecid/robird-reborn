@@ -117,6 +117,9 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
     }
 
     private void enablePurchasedSettings() {
+        //Other setting is free for now
+        mUnlockOtherPreference.setVisible(false);
+
         mUnlockUiPreference.setEnabled(!mBillingModel.isPurchased(BillingModel.UNLOCK_UI_PRODUCT_ID));
         mUnlockAllPreference.setEnabled(!mBillingModel.isPurchased(BillingModel.UNLOCK_ALL_PRODUCT_ID));
         mUnlockOtherPreference.setEnabled(!mBillingModel.isPurchased(BillingModel.UNLOCK_OTHER_PRODUCT_ID));
@@ -130,7 +133,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         mHideMediaPreference.setEnabled(mBillingModel.isPurchased(BillingModel.UNLOCK_UI_PRODUCT_ID));
         mUseInAppBrowserPreference.setEnabled(mBillingModel.isPurchased(BillingModel.UNLOCK_IN_APP_BROWSER));
         mUseMobileViewInAppBrowserPreference.setEnabled(mBillingModel.isPurchased(BillingModel.UNLOCK_IN_APP_BROWSER));
-        mBackgroundUpdatePreference.setEnabled(mBillingModel.isPurchased(BillingModel.UNLOCK_OTHER_PRODUCT_ID));
+//        mBackgroundUpdatePreference.setEnabled(mBillingModel.isPurchased(BillingModel.UNLOCK_OTHER_PRODUCT_ID));
     }
 
     private void unlock(final String productId) {
