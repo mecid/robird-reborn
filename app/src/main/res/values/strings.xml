@@ -77,4 +77,6 @@
     <string name="show_client_name">Show client name in timeline</string>
     <string name="image_saved">Image saved</string>
     <string name="type_something">Type something</string>
+    <string name="restore_purchase_history">Restore Purchase History</string>
+    <string name="purchase_history_restored">Purchase history restored</string>
 </resources>
