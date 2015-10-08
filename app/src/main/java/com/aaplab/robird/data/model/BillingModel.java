@@ -34,9 +34,9 @@ public final class BillingModel implements BillingProcessor.IBillingHandler {
         mActivity = activity;
     }
 
-    public Observable<String> restorePurchaseHistory() {
-        mBillingProcessor.loadOwnedPurchasesFromGoogle();
-        return mProductSubject;
+    public boolean restorePurchaseHistory() {
+        Analytics.event(Analytics.RESTORE);
+        return mBillingProcessor.loadOwnedPurchasesFromGoogle();
     }
 
     public Observable<String> purchase(String productId) {
@@ -65,8 +65,7 @@ public final class BillingModel implements BillingProcessor.IBillingHandler {
 
     @Override
     public void onPurchaseHistoryRestored() {
-        Analytics.event(Analytics.RESTORE);
-        mProductSubject.onNext(null);
+
     }
 
     @Override
