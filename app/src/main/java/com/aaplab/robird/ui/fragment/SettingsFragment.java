@@ -38,6 +38,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
     private Preference mBackgroundUpdatePreference;
     private Preference mBackgroundUpdateIntervalPreference;
     private Preference mUnlockOtherPreference;
+    private Preference mRestorePreference;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -79,6 +80,9 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         mBackgroundUpdatePreference = findPreference(PrefsModel.BACKGROUND_UPDATE_SERVICE);
         mBackgroundUpdatePreference.setOnPreferenceChangeListener(this);
 
+        mRestorePreference = findPreference("restore");
+        mRestorePreference.setOnPreferenceClickListener(this);
+
         enablePurchasedSettings();
     }
 
@@ -97,6 +101,25 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
             unlock(BillingModel.UNLOCK_IN_APP_BROWSER);
         } else if (mUnlockOtherPreference == preference) {
             unlock(BillingModel.UNLOCK_OTHER_PRODUCT_ID);
+        } else if (mRestorePreference == preference) {
+            mSubscriptions.add(
+                    mBillingModel
+                            .restorePurchaseHistory()
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new DefaultObserver<String>() {
+                                @Override
+                                public void onNext(String s) {
+                                    super.onNext(s);
+                                    enablePurchasedSettings();
+                                    Snackbar.make(
+                                            getActivity().findViewById(R.id.coordinator),
+                                            R.string.purchase_history_restored,
+                                            Snackbar.LENGTH_SHORT
+                                    ).show();
+                                }
+                            })
+            );
         }
 
         return true;
@@ -117,6 +140,9 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
     }
 
     private void enablePurchasedSettings() {
+        //Other setting is free for now
+        mUnlockOtherPreference.setVisible(false);
+
         mUnlockUiPreference.setEnabled(!mBillingModel.isPurchased(BillingModel.UNLOCK_UI_PRODUCT_ID));
         mUnlockAllPreference.setEnabled(!mBillingModel.isPurchased(BillingModel.UNLOCK_ALL_PRODUCT_ID));
         mUnlockOtherPreference.setEnabled(!mBillingModel.isPurchased(BillingModel.UNLOCK_OTHER_PRODUCT_ID));
@@ -130,7 +156,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         mHideMediaPreference.setEnabled(mBillingModel.isPurchased(BillingModel.UNLOCK_UI_PRODUCT_ID));
         mUseInAppBrowserPreference.setEnabled(mBillingModel.isPurchased(BillingModel.UNLOCK_IN_APP_BROWSER));
         mUseMobileViewInAppBrowserPreference.setEnabled(mBillingModel.isPurchased(BillingModel.UNLOCK_IN_APP_BROWSER));
-        mBackgroundUpdatePreference.setEnabled(mBillingModel.isPurchased(BillingModel.UNLOCK_OTHER_PRODUCT_ID));
+//        mBackgroundUpdatePreference.setEnabled(mBillingModel.isPurchased(BillingModel.UNLOCK_OTHER_PRODUCT_ID));
     }
 
     private void unlock(final String productId) {

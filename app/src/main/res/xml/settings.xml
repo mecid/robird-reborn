@@ -87,4 +87,8 @@
     <Preference
         app:key="unlock_all_settings"
         app:title="@string/unlock_all_features" />
+
+    <Preference
+        app:key="restore"
+        app:title="@string/restore_purchase_history" />
 </PreferenceScreen>

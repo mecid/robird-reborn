@@ -32,6 +32,7 @@ public final class Analytics {
     public static final String COPY = "Copy";
 
     public static final String PURCHASE = "Purchase";
+    public static final String RESTORE = "Restore";
     public static final String PRODUCT = "Product";
 
     private static final String YANDEX_METRICA_KEY = "af3babcc-d5a6-451e-b955-8ca9ba933440";
