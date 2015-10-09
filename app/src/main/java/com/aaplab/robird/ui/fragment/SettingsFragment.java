@@ -124,13 +124,10 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
     }
 
     private void enablePurchasedSettings() {
-        //Other setting is free for now
-        mUnlockOtherPreference.setVisible(false);
-
         mUnlockUiPreference.setEnabled(!mBillingModel.isPurchased(BillingModel.UNLOCK_UI_PRODUCT_ID));
         mUnlockAllPreference.setEnabled(!mBillingModel.isPurchased(BillingModel.UNLOCK_ALL_PRODUCT_ID));
-        mUnlockOtherPreference.setEnabled(!mBillingModel.isPurchased(BillingModel.UNLOCK_OTHER_PRODUCT_ID));
         mUnlockInAppBrowserPreference.setEnabled(!mBillingModel.isPurchased(BillingModel.UNLOCK_IN_APP_BROWSER));
+        mUnlockOtherPreference.setEnabled(false);
 
         mThemePreference.setEnabled(mBillingModel.isPurchased(BillingModel.UNLOCK_UI_PRODUCT_ID));
         mShowClientNameInTimelinePreference.setEnabled(mBillingModel.isPurchased(BillingModel.UNLOCK_UI_PRODUCT_ID));
