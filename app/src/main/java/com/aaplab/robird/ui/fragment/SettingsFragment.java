@@ -49,12 +49,18 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
 
         mUnlockInAppBrowserPreference = findPreference("unlock_browser");
         mUnlockInAppBrowserPreference.setOnPreferenceClickListener(this);
+
         mUseInAppBrowserPreference = findPreference(PrefsModel.USE_IN_APP_BROWSER);
         mUseMobileViewInAppBrowserPreference = findPreference(PrefsModel.USE_MOBILE_VIEW_BROWSER);
 
         mShowClientNameInTimelinePreference = findPreference(PrefsModel.SHOW_CLIENT_NAME_IN_TIMELINE);
+        mShowClientNameInTimelinePreference.setOnPreferenceChangeListener(this);
+
         mHideAvatarsPreference = findPreference(PrefsModel.HIDE_AVATARS);
+        mHideAvatarsPreference.setOnPreferenceChangeListener(this);
+
         mHideMediaPreference = findPreference(PrefsModel.HIDE_MEDIA);
+        mHideMediaPreference.setOnPreferenceChangeListener(this);
 
         mThemePreference = findPreference(PrefsModel.PREFER_DARK_THEME);
         mThemePreference.setOnPreferenceChangeListener(this);
@@ -70,6 +76,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         mUnlockUiPreference.setOnPreferenceClickListener(this);
 
         mHighlightTimelineLinksPreference = findPreference(PrefsModel.HIGHLIGHT_TIMELINE_LINKS);
+        mHighlightTimelineLinksPreference.setOnPreferenceChangeListener(this);
 
         mUnlockOtherPreference = findPreference("unlock_other_settings");
         mUnlockOtherPreference.setOnPreferenceClickListener(this);
@@ -111,10 +118,17 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
 
     @Override
     public boolean onPreferenceChange(Preference preference, Object o) {
+        // UI preference changed
+        if (preference == mThemePreference || preference == mHighlightTimelineLinksPreference ||
+                preference == mShowClientNameInTimelinePreference || preference == mTimelineFontSizePreference ||
+                preference == mHideMediaPreference || preference == mHideAvatarsPreference) {
+
+            Snackbar.make(getActivity().findViewById(R.id.coordinator),
+                    R.string.need_app_restart, Snackbar.LENGTH_INDEFINITE).show();
+        }
+
         if (preference == mTimelineFontSizePreference) {
             preference.setSummary((String) o);
-        } else if (preference == mThemePreference) {
-            getActivity().recreate();
         } else if (preference == mBackgroundUpdatePreference ||
                 preference == mBackgroundUpdateIntervalPreference) {
             getActivity().sendBroadcast(new Intent(getActivity(), UpdateReceiver.class));
