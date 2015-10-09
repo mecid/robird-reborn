@@ -109,8 +109,11 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         } else if (mUnlockOtherPreference == preference) {
             unlock(BillingModel.UNLOCK_OTHER_PRODUCT_ID);
         } else if (mRestorePreference == preference) {
-            mBillingModel.restorePurchaseHistory();
-            enablePurchasedSettings();
+            if (mBillingModel.restorePurchaseHistory()) {
+                enablePurchasedSettings();
+                Snackbar.make(getActivity().findViewById(R.id.coordinator),
+                        R.string.purchase_history_restored, Snackbar.LENGTH_SHORT).show();
+            }
         }
 
         return true;
