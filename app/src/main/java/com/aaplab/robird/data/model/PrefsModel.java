@@ -11,6 +11,8 @@ import com.aaplab.robird.inject.Inject;
 public final class PrefsModel {
     public static final String PREFER_DARK_THEME = "prefer_dark_theme";
     public static final String SHOW_CLIENT_NAME_IN_TIMELINE = "client_name";
+    public static final String COMPACT_TIMELINE = "compact_timeline";
+    public static final String SHOW_ABSOLUTE_TIME = "absolute_time";
     public static final String TIMELINE_FONT_SIZE = "font_size";
     public static final String HIDE_AVATARS = "hide_avatars";
     public static final String HIDE_MEDIA = "hide_media";
@@ -48,8 +50,16 @@ public final class PrefsModel {
         return mPreferences.getBoolean(USE_MOBILE_VIEW_BROWSER, false);
     }
 
+    public boolean compactTimeline() {
+        return mPreferences.getBoolean(COMPACT_TIMELINE, false);
+    }
+
     public boolean highlightTimelineLinks() {
         return mPreferences.getBoolean(HIGHLIGHT_TIMELINE_LINKS, false);
+    }
+
+    public boolean showAbsoluteTime() {
+        return mPreferences.getBoolean(SHOW_ABSOLUTE_TIME, false);
     }
 
     public boolean showClientNameInTimeline() {

@@ -12,12 +12,20 @@
             app:title="@string/prefer_dark_theme" />
 
         <SwitchPreferenceCompat
+            app:key="compact_timeline"
+            app:title="@string/compact_timeline" />
+
+        <SwitchPreferenceCompat
             app:key="highlight_timeline_links"
             app:title="@string/highlight_timeline_links" />
 
         <SwitchPreferenceCompat
             app:key="client_name"
             app:title="@string/show_client_name" />
+
+        <SwitchPreferenceCompat
+            app:key="absolute_time"
+            app:title="@string/show_absolute_time" />
 
         <ListPreference
             app:defaultValue="14"

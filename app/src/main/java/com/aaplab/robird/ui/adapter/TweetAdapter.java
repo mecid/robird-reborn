@@ -38,6 +38,8 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
     protected Activity mActivity;
     protected Account mAccount;
 
+    protected boolean mCompactTimeline;
+    protected boolean mAbsoluteTime;
     protected boolean mShowClientName;
     protected boolean mIsMediaHidden;
     protected boolean mIsAvatarHidden;
@@ -53,7 +55,8 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
 
     @Override
     public TweetHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new TweetHolder(LayoutInflater.from(mActivity).inflate(R.layout.tweet_item, parent, false));
+        int layoutId = mCompactTimeline ? R.layout.tweet_compact_item : R.layout.tweet_item;
+        return new TweetHolder(LayoutInflater.from(mActivity).inflate(layoutId, parent, false));
     }
 
     @Override
@@ -76,7 +79,11 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
         if (!TextUtils.isEmpty(tweet.retweetedBy()))
             information.append(tweet.retweetedBy()).append(" ");
 
-        information.append(DateUtils.getRelativeTimeSpanString(tweet.createdAt()));
+        if (mAbsoluteTime)
+            information.append(DateUtils.formatDateTime(mActivity, tweet.createdAt(),
+                    DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME));
+        else
+            information.append(DateUtils.getRelativeTimeSpanString(tweet.createdAt()));
 
         if (mShowClientName)
             information.append(" via ").append(tweet.source());
@@ -150,6 +157,8 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
 
     protected void readPrefs() {
         mFontSize = mPrefsModel.fontSize();
+        mAbsoluteTime = mPrefsModel.showAbsoluteTime();
+        mCompactTimeline = mPrefsModel.compactTimeline();
         mHighlightLinks = mPrefsModel.highlightTimelineLinks();
         mShowClientName = mPrefsModel.showClientNameInTimeline();
         mIsAvatarHidden = mPrefsModel.hideAvatarOnMobileConnection() && NetworkUtils.isMobile(mActivity);
