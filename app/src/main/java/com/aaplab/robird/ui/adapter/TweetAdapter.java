@@ -38,6 +38,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
     protected Activity mActivity;
     protected Account mAccount;
 
+    protected boolean mAbsoluteTime;
     protected boolean mShowClientName;
     protected boolean mIsMediaHidden;
     protected boolean mIsAvatarHidden;
@@ -76,7 +77,11 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
         if (!TextUtils.isEmpty(tweet.retweetedBy()))
             information.append(tweet.retweetedBy()).append(" ");
 
-        information.append(DateUtils.getRelativeTimeSpanString(tweet.createdAt()));
+        if (mAbsoluteTime)
+            information.append(DateUtils.formatDateTime(mActivity, tweet.createdAt(),
+                    DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME));
+        else
+            information.append(DateUtils.getRelativeTimeSpanString(tweet.createdAt()));
 
         if (mShowClientName)
             information.append(" via ").append(tweet.source());
@@ -150,6 +155,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
 
     protected void readPrefs() {
         mFontSize = mPrefsModel.fontSize();
+        mAbsoluteTime = mPrefsModel.showAbsoluteTime();
         mHighlightLinks = mPrefsModel.highlightTimelineLinks();
         mShowClientName = mPrefsModel.showClientNameInTimeline();
         mIsAvatarHidden = mPrefsModel.hideAvatarOnMobileConnection() && NetworkUtils.isMobile(mActivity);
