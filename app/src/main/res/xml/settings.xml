@@ -12,6 +12,10 @@
             app:title="@string/prefer_dark_theme" />
 
         <SwitchPreferenceCompat
+            app:key="compact_timeline"
+            app:title="@string/compact_timeline" />
+
+        <SwitchPreferenceCompat
             app:key="highlight_timeline_links"
             app:title="@string/highlight_timeline_links" />
 

@@ -81,4 +81,5 @@
     <string name="purchase_history_restored">Purchase history restored</string>
     <string name="need_app_restart">Need app restart</string>
     <string name="show_absolute_time">Show absolute time</string>
+    <string name="compact_timeline">Compact timeline</string>
 </resources>
