@@ -19,6 +19,10 @@
             app:key="client_name"
             app:title="@string/show_client_name" />
 
+        <SwitchPreferenceCompat
+            app:key="absolute_time"
+            app:title="@string/show_absolute_time" />
+
         <ListPreference
             app:defaultValue="14"
             app:entries="@array/timeline_font_size"
