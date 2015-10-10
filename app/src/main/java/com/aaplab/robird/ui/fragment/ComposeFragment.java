@@ -235,12 +235,12 @@ public class ComposeFragment extends DialogFragment implements Toolbar.OnMenuIte
         if (item.getItemId() == R.id.menu_send) {
             Analytics.event(Analytics.SEND);
             if (TextUtils.isEmpty(mUserName)) {
-                if (mTweetValidator.getTweetLength(mEditText.getText().toString()) == 0) {
+                if (getTweetLength() == 0) {
                     Toast.makeText(getActivity(), R.string.type_something, Toast.LENGTH_SHORT).show();
                     return true;
                 }
 
-                if (!mTweetValidator.isValidTweet(mEditText.getText().toString())) {
+                if (getTweetLength() > Validator.MAX_TWEET_LENGTH) {
                     Toast.makeText(getActivity(), R.string.tweet_is_too_long, Toast.LENGTH_SHORT).show();
                     return true;
                 }
@@ -360,8 +360,14 @@ public class ComposeFragment extends DialogFragment implements Toolbar.OnMenuIte
                 }
 
                 previewImages();
+                onTextChanged(mEditText.getText(), 0, 0, 0);
             }
         }
+    }
+
+    private int getTweetLength() {
+        int length = mTweetValidator.getTweetLength(mEditText.getText().toString());
+        return mAttachedImages.isEmpty() ? length : length + mTweetValidator.getShortUrlLengthHttps();
     }
 
     private void previewImages() {
@@ -396,8 +402,7 @@ public class ComposeFragment extends DialogFragment implements Toolbar.OnMenuIte
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-        mToolbar.setSubtitle(String.format("%d / 140",
-                mTweetValidator.getTweetLength(mEditText.getText().toString())));
+        mToolbar.setSubtitle(String.format("%d / 140", getTweetLength()));
     }
 
     @Override
