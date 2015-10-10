@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="?selectableItemBackground"
     android:paddingLeft="@dimen/keyline_1"
     android:paddingRight="@dimen/keyline_1"
     android:paddingTop="@dimen/keyline_1">
@@ -39,15 +40,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/avatar"
-        android:layout_marginTop="@dimen/keyline_1"
-        android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+        android:layout_marginTop="8dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
     <LinearLayout
         android:id="@+id/information"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/text"
-        android:layout_marginTop="@dimen/keyline_1"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
@@ -67,48 +67,11 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/interactionsInfo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/information"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/retweet_count"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="0 "
-            android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/retweets"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
-
-        <TextView
-            android:id="@+id/favorite_count"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginStart="8dp"
-            android:text="0 "
-            android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/favorites"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
-
-    </LinearLayout>
-
     <ImageView
         android:id="@+id/media"
         android:layout_width="match_parent"
         android:layout_height="171dp"
-        android:layout_below="@id/interactionsInfo"
+        android:layout_below="@id/information"
         android:layout_marginTop="@dimen/keyline_1"
         android:scaleType="centerCrop" />
 
@@ -118,7 +81,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_below="@id/interactionsInfo"
+        android:layout_below="@id/information"
         android:layout_marginTop="@dimen/keyline_1"
         android:background="@drawable/images_count_bg"
         android:gravity="center"

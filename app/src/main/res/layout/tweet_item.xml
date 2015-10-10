@@ -2,38 +2,36 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?selectableItemBackground">
+    android:background="?selectableItemBackground"
+    android:paddingLeft="@dimen/keyline_1"
+    android:paddingRight="@dimen/keyline_1"
+    android:paddingTop="@dimen/keyline_1">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/avatar"
         android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginLeft="@dimen/keyline_1"
-        android:layout_marginStart="@dimen/keyline_1"
-        android:layout_marginTop="@dimen/keyline_1" />
+        android:layout_height="40dp" />
 
     <TextView
-        android:singleLine="true"
         android:id="@+id/full_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/keyline_1"
         android:layout_marginStart="@dimen/keyline_1"
-        android:layout_marginTop="@dimen/keyline_1"
         android:layout_toEndOf="@id/avatar"
         android:layout_toRightOf="@+id/avatar"
+        android:singleLine="true"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
 
     <TextView
-        android:singleLine="true"
         android:id="@+id/screen_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="@dimen/keyline_1"
         android:layout_toEndOf="@id/full_name"
         android:layout_toRightOf="@id/full_name"
+        android:singleLine="true"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
     <TextView
@@ -42,7 +40,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/full_name"
         android:layout_marginLeft="@dimen/keyline_1"
-        android:layout_marginRight="@dimen/keyline_1"
+        android:layout_marginStart="@dimen/keyline_1"
         android:layout_toEndOf="@id/avatar"
         android:layout_toRightOf="@id/avatar"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
@@ -53,7 +51,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/text"
         android:layout_marginLeft="@dimen/keyline_1"
-        android:layout_marginRight="@dimen/keyline_1"
+        android:layout_marginStart="@dimen/keyline_1"
         android:layout_toEndOf="@id/avatar"
         android:layout_toRightOf="@id/avatar"
         android:orientation="horizontal">
@@ -80,7 +78,7 @@
         android:layout_height="171dp"
         android:layout_below="@id/information"
         android:layout_marginLeft="@dimen/keyline_1"
-        android:layout_marginRight="@dimen/keyline_1"
+        android:layout_marginStart="@dimen/keyline_1"
         android:layout_marginTop="@dimen/keyline_1"
         android:layout_toEndOf="@id/avatar"
         android:layout_toRightOf="@id/avatar"
@@ -94,8 +92,6 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_below="@id/information"
-        android:layout_marginEnd="@dimen/keyline_1"
-        android:layout_marginRight="@dimen/keyline_1"
         android:layout_marginTop="@dimen/keyline_1"
         android:background="@drawable/images_count_bg"
         android:gravity="center"
