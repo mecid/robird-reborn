@@ -64,7 +64,7 @@ public final class UpdateService extends IntentService {
         }
     }
 
-    private void notifyMentions(Account account, Integer count) {
+    private void notifyMentions(final Account account, Integer count) {
         final NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
 
         final Intent intent = new Intent(this, HomeActivity.class);
@@ -82,7 +82,7 @@ public final class UpdateService extends IntentService {
             @Override
             public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
                 builder.setLargeIcon(resource);
-                notificationManager.notify(7226, builder.build());
+                notificationManager.notify(account.screenName(), 7226, builder.build());
             }
         });
     }
