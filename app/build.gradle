@@ -9,8 +9,8 @@ android {
         applicationId "com.aaplab.robird"
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode 45
-        versionName "1.0.0rc7"
+        versionCode 46
+        versionName "1.0.0rc8"
 
         resConfigs "en", "ru"
         resConfigs "nodpi", "xhdpi", "xxhdpi", "xxxhdpi"

@@ -10,13 +10,14 @@
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/avatar"
         android:layout_width="40dp"
-        android:layout_height="40dp" />
+        android:layout_height="40dp"
+        android:layout_marginEnd="@dimen/keyline_1"
+        android:layout_marginRight="@dimen/keyline_1" />
 
     <LinearLayout
+        android:id="@+id/name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/keyline_1"
-        android:layout_marginStart="@dimen/keyline_1"
         android:layout_toEndOf="@id/avatar"
         android:layout_toRightOf="@id/avatar"
         android:orientation="vertical">
@@ -39,8 +40,7 @@
         android:id="@+id/text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/avatar"
-        android:layout_marginTop="8dp"
+        android:layout_below="@id/name"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
     <LinearLayout
