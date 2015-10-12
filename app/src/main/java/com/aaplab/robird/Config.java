@@ -2,6 +2,6 @@ package com.aaplab.robird;
 
 public final class Config {
     public static final String LICENSE_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmvoE5NF5aVRhn1H1ErxevArScow0gXoTUMJNTouyv800XRVnPXLryPUKv3pCvwVx8IEnu7Q7bUmbBCLtCmHQK0HosM3SMHDCikfua2+N4XmPtRttc4pt8djVvdM3hJUFJm5YVJxYTCscwNP2tO/iyqO7GTlNV0Y6SmnUm5bCUS0Ij2uuAvO8404GeP3tyOn76rurCBOdhPWHqiB9XBJctLdbLZi+Mk6n+/D+4XVowBvBRhUeOO6xhxBkyWd7lSuVnY88JLOFPn7dSEM52YkPQGRFkP8an2zGnTluhk1F9wiVUerLLq38TsYE/pi0Ll6pj4oUqlyacmdY0+zSq9134wIDAQAB";
-    public static final String TWITTER_CONSUMER_KEY = "5daEF8stGTWTMtzcCO3MgazXl";
-    public static final String TWITTER_CONSUMER_SECRET = "lydLzgX1IMfjWzkAH5OnyVi3nc2OOCAFHQ3MR1Ev1tFviiPXfU";
+    public static final String TWITTER_CONSUMER_KEY = "vypoAmgHR9uWqaQsgAMxkUK7B";
+    public static final String TWITTER_CONSUMER_SECRET = "Tih596iiNWmmbIPUJuEFhSgfNwPjjwiTXVZnprkr6BExrjGzAv";
 }

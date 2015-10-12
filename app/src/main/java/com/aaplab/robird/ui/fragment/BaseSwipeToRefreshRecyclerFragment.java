@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.aaplab.robird.R;
+import com.bumptech.glide.Glide;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -75,6 +76,14 @@ public abstract class BaseSwipeToRefreshRecyclerFragment extends BaseFragment im
     }
 
     private final class ScrollListener extends RecyclerView.OnScrollListener {
+        @Override
+        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            super.onScrollStateChanged(recyclerView, newState);
+            if (newState == RecyclerView.SCROLL_STATE_DRAGGING)
+                Glide.with(BaseSwipeToRefreshRecyclerFragment.this).pauseRequestsRecursive();
+            else
+                Glide.with(BaseSwipeToRefreshRecyclerFragment.this).resumeRequestsRecursive();
+        }
 
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
