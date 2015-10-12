@@ -39,7 +39,7 @@ public final class Analytics {
     public static final String RESTORE = "Restore";
     public static final String PRODUCT = "Product";
 
-    private static final String YANDEX_METRICA_KEY = "af3babcc-d5a6-451e-b955-8ca9ba933440";
+    private static final String YANDEX_METRICA_KEY = "7f94cc6d-99f7-40f3-9eff-a54fd55233ea";
 
     public static void setup(Context context) {
         YandexMetrica.activate(context.getApplicationContext(), YANDEX_METRICA_KEY);
