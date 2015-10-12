@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.aaplab.robird.Analytics;
 import com.aaplab.robird.R;
 import com.aaplab.robird.data.entity.Account;
 import com.aaplab.robird.data.entity.Tweet;
@@ -96,6 +97,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
             holder.textView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    Analytics.event(Analytics.TWEET_DETAILS);
                     TweetDetailsActivity.start(mActivity, mAccount, tweet);
                 }
             });
@@ -137,6 +139,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
         holder.avatarImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Analytics.event(Analytics.USER_PROFILE);
                 UserProfileActivity.start(mActivity, mAccount, tweet.username());
             }
         });
@@ -144,6 +147,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Analytics.event(Analytics.TWEET_DETAILS);
                 TweetDetailsActivity.start(mActivity, mAccount, tweet);
             }
         });

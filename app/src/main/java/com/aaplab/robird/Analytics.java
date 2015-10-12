@@ -13,6 +13,10 @@ import timber.log.Timber;
  * Created by majid on 23.08.15.
  */
 public final class Analytics {
+
+    public static final String TWEET_DETAILS = "Tweet details";
+    public static final String USER_PROFILE = "User profile";
+
     public static final String SHARE_VIA_ROBIRD = "Share via Robird";
     public static final String ATTACH_IMAGE = "Attach Image";
     public static final String ADD_ACCOUNT = "Add account";
