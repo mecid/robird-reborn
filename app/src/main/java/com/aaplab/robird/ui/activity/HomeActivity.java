@@ -92,7 +92,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener,
     ViewPager mPager;
 
     @Icicle
-    int mSelectedNavigationMenuId;
+    int mSelectedNavigationPosition;
 
     @Icicle
     int mSelectedAccountId;
@@ -129,7 +129,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener,
                                 if (account == null)
                                     return Observable.just(0);
 
-                                mSelectedNavigationMenuId = R.id.navigation_item_mentions;
+                                mSelectedNavigationPosition = 1; //position: mentions
                                 return mAccountModel.activate(account);
                             }
                         })
@@ -178,22 +178,29 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener,
     @Override
     public boolean onNavigationItemSelected(final MenuItem menuItem) {
         if (menuItem.getItemId() != R.id.navigation_item_settings) {
-            setTitle(menuItem.getTitle());
-            menuItem.setChecked(true);
-            mDrawerLayout.closeDrawers();
-
-            if (mSelectedNavigationMenuId != menuItem.getItemId() ||
+            selectNavigation(menuItem);
+            if (mSelectedNavigationPosition != menuItem.getOrder() ||
                     mSelectedAccountId != mAccounts.get(0).id()) {
-
-                mSelectedNavigationMenuId = menuItem.getItemId();
                 mSelectedAccountId = mAccounts.get(0).id();
-                mPager.setCurrentItem(menuItem.getOrder(), false);
+                mSelectedNavigationPosition = menuItem.getOrder();
+                mPager.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mPager.setCurrentItem(menuItem.getOrder(), false);
+                    }
+                });
             }
         } else {
             ActivityCompat.startActivity(this, new Intent(this, SettingsActivity.class), null);
         }
 
         return true;
+    }
+
+    public void selectNavigation(MenuItem menuItem) {
+        setTitle(menuItem.getTitle());
+        menuItem.setChecked(true);
+        mDrawerLayout.closeDrawers();
     }
 
     @Override
@@ -252,16 +259,14 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener,
         }
 
         mPager.setAdapter(new NavigationPagerAdapter(getSupportFragmentManager()));
-        MenuItem navigationItem = mNavigationView.getMenu().findItem(mSelectedNavigationMenuId);
-        onNavigationItemSelected(navigationItem == null ?
-                mNavigationView.getMenu().findItem(R.id.navigation_item_home) : navigationItem);
+        onNavigationItemSelected(mNavigationView.getMenu().getItem(mSelectedNavigationPosition));
         mNavigationView.setNavigationItemSelectedListener(this);
         mPager.clearOnPageChangeListeners();
         mPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
-                onNavigationItemSelected(mNavigationView.getMenu().getItem(position));
+                selectNavigation(mNavigationView.getMenu().getItem(position));
             }
         });
     }
