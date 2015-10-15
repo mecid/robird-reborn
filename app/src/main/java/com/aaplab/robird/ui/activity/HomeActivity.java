@@ -5,14 +5,16 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.ShareCompat;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.SearchView;
@@ -86,13 +88,15 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener,
     @Bind(R.id.navigation)
     NavigationView mNavigationView;
 
+    @Bind(R.id.pager)
+    ViewPager mPager;
+
     @Icicle
     int mSelectedNavigationMenuId;
 
     @Icicle
     int mSelectedAccountId;
 
-    private final Handler mNavigationHandler = new Handler();
     private ActionBarDrawerToggle mDrawerToggle;
     private AccountModel mAccountModel;
     private BillingModel mBillingModel;
@@ -183,16 +187,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener,
 
                 mSelectedNavigationMenuId = menuItem.getItemId();
                 mSelectedAccountId = mAccounts.get(0).id();
-
-                mNavigationHandler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        getSupportFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.content, fragmentForNavigationItem(menuItem))
-                                .commitAllowingStateLoss();
-                    }
-                }, 200);
+                mPager.setCurrentItem(menuItem.getOrder(), false);
             }
         } else {
             ActivityCompat.startActivity(this, new Intent(this, SettingsActivity.class), null);
@@ -256,30 +251,52 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener,
             avatars[i].setVisibility(View.VISIBLE);
         }
 
+        mPager.setAdapter(new NavigationPagerAdapter(getSupportFragmentManager()));
         MenuItem navigationItem = mNavigationView.getMenu().findItem(mSelectedNavigationMenuId);
         onNavigationItemSelected(navigationItem == null ?
                 mNavigationView.getMenu().findItem(R.id.navigation_item_home) : navigationItem);
         mNavigationView.setNavigationItemSelectedListener(this);
+        mPager.clearOnPageChangeListeners();
+        mPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                onNavigationItemSelected(mNavigationView.getMenu().getItem(position));
+            }
+        });
     }
 
-    private Fragment fragmentForNavigationItem(MenuItem navigationMenuItem) {
-        if (navigationMenuItem.getItemId() == R.id.navigation_item_home) {
-            return TimelineFragment.create(mAccounts.get(0), TimelineModel.HOME_ID);
-        } else if (navigationMenuItem.getItemId() == R.id.navigation_item_mentions) {
-            return TimelineFragment.create(mAccounts.get(0), TimelineModel.MENTIONS_ID);
-        } else if (navigationMenuItem.getItemId() == R.id.navigation_item_retweets) {
-            return TimelineFragment.create(mAccounts.get(0), TimelineModel.RETWEETS_ID);
-        } else if (navigationMenuItem.getItemId() == R.id.navigation_item_favorites) {
-            return TimelineFragment.create(mAccounts.get(0), TimelineModel.FAVORITES_ID);
-        } else if (navigationMenuItem.getItemId() == R.id.navigation_item_lists) {
-            return UserListsFragment.create(mAccounts.get(0));
-        } else if (navigationMenuItem.getItemId() == R.id.navigation_item_directs) {
-            return DirectsFragment.create(mAccounts.get(0));
-        } else if (navigationMenuItem.getItemId() == R.id.navigation_item_world) {
-            return TrendsFragment.create(mAccounts.get(0));
+    private final class NavigationPagerAdapter extends FragmentStatePagerAdapter {
+
+        public NavigationPagerAdapter(FragmentManager fm) {
+            super(fm);
         }
 
-        throw new IllegalArgumentException("There is no fragment for " + navigationMenuItem.getTitle());
+        @Override
+        public Fragment getItem(int position) {
+            if (position == 0) {
+                return TimelineFragment.create(mAccounts.get(0), TimelineModel.HOME_ID);
+            } else if (position == 1) {
+                return TimelineFragment.create(mAccounts.get(0), TimelineModel.MENTIONS_ID);
+            } else if (position == 2) {
+                return TimelineFragment.create(mAccounts.get(0), TimelineModel.RETWEETS_ID);
+            } else if (position == 3) {
+                return TimelineFragment.create(mAccounts.get(0), TimelineModel.FAVORITES_ID);
+            } else if (position == 4) {
+                return DirectsFragment.create(mAccounts.get(0));
+            } else if (position == 5) {
+                return UserListsFragment.create(mAccounts.get(0));
+            } else if (position == 6) {
+                return TrendsFragment.create(mAccounts.get(0));
+            }
+
+            throw new IllegalArgumentException("There is no fragment for position: " + position);
+        }
+
+        @Override
+        public int getCount() {
+            return 7;
+        }
     }
 
     private void activate(final Account selectedAccount) {

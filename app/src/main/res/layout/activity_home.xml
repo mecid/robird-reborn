@@ -21,9 +21,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <!-- The rest of your content view -->
-            <FrameLayout
-                android:id="@+id/content"
+            <android.support.v4.view.ViewPager
+                android:id="@+id/pager"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
@@ -34,7 +33,7 @@
                 android:layout_margin="@dimen/keyline_1"
                 android:src="@drawable/ic_edit"
                 app:borderWidth="0dp"
-                app:layout_anchor="@id/content"
+                app:layout_anchor="@id/pager"
                 app:layout_anchorGravity="bottom|right|end" />
 
         </android.support.design.widget.CoordinatorLayout>
