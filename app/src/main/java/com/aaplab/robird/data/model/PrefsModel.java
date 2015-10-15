@@ -24,6 +24,7 @@ public final class PrefsModel {
     public static final String NOTIFICATION_SOUND = "notification_sound";
     public static final String NOTIFICATIONS = "notifications";
     public static final String TWEETMARKER = "tweetmarker";
+    public static final String MEDIA_PREVIEW = "media_preview";
 
     private final SharedPreferences mPreferences = Inject.preferences();
 
@@ -69,6 +70,10 @@ public final class PrefsModel {
 
     public boolean isBackgroundUpdateServiceEnabled() {
         return mPreferences.getBoolean(BACKGROUND_UPDATE_SERVICE, true);
+    }
+
+    public boolean isMediaPreviewEnabled() {
+        return mPreferences.getBoolean(MEDIA_PREVIEW, true);
     }
 
     public long backgroundUpdateInterval() {
