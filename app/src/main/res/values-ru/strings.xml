@@ -82,4 +82,5 @@
     <string name="need_app_restart">Требуется перезагрузка приложения</string>
     <string name="show_absolute_time">Показывать абсолютное время</string>
     <string name="compact_timeline">Компактная лента</string>
+    <string name="notification_sound">Звуковые уведомления</string>
 </resources>
