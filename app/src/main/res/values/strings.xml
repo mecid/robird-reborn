@@ -82,4 +82,5 @@
     <string name="need_app_restart">Need app restart</string>
     <string name="show_absolute_time">Show absolute time</string>
     <string name="compact_timeline">Compact timeline</string>
+    <string name="notification_sound">Notification sound</string>
 </resources>
