@@ -39,11 +39,12 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
     protected Activity mActivity;
     protected Account mAccount;
 
+    protected boolean mShowMediaPreview;
     protected boolean mCompactTimeline;
     protected boolean mAbsoluteTime;
     protected boolean mShowClientName;
-    protected boolean mIsMediaHidden;
-    protected boolean mIsAvatarHidden;
+    protected boolean mIsMediaHiddenOnMobile;
+    protected boolean mIsAvatarHiddenOnMobile;
     protected boolean mHighlightLinks;
     protected int mFontSize;
 
@@ -103,7 +104,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
             });
         }
 
-        if (!TextUtils.isEmpty(tweet.media()) && !mIsMediaHidden) {
+        if (!TextUtils.isEmpty(tweet.media()) && !mIsMediaHiddenOnMobile && mShowMediaPreview) {
             final String[] media = tweet.media().split("\\+\\+\\+\\+\\+");
 
             holder.mediaCountTextView.setVisibility(media.length > 1 ? View.VISIBLE : View.GONE);
@@ -126,7 +127,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
             holder.mediaImageView.setVisibility(View.GONE);
         }
 
-        if (!mIsAvatarHidden) {
+        if (!mIsAvatarHiddenOnMobile) {
             holder.avatarImageView.setVisibility(View.VISIBLE);
             Glide.with(mActivity)
                     .load(tweet.avatar())
@@ -164,9 +165,10 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
         mAbsoluteTime = mPrefsModel.showAbsoluteTime();
         mCompactTimeline = mPrefsModel.compactTimeline();
         mHighlightLinks = mPrefsModel.highlightTimelineLinks();
+        mShowMediaPreview = mPrefsModel.isMediaPreviewEnabled();
         mShowClientName = mPrefsModel.showClientNameInTimeline();
-        mIsAvatarHidden = mPrefsModel.hideAvatarOnMobileConnection() && NetworkUtils.isMobile(mActivity);
-        mIsMediaHidden = mPrefsModel.hideMediaOnMobileConnection() && NetworkUtils.isMobile(mActivity);
+        mIsAvatarHiddenOnMobile = mPrefsModel.hideAvatarOnMobileConnection() && NetworkUtils.isMobile(mActivity);
+        mIsMediaHiddenOnMobile = mPrefsModel.hideMediaOnMobileConnection() && NetworkUtils.isMobile(mActivity);
     }
 
     static class TweetHolder extends RecyclerView.ViewHolder {

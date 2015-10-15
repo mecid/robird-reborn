@@ -28,6 +28,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
     private Preference mUnlockAllPreference;
     private Preference mUnlockUiPreference;
     private Preference mHideMediaPreference;
+    private Preference mShowMediaPreviewPreference;
     private Preference mShowAbsoluteTimePreference;
     private Preference mShowClientNameInTimelinePreference;
     private Preference mCompactTimelinePreference;
@@ -66,6 +67,9 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
 
         mHideAvatarsPreference = findPreference(PrefsModel.HIDE_AVATARS);
         mHideAvatarsPreference.setOnPreferenceChangeListener(this);
+
+        mShowMediaPreviewPreference = findPreference(PrefsModel.MEDIA_PREVIEW);
+        mShowMediaPreviewPreference.setOnPreferenceChangeListener(this);
 
         mHideMediaPreference = findPreference(PrefsModel.HIDE_MEDIA);
         mHideMediaPreference.setOnPreferenceChangeListener(this);
@@ -133,7 +137,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         if (preference == mThemePreference || preference == mHighlightTimelineLinksPreference ||
                 preference == mShowClientNameInTimelinePreference || preference == mTimelineFontSizePreference ||
                 preference == mHideMediaPreference || preference == mHideAvatarsPreference ||
-                preference == mShowAbsoluteTimePreference || preference == mCompactTimelinePreference) {
+                preference == mShowAbsoluteTimePreference || preference == mCompactTimelinePreference ||
+                preference == mShowMediaPreviewPreference) {
 
             Snackbar.make(getActivity().findViewById(R.id.coordinator),
                     R.string.need_app_restart, Snackbar.LENGTH_INDEFINITE).show();
@@ -156,6 +161,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         mUnlockOtherPreference.setEnabled(false);
 
         mThemePreference.setEnabled(mBillingModel.isPurchased(BillingModel.UNLOCK_UI_PRODUCT_ID));
+        mShowMediaPreviewPreference.setEnabled(mBillingModel.isPurchased(BillingModel.UNLOCK_UI_PRODUCT_ID));
         mCompactTimelinePreference.setEnabled(mBillingModel.isPurchased(BillingModel.UNLOCK_UI_PRODUCT_ID));
         mShowAbsoluteTimePreference.setEnabled(mBillingModel.isPurchased(BillingModel.UNLOCK_UI_PRODUCT_ID));
         mShowClientNameInTimelinePreference.setEnabled(mBillingModel.isPurchased(BillingModel.UNLOCK_UI_PRODUCT_ID));

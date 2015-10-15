@@ -21,8 +21,10 @@ public final class PrefsModel {
     public static final String HIGHLIGHT_TIMELINE_LINKS = "highlight_timeline_links";
     public static final String BACKGROUND_UPDATE_SERVICE = "background_update_service";
     public static final String BACKGROUND_UPDATE_INTERVAL = "background_updates_interval";
+    public static final String NOTIFICATION_SOUND = "notification_sound";
     public static final String NOTIFICATIONS = "notifications";
     public static final String TWEETMARKER = "tweetmarker";
+    public static final String MEDIA_PREVIEW = "media_preview";
 
     private final SharedPreferences mPreferences = Inject.preferences();
 
@@ -70,6 +72,10 @@ public final class PrefsModel {
         return mPreferences.getBoolean(BACKGROUND_UPDATE_SERVICE, true);
     }
 
+    public boolean isMediaPreviewEnabled() {
+        return mPreferences.getBoolean(MEDIA_PREVIEW, true);
+    }
+
     public long backgroundUpdateInterval() {
         return Long.valueOf(mPreferences.getString(BACKGROUND_UPDATE_INTERVAL,
                 String.valueOf(AlarmManager.INTERVAL_HALF_HOUR)));
@@ -77,6 +83,10 @@ public final class PrefsModel {
 
     public boolean isNotificationsEnabled() {
         return mPreferences.getBoolean(NOTIFICATIONS, true);
+    }
+
+    public boolean isNotificationSoundEnabled() {
+        return mPreferences.getBoolean(NOTIFICATION_SOUND, false);
     }
 
     public boolean isTweetMarkerEnabled() {

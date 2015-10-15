@@ -36,10 +36,17 @@
             app:title="@string/timeline_font_size" />
 
         <SwitchPreferenceCompat
+            app:defaultValue="true"
+            app:key="media_preview"
+            app:title="@string/show_media_preview" />
+
+        <SwitchPreferenceCompat
+            app:dependency="media_preview"
             app:key="hide_media"
             app:title="@string/hide_image_preview" />
 
         <SwitchPreferenceCompat
+            app:dependency="media_preview"
             app:key="hide_avatars"
             app:title="@string/hide_avatars" />
 
@@ -85,6 +92,12 @@
             app:dependency="background_update_service"
             app:key="notifications"
             app:title="@string/notifications" />
+
+        <SwitchPreferenceCompat
+            app:defaultValue="false"
+            app:dependency="notifications"
+            app:key="notification_sound"
+            app:title="@string/notification_sound" />
 
         <SwitchPreferenceCompat
             app:dependency="background_update_service"

@@ -69,9 +69,10 @@ public class TweetDetailsAdapter extends TweetAdapter {
     @Override
     protected void readPrefs() {
         super.readPrefs();
-        mIsMediaHidden = false;
-        mIsAvatarHidden = false;
         mShowClientName = true;
+        mShowMediaPreview = true;
+        mIsMediaHiddenOnMobile = false;
+        mIsAvatarHiddenOnMobile = false;
     }
 
     @Override

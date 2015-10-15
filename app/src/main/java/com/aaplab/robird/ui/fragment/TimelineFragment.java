@@ -2,6 +2,7 @@ package com.aaplab.robird.ui.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -49,8 +50,8 @@ public class TimelineFragment extends BaseTimelineFragment {
         mTimelineModel = new TimelineModel(mAccount,
                 getArguments().getLong("timeline_id", TimelineModel.HOME_ID));
         mLastUnread = mTimelineModel.lastUnread();
-        setHasOptionsMenu(true);
         mRecyclerView.addOnScrollListener(new UnreadCounterScrollListener());
+        setHasOptionsMenu(true);
 
         mSubscriptions.add(
                 mTimelineModel
@@ -62,6 +63,7 @@ public class TimelineFragment extends BaseTimelineFragment {
                             public void onNext(List<Tweet> tweets) {
                                 super.onNext(tweets);
                                 setupTimeline(tweets);
+                                ActivityCompat.invalidateOptionsMenu(getActivity());
                             }
                         })
         );

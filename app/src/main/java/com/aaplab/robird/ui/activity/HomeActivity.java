@@ -5,14 +5,16 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.ShareCompat;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.SearchView;
@@ -86,13 +88,15 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener,
     @Bind(R.id.navigation)
     NavigationView mNavigationView;
 
+    @Bind(R.id.pager)
+    ViewPager mPager;
+
     @Icicle
-    int mSelectedNavigationMenuId;
+    int mSelectedNavigationPosition;
 
     @Icicle
     int mSelectedAccountId;
 
-    private final Handler mNavigationHandler = new Handler();
     private ActionBarDrawerToggle mDrawerToggle;
     private AccountModel mAccountModel;
     private BillingModel mBillingModel;
@@ -125,7 +129,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener,
                                 if (account == null)
                                     return Observable.just(0);
 
-                                mSelectedNavigationMenuId = R.id.navigation_item_mentions;
+                                mSelectedNavigationPosition = 1; //position: mentions
                                 return mAccountModel.activate(account);
                             }
                         })
@@ -174,31 +178,29 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener,
     @Override
     public boolean onNavigationItemSelected(final MenuItem menuItem) {
         if (menuItem.getItemId() != R.id.navigation_item_settings) {
-            setTitle(menuItem.getTitle());
-            menuItem.setChecked(true);
-            mDrawerLayout.closeDrawers();
-
-            if (mSelectedNavigationMenuId != menuItem.getItemId() ||
+            selectNavigation(menuItem);
+            if (mSelectedNavigationPosition != menuItem.getOrder() ||
                     mSelectedAccountId != mAccounts.get(0).id()) {
-
-                mSelectedNavigationMenuId = menuItem.getItemId();
                 mSelectedAccountId = mAccounts.get(0).id();
-
-                mNavigationHandler.postDelayed(new Runnable() {
+                mSelectedNavigationPosition = menuItem.getOrder();
+                mPager.post(new Runnable() {
                     @Override
                     public void run() {
-                        getSupportFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.content, fragmentForNavigationItem(menuItem))
-                                .commitAllowingStateLoss();
+                        mPager.setCurrentItem(menuItem.getOrder(), false);
                     }
-                }, 200);
+                });
             }
         } else {
             ActivityCompat.startActivity(this, new Intent(this, SettingsActivity.class), null);
         }
 
         return true;
+    }
+
+    public void selectNavigation(MenuItem menuItem) {
+        setTitle(menuItem.getTitle());
+        menuItem.setChecked(true);
+        mDrawerLayout.closeDrawers();
     }
 
     @Override
@@ -256,30 +258,50 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener,
             avatars[i].setVisibility(View.VISIBLE);
         }
 
-        MenuItem navigationItem = mNavigationView.getMenu().findItem(mSelectedNavigationMenuId);
-        onNavigationItemSelected(navigationItem == null ?
-                mNavigationView.getMenu().findItem(R.id.navigation_item_home) : navigationItem);
+        mPager.setAdapter(new NavigationPagerAdapter(getSupportFragmentManager()));
+        onNavigationItemSelected(mNavigationView.getMenu().getItem(mSelectedNavigationPosition));
         mNavigationView.setNavigationItemSelectedListener(this);
+        mPager.clearOnPageChangeListeners();
+        mPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                selectNavigation(mNavigationView.getMenu().getItem(position));
+            }
+        });
     }
 
-    private Fragment fragmentForNavigationItem(MenuItem navigationMenuItem) {
-        if (navigationMenuItem.getItemId() == R.id.navigation_item_home) {
-            return TimelineFragment.create(mAccounts.get(0), TimelineModel.HOME_ID);
-        } else if (navigationMenuItem.getItemId() == R.id.navigation_item_mentions) {
-            return TimelineFragment.create(mAccounts.get(0), TimelineModel.MENTIONS_ID);
-        } else if (navigationMenuItem.getItemId() == R.id.navigation_item_retweets) {
-            return TimelineFragment.create(mAccounts.get(0), TimelineModel.RETWEETS_ID);
-        } else if (navigationMenuItem.getItemId() == R.id.navigation_item_favorites) {
-            return TimelineFragment.create(mAccounts.get(0), TimelineModel.FAVORITES_ID);
-        } else if (navigationMenuItem.getItemId() == R.id.navigation_item_lists) {
-            return UserListsFragment.create(mAccounts.get(0));
-        } else if (navigationMenuItem.getItemId() == R.id.navigation_item_directs) {
-            return DirectsFragment.create(mAccounts.get(0));
-        } else if (navigationMenuItem.getItemId() == R.id.navigation_item_world) {
-            return TrendsFragment.create(mAccounts.get(0));
+    private final class NavigationPagerAdapter extends FragmentStatePagerAdapter {
+
+        public NavigationPagerAdapter(FragmentManager fm) {
+            super(fm);
         }
 
-        throw new IllegalArgumentException("There is no fragment for " + navigationMenuItem.getTitle());
+        @Override
+        public Fragment getItem(int position) {
+            if (position == 0) {
+                return TimelineFragment.create(mAccounts.get(0), TimelineModel.HOME_ID);
+            } else if (position == 1) {
+                return TimelineFragment.create(mAccounts.get(0), TimelineModel.MENTIONS_ID);
+            } else if (position == 2) {
+                return TimelineFragment.create(mAccounts.get(0), TimelineModel.RETWEETS_ID);
+            } else if (position == 3) {
+                return TimelineFragment.create(mAccounts.get(0), TimelineModel.FAVORITES_ID);
+            } else if (position == 4) {
+                return DirectsFragment.create(mAccounts.get(0));
+            } else if (position == 5) {
+                return UserListsFragment.create(mAccounts.get(0));
+            } else if (position == 6) {
+                return TrendsFragment.create(mAccounts.get(0));
+            }
+
+            throw new IllegalArgumentException("There is no fragment for position: " + position);
+        }
+
+        @Override
+        public int getCount() {
+            return 7;
+        }
     }
 
     private void activate(final Account selectedAccount) {

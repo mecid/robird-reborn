@@ -4,48 +4,56 @@
         android:id="@+id/navigation_primary"
         android:checkableBehavior="single">
 
-    <item
+        <item
             android:id="@+id/navigation_item_home"
             android:icon="@drawable/ic_home_grey"
+            android:orderInCategory="0"
             android:title="@string/home" />
 
         <item
             android:id="@+id/navigation_item_mentions"
             android:icon="@drawable/ic_notifications_grey"
+            android:orderInCategory="1"
             android:title="@string/mentions" />
 
         <item
             android:id="@+id/navigation_item_retweets"
             android:icon="@drawable/ic_repeat_grey"
+            android:orderInCategory="2"
             android:title="@string/retweets" />
 
         <item
             android:id="@+id/navigation_item_favorites"
             android:icon="@drawable/ic_star_grey"
+            android:orderInCategory="3"
             android:title="@string/favorites" />
 
         <item
             android:id="@+id/navigation_item_directs"
             android:icon="@drawable/ic_message_grey"
+            android:orderInCategory="4"
             android:title="@string/directs" />
 
         <item
             android:id="@+id/navigation_item_lists"
             android:icon="@drawable/ic_list_grey"
+            android:orderInCategory="5"
             android:title="@string/lists" />
 
         <item
             android:id="@+id/navigation_item_world"
             android:icon="@drawable/ic_language_grey"
+            android:orderInCategory="6"
             android:title="@string/trends" />
 
     </group>
 
     <group
         android:id="@+id/navigation_secondary"
-        android:checkableBehavior="none">
+        android:checkableBehavior="none"
+        android:orderInCategory="100">
 
-    <item
+        <item
             android:id="@+id/navigation_item_settings"
             android:title="@string/settings" />
     </group>
