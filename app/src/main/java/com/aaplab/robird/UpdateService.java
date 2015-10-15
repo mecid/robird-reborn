@@ -1,6 +1,7 @@
 package com.aaplab.robird;
 
 import android.app.IntentService;
+import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -77,6 +78,9 @@ public final class UpdateService extends IntentService {
         builder.setContentTitle(getString(R.string.app_name));
         builder.setSmallIcon(R.drawable.ic_at);
         builder.setAutoCancel(true);
+
+        if (new PrefsModel().isNotificationSoundEnabled())
+            builder.setDefaults(Notification.DEFAULT_SOUND);
 
         Glide.with(this).load(account.avatar()).asBitmap().into(new SimpleTarget<Bitmap>() {
             @Override
