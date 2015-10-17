@@ -9,7 +9,7 @@ android {
         applicationId "com.aaplab.robird"
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode 51
+        versionCode 52
         versionName "1.0.1"
 
         resConfigs "en", "ru"
