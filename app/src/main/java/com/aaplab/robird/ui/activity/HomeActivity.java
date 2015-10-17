@@ -26,12 +26,14 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.aaplab.robird.AccountUpdateService;
 import com.aaplab.robird.Analytics;
 import com.aaplab.robird.R;
-import com.aaplab.robird.UpdateReceiver;
+import com.aaplab.robird.TimelineUpdateService;
 import com.aaplab.robird.data.entity.Account;
 import com.aaplab.robird.data.model.AccountModel;
 import com.aaplab.robird.data.model.BillingModel;
+import com.aaplab.robird.data.model.PrefsModel;
 import com.aaplab.robird.data.model.TimelineModel;
 import com.aaplab.robird.ui.fragment.ComposeFragment;
 import com.aaplab.robird.ui.fragment.DirectsFragment;
@@ -42,6 +44,7 @@ import com.aaplab.robird.util.DefaultObserver;
 import com.aaplab.robird.util.NavigationUtils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.android.gms.gcm.GcmNetworkManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -101,6 +104,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener,
     private AccountModel mAccountModel;
     private BillingModel mBillingModel;
     private List<Account> mAccounts;
+    private PrefsModel mPrefsModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,6 +122,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener,
         avatars[1].setOnClickListener(this);
         avatars[2].setOnClickListener(this);
 
+        mPrefsModel = new PrefsModel();
         mBillingModel = new BillingModel(this);
         mAccountModel = new AccountModel();
         mSubscriptions.add(
@@ -159,9 +164,12 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener,
     @Override
     protected void onStop() {
         super.onStop();
-        if (!Once.beenDone(Once.THIS_APP_VERSION, "update_receiver")) {
-            sendBroadcast(new Intent(this, UpdateReceiver.class));
-            Once.markDone("update_receiver");
+        if (!Once.beenDone(Once.THIS_APP_VERSION, "update")) {
+            final GcmNetworkManager manager = GcmNetworkManager.getInstance(this);
+            if (mPrefsModel.isBackgroundUpdateServiceEnabled())
+                manager.schedule(TimelineUpdateService.create(mPrefsModel.backgroundUpdateInterval() / 1000));
+            manager.schedule(AccountUpdateService.create());
+            Once.markDone("update");
         }
     }
 
