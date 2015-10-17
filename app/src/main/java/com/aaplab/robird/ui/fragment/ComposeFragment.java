@@ -15,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.text.method.TextKeyListener;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -173,7 +174,8 @@ public class ComposeFragment extends DialogFragment implements Toolbar.OnMenuIte
         mContactModel = new ContactModel(mAccount);
         mTweetValidator = new Validator();
 
-        mScreenNameTextView.setText("@" + mAccount.screenName());
+        mEditText.setKeyListener(TextKeyListener.getInstance(true, TextKeyListener.Capitalize.SENTENCES));
+        mScreenNameTextView.setText(TextUtils.concat("@", mAccount.screenName()));
         mFullNameTextView.setText(mAccount.fullName());
 
         Glide.with(this)
