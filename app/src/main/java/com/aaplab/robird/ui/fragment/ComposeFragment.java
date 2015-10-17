@@ -199,6 +199,15 @@ public class ComposeFragment extends DialogFragment implements Toolbar.OnMenuIte
                                     super.onNext(contacts);
                                     mEditText.setTokenizer(new UsernameCompleteAdapter.SpaceTokenizer());
                                     mEditText.setAdapter(new UsernameCompleteAdapter(getActivity(), contacts));
+
+                                    if (contacts.isEmpty()) {
+                                        mContactModel
+                                                .update()
+                                                .subscribeOn(Schedulers.io())
+                                                .observeOn(AndroidSchedulers.mainThread())
+                                                .subscribe(new DefaultObserver<Integer>() {
+                                                });
+                                    }
                                 }
                             })
             );
