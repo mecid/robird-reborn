@@ -1,6 +1,5 @@
 package com.aaplab.robird;
 
-import android.app.IntentService;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Intent;
@@ -20,6 +19,10 @@ import com.aaplab.robird.util.DefaultObserver;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
+import com.google.android.gms.gcm.GcmNetworkManager;
+import com.google.android.gms.gcm.GcmTaskService;
+import com.google.android.gms.gcm.PeriodicTask;
+import com.google.android.gms.gcm.TaskParams;
 
 import java.util.List;
 
@@ -28,15 +31,20 @@ import rx.android.schedulers.AndroidSchedulers;
 /**
  * Created by majid on 02.09.15.
  */
-public final class UpdateService extends IntentService {
-    public static final String NAME = "UpdateService";
+public final class TimelineUpdateService extends GcmTaskService {
 
-    public UpdateService() {
-        super(NAME);
+    public static PeriodicTask create(long periodInSeconds) {
+        return new PeriodicTask.Builder()
+                .setService(TimelineUpdateService.class)
+                .setPeriod(periodInSeconds)
+                .setTag("timeline_update")
+                .setUpdateCurrent(true)
+                .setPersisted(true)
+                .build();
     }
 
     @Override
-    protected void onHandleIntent(Intent intent) {
+    public int onRunTask(TaskParams taskParams) {
         final PrefsModel prefsModel = new PrefsModel();
 
         for (final Account account : new AccountModel().accounts().toBlocking().first()) {
@@ -63,6 +71,8 @@ public final class UpdateService extends IntentService {
                         }
                     });
         }
+
+        return GcmNetworkManager.RESULT_SUCCESS;
     }
 
     private void notifyMentions(final Account account, Integer count) {

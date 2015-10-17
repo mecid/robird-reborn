@@ -8,10 +8,11 @@ import android.support.v7.preference.PreferenceFragmentCompat;
 import android.text.TextUtils;
 
 import com.aaplab.robird.R;
-import com.aaplab.robird.UpdateReceiver;
+import com.aaplab.robird.TimelineUpdateService;
 import com.aaplab.robird.data.model.BillingModel;
 import com.aaplab.robird.data.model.PrefsModel;
 import com.aaplab.robird.util.DefaultObserver;
+import com.google.android.gms.gcm.GcmNetworkManager;
 
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
@@ -23,6 +24,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
 
     private CompositeSubscription mSubscriptions;
     private BillingModel mBillingModel;
+    private PrefsModel mPrefsModel;
 
     private Preference mThemePreference;
     private Preference mUnlockAllPreference;
@@ -46,9 +48,9 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        final PrefsModel prefsModel = new PrefsModel();
         mSubscriptions = new CompositeSubscription();
         mBillingModel = new BillingModel(getActivity());
+        mPrefsModel = new PrefsModel();
 
         mUnlockInAppBrowserPreference = findPreference("unlock_browser");
         mUnlockInAppBrowserPreference.setOnPreferenceClickListener(this);
@@ -79,7 +81,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
 
         mTimelineFontSizePreference = findPreference(PrefsModel.TIMELINE_FONT_SIZE);
         mTimelineFontSizePreference.setOnPreferenceChangeListener(this);
-        mTimelineFontSizePreference.setSummary("" + prefsModel.fontSize());
+        mTimelineFontSizePreference.setSummary("" + mPrefsModel.fontSize());
 
         mUnlockAllPreference = findPreference("unlock_all_settings");
         mUnlockAllPreference.setOnPreferenceClickListener(this);
@@ -148,7 +150,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
             preference.setSummary((String) o);
         } else if (preference == mBackgroundUpdatePreference ||
                 preference == mBackgroundUpdateIntervalPreference) {
-            getActivity().sendBroadcast(new Intent(getActivity(), UpdateReceiver.class));
+            GcmNetworkManager.getInstance(getActivity())
+                    .schedule(TimelineUpdateService.create(mPrefsModel.backgroundUpdateInterval() / 1000));
         }
 
         return true;

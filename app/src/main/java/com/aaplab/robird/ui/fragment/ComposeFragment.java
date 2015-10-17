@@ -21,20 +21,23 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aaplab.robird.Analytics;
 import com.aaplab.robird.R;
 import com.aaplab.robird.data.entity.Account;
+import com.aaplab.robird.data.entity.Contact;
 import com.aaplab.robird.data.entity.Tweet;
 import com.aaplab.robird.data.model.AccountModel;
 import com.aaplab.robird.data.model.ComposeModel;
+import com.aaplab.robird.data.model.ContactModel;
 import com.aaplab.robird.data.model.DirectsModel;
 import com.aaplab.robird.ui.activity.BaseActivity;
+import com.aaplab.robird.ui.adapter.UsernameCompleteAdapter;
 import com.aaplab.robird.util.DefaultObserver;
 import com.aaplab.robird.util.ImageUtils;
 import com.bumptech.glide.Glide;
@@ -128,7 +131,7 @@ public class ComposeFragment extends DialogFragment implements Toolbar.OnMenuIte
     Toolbar mToolbar;
 
     @Bind(R.id.text)
-    EditText mEditText;
+    MultiAutoCompleteTextView mEditText;
 
     @Bind(R.id.screen_name)
     TextView mScreenNameTextView;
@@ -149,6 +152,7 @@ public class ComposeFragment extends DialogFragment implements Toolbar.OnMenuIte
     private Account mAccount;
     private String mUserName;
     private Validator mTweetValidator;
+    private ContactModel mContactModel;
     private ComposeModel mComposeModel;
     private DirectsModel mDirectsModel;
     private WeakReference<BaseActivity> mActivityWeak;
@@ -166,6 +170,7 @@ public class ComposeFragment extends DialogFragment implements Toolbar.OnMenuIte
         mUserName = getArguments().getString("username");
         mComposeModel = new ComposeModel(mAccount);
         mDirectsModel = new DirectsModel(mAccount);
+        mContactModel = new ContactModel(mAccount);
         mTweetValidator = new Validator();
 
         mScreenNameTextView.setText("@" + mAccount.screenName());
@@ -183,6 +188,29 @@ public class ComposeFragment extends DialogFragment implements Toolbar.OnMenuIte
             mEditText.addTextChangedListener(this);
             mEditText.setText(getArguments().getString("text"));
             mEditText.setSelection(TextUtils.equals(getTag(), TAG_QUOTE) ? 0 : mEditText.length());
+            mActivityWeak.get().compositeSubscription(
+                    mContactModel
+                            .contacts()
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new DefaultObserver<List<Contact>>() {
+                                @Override
+                                public void onNext(List<Contact> contacts) {
+                                    super.onNext(contacts);
+                                    mEditText.setTokenizer(new UsernameCompleteAdapter.SpaceTokenizer());
+                                    mEditText.setAdapter(new UsernameCompleteAdapter(getActivity(), contacts));
+
+                                    if (contacts.isEmpty()) {
+                                        mContactModel
+                                                .update()
+                                                .subscribeOn(Schedulers.io())
+                                                .observeOn(AndroidSchedulers.mainThread())
+                                                .subscribe(new DefaultObserver<Integer>() {
+                                                });
+                                    }
+                                }
+                            })
+            );
         } else {
             mToolbar.getMenu().findItem(R.id.menu_schedule).setVisible(false);
             mToolbar.getMenu().findItem(R.id.menu_camera).setVisible(false);
