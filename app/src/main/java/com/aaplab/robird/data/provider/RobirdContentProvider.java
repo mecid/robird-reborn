@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 
 import com.aaplab.robird.data.provider.contract.AccountContract;
+import com.aaplab.robird.data.provider.contract.ContactContract;
 import com.aaplab.robird.data.provider.contract.DirectContract;
 import com.aaplab.robird.data.provider.contract.TweetContract;
 import com.aaplab.robird.data.provider.contract.UserListContract;
@@ -23,12 +24,14 @@ public class RobirdContentProvider extends ProviGenProvider {
     public static final String DATABASE = "robird";
 
     public static final Class[] contracts = new Class[]{
-            AccountContract.class, TweetContract.class, UserListContract.class, DirectContract.class
+            AccountContract.class, TweetContract.class,
+            UserListContract.class, DirectContract.class,
+            ContactContract.class
     };
 
     @Override
     public SQLiteOpenHelper openHelper(Context context) {
-        return new ProviGenOpenHelper(context, DATABASE, null, 1, contracts);
+        return new ProviGenOpenHelper(context, DATABASE, null, 3, contracts);
     }
 
     @Override
