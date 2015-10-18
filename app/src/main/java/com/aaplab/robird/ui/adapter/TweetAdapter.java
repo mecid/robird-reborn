@@ -1,6 +1,10 @@
 package com.aaplab.robird.ui.adapter;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
@@ -72,9 +76,9 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
         Glide.clear(holder.mediaImageView);
         bindFonts(holder, position);
 
-        holder.textView.setText(tweet.text());
-        holder.usernameTextView.setText("@" + tweet.username());
+        holder.usernameTextView.setText(TextUtils.concat("@", tweet.username()));
         holder.fullNameTextView.setText(tweet.fullname());
+        holder.textView.setText(tweet.text());
 
         StringBuilder information = new StringBuilder();
 
@@ -137,6 +141,36 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
             holder.avatarImageView.setVisibility(View.GONE);
         }
 
+        if (!TextUtils.isEmpty(tweet.quotedText())) {
+            holder.quotedScreenNameTextView.setText(TextUtils.concat("@", tweet.quotedScreenName()));
+            holder.quotedNameTextView.setText(tweet.quotedName());
+            holder.quotedTextView.setText(tweet.quotedText());
+
+            if (TextUtils.isEmpty(tweet.quotedMedia())) {
+                holder.quotedImageView.setVisibility(View.GONE);
+            } else {
+                final String[] media = tweet.quotedMedia().split("\\+\\+\\+\\+\\+");
+                Glide.with(mActivity)
+                        .load(media[0])
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(holder.quotedImageView);
+                holder.quotedImageView.setVisibility(View.VISIBLE);
+            }
+
+            holder.quotedCardView.setVisibility(View.VISIBLE);
+            holder.quotedCardView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    final String url = String.format("https://twitter.com/%s/status/%d",
+                            tweet.quotedScreenName(), tweet.quotedId());
+                    final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                    ActivityCompat.startActivity(mActivity, intent, null);
+                }
+            });
+        } else {
+            holder.quotedCardView.setVisibility(View.GONE);
+        }
+
         holder.avatarImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -196,6 +230,21 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
 
         @Bind(R.id.text)
         TextView textView;
+
+        @Bind(R.id.quoted)
+        CardView quotedCardView;
+
+        @Bind(R.id.quoted_media)
+        ImageView quotedImageView;
+
+        @Bind(R.id.quoted_text)
+        TextView quotedTextView;
+
+        @Bind(R.id.quoted_name)
+        TextView quotedNameTextView;
+
+        @Bind(R.id.quoted_screen_name)
+        TextView quotedScreenNameTextView;
 
         public TweetHolder(View itemView) {
             super(itemView);
