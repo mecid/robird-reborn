@@ -34,7 +34,7 @@ public class RobirdContentProvider extends ProviGenProvider {
 
     @Override
     public SQLiteOpenHelper openHelper(Context context) {
-        return new RobirdSQLiteOpenHelper(context, DATABASE, null, 3, contracts);
+        return new RobirdSQLiteOpenHelper(context, DATABASE, null, 4, contracts);
     }
 
     @Override
