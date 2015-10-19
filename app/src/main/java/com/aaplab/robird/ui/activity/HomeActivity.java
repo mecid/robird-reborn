@@ -73,21 +73,6 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener,
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
 
-    @Bind({R.id.avatar, R.id.avatar2, R.id.avatar3})
-    ImageView[] avatars;
-
-    @Bind(R.id.user_background)
-    ImageView mBackgroundImageView;
-
-    @Bind(R.id.screen_name)
-    TextView mScreenNameTextView;
-
-    @Bind(R.id.full_name)
-    TextView mFullNameTextView;
-
-    @Bind(R.id.add_account_button)
-    ImageView mAddAccountImageView;
-
     @Bind(R.id.navigation)
     NavigationView mNavigationView;
 
@@ -101,6 +86,12 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener,
     int mSelectedAccountId;
 
     private ActionBarDrawerToggle mDrawerToggle;
+    private ImageView mAddAccountImageView;
+    private ImageView mBackgroundImageView;
+    private TextView mScreenNameTextView;
+    private TextView mFullNameTextView;
+    private ImageView[] avatars = new ImageView[3];
+
     private AccountModel mAccountModel;
     private BillingModel mBillingModel;
     private List<Account> mAccounts;
@@ -112,6 +103,15 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener,
         setContentView(R.layout.activity_home);
         ButterKnife.bind(this);
         setSupportActionBar(mToolbar);
+
+        final View headerView = mNavigationView.inflateHeaderView(R.layout.navigation_header);
+        avatars[0] = ButterKnife.findById(headerView, R.id.avatar);
+        avatars[1] = ButterKnife.findById(headerView, R.id.avatar2);
+        avatars[2] = ButterKnife.findById(headerView, R.id.avatar3);
+        mBackgroundImageView = ButterKnife.findById(headerView, R.id.user_background);
+        mAddAccountImageView = ButterKnife.findById(headerView, R.id.add_account_button);
+        mScreenNameTextView = ButterKnife.findById(headerView, R.id.screen_name);
+        mFullNameTextView = ButterKnife.findById(headerView, R.id.full_name);
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.app_name, R.string.app_name);
         mDrawerLayout.setDrawerListener(mDrawerToggle);
@@ -249,7 +249,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener,
         Account activeAccount = mAccounts.get(0);
         mAddAccountImageView.setVisibility(mAccounts.size() < 3 ? View.VISIBLE : View.GONE);
 
-        mScreenNameTextView.setText("@" + activeAccount.screenName());
+        mScreenNameTextView.setText(TextUtils.concat("@", activeAccount.screenName()));
         mFullNameTextView.setText(activeAccount.fullName());
 
         Glide.with(this)
@@ -393,20 +393,8 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener,
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
-
-        }
-
-        return super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (mDrawerToggle.onOptionsItemSelected(item))
-            return true;
-
-        return super.onOptionsItemSelected(item);
+        return mDrawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
     }
 
     @Override
