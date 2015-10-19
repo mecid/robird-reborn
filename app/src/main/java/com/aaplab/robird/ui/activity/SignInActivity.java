@@ -11,6 +11,7 @@ import com.aaplab.robird.R;
 import com.aaplab.robird.data.entity.Account;
 import com.aaplab.robird.data.entity.UserList;
 import com.aaplab.robird.data.model.AccountModel;
+import com.aaplab.robird.data.model.ContactModel;
 import com.aaplab.robird.data.model.DirectsModel;
 import com.aaplab.robird.data.model.TimelineModel;
 import com.aaplab.robird.data.model.UserListsModel;
@@ -23,7 +24,7 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
-import rx.functions.Func6;
+import rx.functions.Func7;
 import rx.schedulers.Schedulers;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -177,10 +178,11 @@ public class SignInActivity extends BaseActivity {
                 new TimelineModel(account, TimelineModel.FAVORITES_ID).update(),
                 new TimelineModel(account, TimelineModel.RETWEETS_ID).update(),
                 new UserListsModel(account).update(),
-                new Func6<Integer, Integer, Integer, Integer, Integer, Integer, Integer>() {
+                new ContactModel(account).update(),
+                new Func7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer>() {
                     @Override
-                    public Integer call(Integer integer, Integer integer2, Integer integer3, Integer integer4, Integer integer5, Integer integer6) {
-                        return integer + integer2 + integer3 + integer4 + integer5 + integer6;
+                    public Integer call(Integer integer, Integer integer2, Integer integer3, Integer integer4, Integer integer5, Integer integer6, Integer integer7) {
+                        return integer + integer2 + integer3 + integer4 + integer5 + integer6 + integer7;
                     }
                 }
         )

@@ -26,12 +26,14 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.aaplab.robird.AccountUpdateService;
 import com.aaplab.robird.Analytics;
 import com.aaplab.robird.R;
-import com.aaplab.robird.UpdateReceiver;
+import com.aaplab.robird.TimelineUpdateService;
 import com.aaplab.robird.data.entity.Account;
 import com.aaplab.robird.data.model.AccountModel;
 import com.aaplab.robird.data.model.BillingModel;
+import com.aaplab.robird.data.model.PrefsModel;
 import com.aaplab.robird.data.model.TimelineModel;
 import com.aaplab.robird.ui.fragment.ComposeFragment;
 import com.aaplab.robird.ui.fragment.DirectsFragment;
@@ -42,6 +44,7 @@ import com.aaplab.robird.util.DefaultObserver;
 import com.aaplab.robird.util.NavigationUtils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.android.gms.gcm.GcmNetworkManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,21 +73,6 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener,
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
 
-    @Bind({R.id.avatar, R.id.avatar2, R.id.avatar3})
-    ImageView[] avatars;
-
-    @Bind(R.id.user_background)
-    ImageView mBackgroundImageView;
-
-    @Bind(R.id.screen_name)
-    TextView mScreenNameTextView;
-
-    @Bind(R.id.full_name)
-    TextView mFullNameTextView;
-
-    @Bind(R.id.add_account_button)
-    ImageView mAddAccountImageView;
-
     @Bind(R.id.navigation)
     NavigationView mNavigationView;
 
@@ -98,9 +86,16 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener,
     int mSelectedAccountId;
 
     private ActionBarDrawerToggle mDrawerToggle;
+    private ImageView mAddAccountImageView;
+    private ImageView mBackgroundImageView;
+    private TextView mScreenNameTextView;
+    private TextView mFullNameTextView;
+    private ImageView[] avatars = new ImageView[3];
+
     private AccountModel mAccountModel;
     private BillingModel mBillingModel;
     private List<Account> mAccounts;
+    private PrefsModel mPrefsModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,6 +103,15 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener,
         setContentView(R.layout.activity_home);
         ButterKnife.bind(this);
         setSupportActionBar(mToolbar);
+
+        final View headerView = mNavigationView.inflateHeaderView(R.layout.navigation_header);
+        avatars[0] = ButterKnife.findById(headerView, R.id.avatar);
+        avatars[1] = ButterKnife.findById(headerView, R.id.avatar2);
+        avatars[2] = ButterKnife.findById(headerView, R.id.avatar3);
+        mBackgroundImageView = ButterKnife.findById(headerView, R.id.user_background);
+        mAddAccountImageView = ButterKnife.findById(headerView, R.id.add_account_button);
+        mScreenNameTextView = ButterKnife.findById(headerView, R.id.screen_name);
+        mFullNameTextView = ButterKnife.findById(headerView, R.id.full_name);
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.app_name, R.string.app_name);
         mDrawerLayout.setDrawerListener(mDrawerToggle);
@@ -118,6 +122,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener,
         avatars[1].setOnClickListener(this);
         avatars[2].setOnClickListener(this);
 
+        mPrefsModel = new PrefsModel();
         mBillingModel = new BillingModel(this);
         mAccountModel = new AccountModel();
         mSubscriptions.add(
@@ -159,9 +164,12 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener,
     @Override
     protected void onStop() {
         super.onStop();
-        if (!Once.beenDone(Once.THIS_APP_VERSION, "update_receiver")) {
-            sendBroadcast(new Intent(this, UpdateReceiver.class));
-            Once.markDone("update_receiver");
+        if (!Once.beenDone(Once.THIS_APP_VERSION, "update")) {
+            final GcmNetworkManager manager = GcmNetworkManager.getInstance(this);
+            if (mPrefsModel.isBackgroundUpdateServiceEnabled())
+                manager.schedule(TimelineUpdateService.create(mPrefsModel.backgroundUpdateInterval() / 1000));
+            manager.schedule(AccountUpdateService.create());
+            Once.markDone("update");
         }
     }
 
@@ -241,7 +249,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener,
         Account activeAccount = mAccounts.get(0);
         mAddAccountImageView.setVisibility(mAccounts.size() < 3 ? View.VISIBLE : View.GONE);
 
-        mScreenNameTextView.setText("@" + activeAccount.screenName());
+        mScreenNameTextView.setText(TextUtils.concat("@", activeAccount.screenName()));
         mFullNameTextView.setText(activeAccount.fullName());
 
         Glide.with(this)
@@ -385,20 +393,8 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener,
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
-
-        }
-
-        return super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (mDrawerToggle.onOptionsItemSelected(item))
-            return true;
-
-        return super.onOptionsItemSelected(item);
+        return mDrawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
     }
 
     @Override
