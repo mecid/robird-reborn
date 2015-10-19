@@ -99,7 +99,8 @@
         android:layout_below="@id/media"
         android:layout_marginTop="8dp"
         android:visibility="gone"
-        app:cardBackgroundColor="?attr/card_bg_color">
+        app:cardBackgroundColor="?attr/card_bg_color"
+        app:cardUseCompatPadding="true">
 
         <RelativeLayout
             android:layout_width="match_parent"

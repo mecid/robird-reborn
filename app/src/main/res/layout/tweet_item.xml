@@ -103,7 +103,8 @@
         android:layout_toEndOf="@id/avatar"
         android:layout_toRightOf="@id/avatar"
         android:visibility="gone"
-        app:cardBackgroundColor="?attr/card_bg_color">
+        app:cardBackgroundColor="?attr/card_bg_color"
+        app:cardUseCompatPadding="true">
 
         <RelativeLayout
             android:layout_width="match_parent"
