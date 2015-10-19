@@ -75,7 +75,10 @@ public final class TimelineUpdateService extends GcmTaskService {
 
             final long twoDaysAgo = System.currentTimeMillis() - 2 * 24 * 3600 * 1000;
             Inject.contentResolver().delete(TweetContract.CONTENT_URI,
-                    String.format("%s < %d", TweetContract.CREATED_AT, twoDaysAgo), null);
+                    String.format("%s < %d AND %s != %d",
+                            TweetContract.CREATED_AT, twoDaysAgo,
+                            TweetContract.TIMELINE_ID, TimelineModel.FAVORITES_ID
+                    ), null);
         }
 
         return GcmNetworkManager.RESULT_SUCCESS;
