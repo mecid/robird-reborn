@@ -14,6 +14,8 @@ import com.aaplab.robird.data.model.DirectsModel;
 import com.aaplab.robird.data.model.PrefsModel;
 import com.aaplab.robird.data.model.TimelineModel;
 import com.aaplab.robird.data.model.UserListsModel;
+import com.aaplab.robird.data.provider.contract.TweetContract;
+import com.aaplab.robird.inject.Inject;
 import com.aaplab.robird.ui.activity.HomeActivity;
 import com.aaplab.robird.util.DefaultObserver;
 import com.bumptech.glide.Glide;
@@ -70,6 +72,13 @@ public final class TimelineUpdateService extends GcmTaskService {
                             }
                         }
                     });
+
+            final long twoDaysAgo = System.currentTimeMillis() - 2 * 24 * 3600 * 1000;
+            Inject.contentResolver().delete(TweetContract.CONTENT_URI,
+                    String.format("%s < %d AND %s != %d",
+                            TweetContract.CREATED_AT, twoDaysAgo,
+                            TweetContract.TIMELINE_ID, TimelineModel.FAVORITES_ID
+                    ), null);
         }
 
         return GcmNetworkManager.RESULT_SUCCESS;

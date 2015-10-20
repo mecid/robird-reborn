@@ -25,7 +25,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import icepick.Icicle;
+import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func3;
 import rx.schedulers.Schedulers;
 import twitter4j.Status;
 
@@ -49,6 +51,9 @@ public class TweetDetailsFragment extends BaseSwipeToRefreshRecyclerFragment {
     ArrayList<Tweet> mConversation;
 
     @Icicle
+    ArrayList<Tweet> mReplies;
+
+    @Icicle
     Status mDetailedStatus;
 
     private TweetDetailsAdapter mTweetDetailsAdapter;
@@ -67,39 +72,44 @@ public class TweetDetailsFragment extends BaseSwipeToRefreshRecyclerFragment {
         mRefreshLayout.setEnabled(false);
         setHasOptionsMenu(true);
 
-        if (savedInstanceState == null || mConversation == null || mDetailedStatus == null) {
+        if (mConversation == null || mDetailedStatus == null || mReplies == null) {
             mSubscriptions.add(
-                    mTweetModel
-                            .tweet()
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribeOn(Schedulers.io())
-                            .subscribe(new DefaultObserver<Status>() {
+                    Observable.zip(
+                            mTweetModel.detailedStatus(),
+                            mTweetModel.conversation(),
+                            mTweetModel.replies(),
+                            new Func3<Status, List<Tweet>, List<Tweet>, TweetDetailsHolder>() {
                                 @Override
-                                public void onNext(Status status) {
-                                    super.onNext(status);
-                                    mDetailedStatus = status;
-                                    mTweetDetailsAdapter.addDetails(mDetailedStatus);
+                                public TweetDetailsHolder call(Status status, List<Tweet> conversation, List<Tweet> replies) {
+                                    return new TweetDetailsHolder(status, conversation, replies);
                                 }
-                            })
-            );
-
-            mSubscriptions.add(
-                    mTweetModel
-                            .conversation()
-                            .observeOn(AndroidSchedulers.mainThread())
+                            }
+                    )
                             .subscribeOn(Schedulers.io())
-                            .subscribe(new DefaultObserver<List<Tweet>>() {
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new DefaultObserver<TweetDetailsHolder>() {
                                 @Override
-                                public void onNext(List<Tweet> tweets) {
-                                    super.onNext(tweets);
-                                    mConversation = new ArrayList<>(tweets);
+                                public void onNext(TweetDetailsHolder tweetDetailsHolder) {
+                                    super.onNext(tweetDetailsHolder);
+
+                                    mDetailedStatus = tweetDetailsHolder.detailedStatus;
+                                    mTweetDetailsAdapter.addDetails(mDetailedStatus);
+
+                                    mConversation = new ArrayList<>(tweetDetailsHolder.conversation);
                                     mTweetDetailsAdapter.addConversation(mConversation);
+
+                                    mReplies = new ArrayList<>(tweetDetailsHolder.replies);
+                                    mTweetDetailsAdapter.addReplies(mReplies);
+
+                                    int position = mLayoutManager.getItemCount() - mConversation.size();
+                                    mLayoutManager.scrollToPosition(position - 1);
                                 }
                             })
             );
         } else {
             mTweetDetailsAdapter.addDetails(mDetailedStatus);
             mTweetDetailsAdapter.addConversation(mConversation);
+            mTweetDetailsAdapter.addReplies(mReplies);
         }
     }
 
@@ -199,5 +209,17 @@ public class TweetDetailsFragment extends BaseSwipeToRefreshRecyclerFragment {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private static final class TweetDetailsHolder {
+        public Status detailedStatus;
+        public List<Tweet> conversation;
+        public List<Tweet> replies;
+
+        public TweetDetailsHolder(Status detailedStatus, List<Tweet> conversation, List<Tweet> replies) {
+            this.detailedStatus = detailedStatus;
+            this.conversation = conversation;
+            this.replies = replies;
+        }
     }
 }

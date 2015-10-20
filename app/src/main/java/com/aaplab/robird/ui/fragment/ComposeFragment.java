@@ -336,7 +336,12 @@ public class ComposeFragment extends DialogFragment implements Toolbar.OnMenuIte
                                 })
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe()
+                                .subscribe(new DefaultObserver<Integer>() {
+                                    @Override
+                                    public void onCompleted() {
+                                        super.onCompleted();
+                                    }
+                                })
                 );
 
                 dismiss();
