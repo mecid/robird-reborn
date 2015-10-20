@@ -13,7 +13,10 @@ import java.util.List;
 
 import rx.Observable;
 import rx.Subscriber;
+import rx.functions.Func0;
 import rx.functions.Func1;
+import twitter4j.Query;
+import twitter4j.QueryResult;
 import twitter4j.Status;
 import twitter4j.TwitterException;
 
@@ -29,7 +32,28 @@ public class TweetModel extends BaseTwitterModel {
         mTweetId = tweetId;
     }
 
-    public Observable<Status> tweet() {
+    public Observable<Tweet> tweet() {
+        return Observable.defer(new Func0<Observable<Tweet>>() {
+            @Override
+            public Observable<Tweet> call() {
+                return Observable.just(findTweetById(mTweetId));
+            }
+        }).flatMap(new Func1<Tweet, Observable<Tweet>>() {
+            @Override
+            public Observable<Tweet> call(Tweet tweet) {
+                return tweet != null ?
+                        Observable.just(tweet) :
+                        detailedStatus().map(new Func1<Status, Tweet>() {
+                            @Override
+                            public Tweet call(Status status) {
+                                return Tweet.from(status);
+                            }
+                        });
+            }
+        });
+    }
+
+    public Observable<Status> detailedStatus() {
         return Observable.create(new Observable.OnSubscribe<Status>() {
             @Override
             public void call(Subscriber<? super Status> subscriber) {
@@ -49,14 +73,6 @@ public class TweetModel extends BaseTwitterModel {
             public void call(Subscriber<? super Status> subscriber) {
                 try {
                     Status status = mTwitter.retweetStatus(mTweetId);
-//                    Status status = mTwitter.showStatus(mTweet.tweetId);
-//                    TODO is retweeted by me working only for tweet from my timeline
-//                    if (status.isRetweetedByMe()) {
-//                        mTwitter.destroyStatus(status.getCurrentUserRetweetId());
-//                    } else {
-//                        mTwitter.retweetStatus(mTweet.tweetId);
-//                    }
-
                     updateLocalTweet(status);
                     subscriber.onNext(status);
                     subscriber.onCompleted();
@@ -89,57 +105,62 @@ public class TweetModel extends BaseTwitterModel {
         });
     }
 
-    public Observable<List<Tweet>> conversation() {
-        return Observable.create(new Observable.OnSubscribe<Tweet>() {
+    public Observable<List<Tweet>> replies() {
+        return tweet().flatMap(new Func1<Tweet, Observable<List<Tweet>>>() {
             @Override
-            public void call(Subscriber<? super Tweet> subscriber) {
-                subscriber.onNext(findTweetById(mTweetId));
-                subscriber.onCompleted();
-            }
-        })
-                .flatMap(new Func1<Tweet, Observable<Tweet>>() {
+            public Observable<List<Tweet>> call(final Tweet tweet) {
+                return Observable.create(new Observable.OnSubscribe<List<Tweet>>() {
                     @Override
-                    public Observable<Tweet> call(Tweet tweet) {
-                        return tweet != null ?
-                                Observable.just(tweet) :
-                                tweet()
-                                        .map(new Func1<Status, Tweet>() {
-                                            @Override
-                                            public Tweet call(Status status) {
-                                                return Tweet.from(status);
-                                            }
-                                        });
-                    }
-                })
-                .flatMap(new Func1<Tweet, Observable<List<Tweet>>>() {
-                    @Override
-                    public Observable<List<Tweet>> call(final Tweet tweet) {
-                        return Observable.create(new Observable.OnSubscribe<List<Tweet>>() {
-                            @Override
-                            public void call(Subscriber<? super List<Tweet>> subscriber) {
-                                List<Tweet> conversation = new ArrayList<>();
-                                long inReplyToStatus = tweet.inReplyToStatus();
+                    public void call(Subscriber<? super List<Tweet>> subscriber) {
+                        try {
+                            List<Tweet> tweets = new ArrayList<>();
+                            QueryResult result = mTwitter.search(new Query("@" + tweet.username()).count(100));
 
-                                try {
-                                    while (inReplyToStatus > 0) {
-                                        Tweet temp = findTweetById(inReplyToStatus);
-                                        if (temp == null) {
-                                            temp = Tweet.from(mTwitter.showStatus(inReplyToStatus));
-                                        }
+                            for (Status status : result.getTweets())
+                                if (status.getInReplyToStatusId() == mTweetId)
+                                    tweets.add(Tweet.from(status));
 
-                                        conversation.add(temp);
-                                        inReplyToStatus = temp.inReplyToStatus();
-                                    }
-
-                                    subscriber.onNext(conversation);
-                                    subscriber.onCompleted();
-                                } catch (TwitterException e) {
-                                    subscriber.onError(e);
-                                }
-                            }
-                        });
+                            subscriber.onNext(tweets);
+                            subscriber.onCompleted();
+                        } catch (TwitterException e) {
+                            subscriber.onError(e);
+                        }
                     }
                 });
+            }
+        });
+    }
+
+    public Observable<List<Tweet>> conversation() {
+        return tweet().flatMap(new Func1<Tweet, Observable<List<Tweet>>>() {
+            @Override
+            public Observable<List<Tweet>> call(final Tweet tweet) {
+                return Observable.create(new Observable.OnSubscribe<List<Tweet>>() {
+                    @Override
+                    public void call(Subscriber<? super List<Tweet>> subscriber) {
+                        List<Tweet> conversation = new ArrayList<>();
+                        long inReplyToStatus = tweet.inReplyToStatus();
+
+                        try {
+                            while (inReplyToStatus > 0) {
+                                Tweet temp = findTweetById(inReplyToStatus);
+                                if (temp == null) {
+                                    temp = Tweet.from(mTwitter.showStatus(inReplyToStatus));
+                                }
+
+                                conversation.add(temp);
+                                inReplyToStatus = temp.inReplyToStatus();
+                            }
+
+                            subscriber.onNext(conversation);
+                            subscriber.onCompleted();
+                        } catch (TwitterException e) {
+                            subscriber.onError(e);
+                        }
+                    }
+                });
+            }
+        });
     }
 
     public Observable<Status> delete() {

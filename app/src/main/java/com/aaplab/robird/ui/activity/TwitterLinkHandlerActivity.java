@@ -14,9 +14,7 @@ import com.aaplab.robird.util.DefaultObserver;
 import java.util.List;
 
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
-import twitter4j.Status;
 
 /**
  * Created by majid on 28.09.15.
@@ -57,12 +55,6 @@ public class TwitterLinkHandlerActivity extends BaseActivity {
                         .tweet()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .map(new Func1<Status, Tweet>() {
-                            @Override
-                            public Tweet call(Status status) {
-                                return Tweet.from(status);
-                            }
-                        })
                         .subscribe(new DefaultObserver<Tweet>() {
                             @Override
                             public void onNext(Tweet tweet) {
