@@ -62,7 +62,7 @@ public class TweetDetailsAdapter extends TweetAdapter {
     @Override
     protected void bindFonts(TweetHolder holder, int position) {
         super.bindFonts(holder, position);
-        if (position == 0)
+        if (getItemViewType(position) == TWEET_DETAILS_TYPE)
             holder.textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, mFontSize + 2);
     }
 
@@ -77,11 +77,21 @@ public class TweetDetailsAdapter extends TweetAdapter {
 
     @Override
     public int getItemViewType(int position) {
-        return position == 0 ? TWEET_DETAILS_TYPE : TWEET_ITEM_TYPE;
+        if (mDetailedStatus == null) {
+            return position == 0 ? TWEET_DETAILS_TYPE : TWEET_ITEM_TYPE;
+        } else {
+            return mTweets.get(position).tweetId() == mDetailedStatus.getId() ?
+                    TWEET_DETAILS_TYPE : TWEET_ITEM_TYPE;
+        }
     }
 
     public void addDetails(Status status) {
         mDetailedStatus = status;
+        notifyDataSetChanged();
+    }
+
+    public void addReplies(List<Tweet> tweets) {
+        mTweets.addAll(0, tweets);
         notifyDataSetChanged();
     }
 
