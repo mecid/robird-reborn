@@ -91,12 +91,12 @@ public class TweetDetailsAdapter extends TweetAdapter {
     }
 
     public void addReplies(List<Tweet> tweets) {
-        mTweets.addAll(0, tweets);
+        mTweets.addAll(tweets);
         notifyDataSetChanged();
     }
 
     public void addConversation(List<Tweet> tweets) {
-        mTweets.addAll(tweets);
+        mTweets.addAll(0, tweets);
         notifyDataSetChanged();
     }
 
