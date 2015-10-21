@@ -102,7 +102,7 @@ public class TweetDetailsFragment extends BaseSwipeToRefreshRecyclerFragment {
                                     mTweetDetailsAdapter.addReplies(mReplies);
 
                                     int position = mLayoutManager.getItemCount() - mReplies.size();
-                                    mLayoutManager.scrollToPosition(position - 1);
+                                    mLayoutManager.scrollToPositionWithOffset(position - 1, 0);
                                 }
                             })
             );
