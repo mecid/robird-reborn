@@ -70,7 +70,7 @@ public abstract class BaseTimelineFragment extends BaseSwipeToRefreshRecyclerFra
 
     protected long findFirstVisibleTweetId() {
         int i = mLayoutManager.findFirstVisibleItemPosition();
-        return i != -1 ? mTweets.get(i).tweetId() : -1;
+        return i != -1 && mTweets.size() > 0 ? mTweets.get(i).tweetId() : -1;
     }
 
     protected void setTimelinePosition(final long tweetId, int top) {
