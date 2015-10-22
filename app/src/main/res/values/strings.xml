@@ -84,4 +84,5 @@
     <string name="compact_timeline">Compact timeline</string>
     <string name="notification_sound">Notification sound</string>
     <string name="show_media_preview">Show media preview</string>
+    <string name="rate_limit">Rate limit exceeded. %d seconds until reset.</string>
 </resources>

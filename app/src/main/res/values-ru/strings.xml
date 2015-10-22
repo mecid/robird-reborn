@@ -84,4 +84,5 @@
     <string name="compact_timeline">Компактная лента</string>
     <string name="notification_sound">Звуковые уведомления</string>
     <string name="show_media_preview">Показывать картинки в ленте</string>
+    <string name="rate_limit">Превышен лимит запросов. Попробуйте через %d секунд.</string>
 </resources>
