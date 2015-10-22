@@ -146,6 +146,11 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
             holder.quotedNameTextView.setText(tweet.quotedName());
             holder.quotedTextView.setText(tweet.quotedText());
 
+            if (mHighlightLinks) {
+                LinkUtils.activate(mActivity, holder.quotedTextView);
+                holder.quotedTextView.setOnClickListener(new QuoteClickListener(tweet));
+            }
+
             if (TextUtils.isEmpty(tweet.quotedMedia())) {
                 holder.quotedImageView.setVisibility(View.GONE);
             } else {
@@ -158,15 +163,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
             }
 
             holder.quotedCardView.setVisibility(View.VISIBLE);
-            holder.quotedCardView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    final String url = String.format("https://twitter.com/%s/status/%d",
-                            tweet.quotedScreenName(), tweet.quotedId());
-                    final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                    ActivityCompat.startActivity(mActivity, intent, null);
-                }
-            });
+            holder.quotedCardView.setOnClickListener(new QuoteClickListener(tweet));
         } else {
             holder.quotedCardView.setVisibility(View.GONE);
         }
@@ -203,6 +200,22 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
         mShowClientName = mPrefsModel.showClientNameInTimeline();
         mIsAvatarHiddenOnMobile = mPrefsModel.hideAvatarOnMobileConnection() && NetworkUtils.isMobile(mActivity);
         mIsMediaHiddenOnMobile = mPrefsModel.hideMediaOnMobileConnection() && NetworkUtils.isMobile(mActivity);
+    }
+
+    private final class QuoteClickListener implements View.OnClickListener {
+        private final Tweet tweet;
+
+        private QuoteClickListener(Tweet tweet) {
+            this.tweet = tweet;
+        }
+
+        @Override
+        public void onClick(View v) {
+            final String url = String.format("https://twitter.com/%s/status/%d",
+                    tweet.quotedScreenName(), tweet.quotedId());
+            final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            ActivityCompat.startActivity(mActivity, intent, null);
+        }
     }
 
     static class TweetHolder extends RecyclerView.ViewHolder {
