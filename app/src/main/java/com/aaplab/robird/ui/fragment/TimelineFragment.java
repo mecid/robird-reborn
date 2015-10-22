@@ -123,6 +123,7 @@ public class TimelineFragment extends BaseTimelineFragment {
                             @Override
                             public void onError(Throwable e) {
                                 super.onError(e);
+                                setRefreshing(false);
                                 if (e instanceof TwitterException) {
                                     final TwitterException twitterException = (TwitterException) e;
                                     if (twitterException.exceededRateLimitation()) {
