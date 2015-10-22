@@ -10,14 +10,14 @@ import com.aaplab.robird.data.provider.contract.ContactContract;
 import com.aaplab.robird.inject.Inject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import rx.Observable;
 import rx.Subscriber;
 import rx.functions.Action1;
 import rx.functions.Func1;
-import timber.log.Timber;
-import twitter4j.PagableResponseList;
+import twitter4j.IDs;
 import twitter4j.TwitterException;
 import twitter4j.User;
 
@@ -48,14 +48,18 @@ public class ContactModel extends BaseTwitterModel {
             @Override
             public void call(Subscriber<? super List<User>> subscriber) {
                 try {
-                    List<User> users = new ArrayList<>();
-                    long cursor = -1;
+                    List<User> users = new ArrayList<User>();
 
-                    do {
-                        PagableResponseList<User> list = mTwitter.getFriendsList(mAccount.userId(), cursor);
-                        cursor = list.getNextCursor();
-                        users.addAll(list);
-                    } while (cursor != 0);
+                    IDs ids = mTwitter.getFriendsIDs(-1);
+                    int n = ids.getIDs().length / 100;
+                    int offset = ids.getIDs().length % 100;
+
+                    for (int i = 0; i < n; ++i) {
+                        users.addAll(mTwitter.lookupUsers(
+                                Arrays.copyOfRange(ids.getIDs(), i * 100, (i + 1) * 100)));
+                    }
+                    users.addAll(mTwitter.lookupUsers(Arrays.copyOfRange(ids.getIDs(),
+                            100 * n, (100 * n) + offset)));
 
                     subscriber.onNext(users);
                     subscriber.onCompleted();
@@ -68,7 +72,6 @@ public class ContactModel extends BaseTwitterModel {
                 .map(new Func1<List<User>, Integer>() {
                     @Override
                     public Integer call(List<User> users) {
-                        Timber.d("saved contact size = %d", users.size());
                         return users.size();
                     }
                 });
