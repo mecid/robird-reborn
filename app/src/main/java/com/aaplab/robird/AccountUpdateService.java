@@ -11,6 +11,7 @@ import com.google.android.gms.gcm.TaskParams;
 
 import java.util.List;
 
+import timber.log.Timber;
 import twitter4j.User;
 
 /**
@@ -20,25 +21,31 @@ public final class AccountUpdateService extends GcmTaskService {
 
     @Override
     public int onRunTask(TaskParams taskParams) {
-        final AccountModel accountModel = new AccountModel();
-        final List<Account> accounts = accountModel.accounts().toBlocking().first();
+        try {
+            final AccountModel accountModel = new AccountModel();
+            final List<Account> accounts = accountModel.accounts().toBlocking().first();
 
-        for (Account account : accounts) {
-            final UserModel userModel = new UserModel(account, account.screenName());
-            final User user = userModel.user().toBlocking().first();
+            for (Account account : accounts) {
+                final UserModel userModel = new UserModel(account, account.screenName());
+                final User user = userModel.user().toBlocking().first();
 
-            final Account updatedAccount = account.withMeta(
-                    user.getName(),
-                    user.getScreenName(),
-                    user.getOriginalProfileImageURL(),
-                    user.getProfileBannerMobileRetinaURL()
-            );
+                final Account updatedAccount = account.withMeta(
+                        user.getName(),
+                        user.getScreenName(),
+                        user.getOriginalProfileImageURL(),
+                        user.getProfileBannerMobileRetinaURL()
+                );
 
-            accountModel.update(updatedAccount).toBlocking().first();
-            new ContactModel(account).update().toBlocking().first();
+                accountModel.update(updatedAccount).toBlocking().first();
+                new ContactModel(account).update().toBlocking().first();
+
+                return GcmNetworkManager.RESULT_SUCCESS;
+            }
+        } catch (Throwable t) {
+            Timber.w(t, "");
         }
 
-        return GcmNetworkManager.RESULT_SUCCESS;
+        return GcmNetworkManager.RESULT_FAILURE;
     }
 
     public static PeriodicTask create() {

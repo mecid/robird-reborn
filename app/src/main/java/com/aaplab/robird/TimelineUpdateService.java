@@ -29,6 +29,7 @@ import com.google.android.gms.gcm.TaskParams;
 import java.util.List;
 
 import rx.android.schedulers.AndroidSchedulers;
+import timber.log.Timber;
 
 /**
  * Created by majid on 02.09.15.
@@ -47,41 +48,47 @@ public final class TimelineUpdateService extends GcmTaskService {
 
     @Override
     public int onRunTask(TaskParams taskParams) {
-        final PrefsModel prefsModel = new PrefsModel();
+        try {
+            final PrefsModel prefsModel = new PrefsModel();
 
-        for (final Account account : new AccountModel().accounts().toBlocking().first()) {
-            new TimelineModel(account, TimelineModel.HOME_ID).update().subscribe(OBSERVER);
-            new TimelineModel(account, TimelineModel.RETWEETS_ID).update().subscribe(OBSERVER);
-            new TimelineModel(account, TimelineModel.FAVORITES_ID).update().subscribe(OBSERVER);
-            new UserListsModel(account).update().subscribe(OBSERVER);
-            new DirectsModel(account).update().subscribe(OBSERVER);
+            for (final Account account : new AccountModel().accounts().toBlocking().first()) {
+                new TimelineModel(account, TimelineModel.HOME_ID).update().subscribe(OBSERVER);
+                new TimelineModel(account, TimelineModel.RETWEETS_ID).update().subscribe(OBSERVER);
+                new TimelineModel(account, TimelineModel.FAVORITES_ID).update().subscribe(OBSERVER);
+                new UserListsModel(account).update().subscribe(OBSERVER);
+                new DirectsModel(account).update().subscribe(OBSERVER);
 
-            List<UserList> userLists = new UserListsModel(account).lists().toBlocking().first();
-            for (UserList userList : userLists)
-                new TimelineModel(account, userList.listId()).update().subscribe(OBSERVER);
+                List<UserList> userLists = new UserListsModel(account).lists().toBlocking().first();
+                for (UserList userList : userLists)
+                    new TimelineModel(account, userList.listId()).update().subscribe(OBSERVER);
 
-            new TimelineModel(account, TimelineModel.MENTIONS_ID)
-                    .update()
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new DefaultObserver<Integer>() {
-                        @Override
-                        public void onNext(Integer integer) {
-                            super.onNext(integer);
-                            if (prefsModel.isNotificationsEnabled() && integer > 0) {
-                                notifyMentions(account, integer);
+                new TimelineModel(account, TimelineModel.MENTIONS_ID)
+                        .update()
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new DefaultObserver<Integer>() {
+                            @Override
+                            public void onNext(Integer integer) {
+                                super.onNext(integer);
+                                if (prefsModel.isNotificationsEnabled() && integer > 0) {
+                                    notifyMentions(account, integer);
+                                }
                             }
-                        }
-                    });
+                        });
 
-            final long twoDaysAgo = System.currentTimeMillis() - 2 * 24 * 3600 * 1000;
-            Inject.contentResolver().delete(TweetContract.CONTENT_URI,
-                    String.format("%s < %d AND %s != %d",
-                            TweetContract.CREATED_AT, twoDaysAgo,
-                            TweetContract.TIMELINE_ID, TimelineModel.FAVORITES_ID
-                    ), null);
+                final long twoDaysAgo = System.currentTimeMillis() - 2 * 24 * 3600 * 1000;
+                Inject.contentResolver().delete(TweetContract.CONTENT_URI,
+                        String.format("%s < %d AND %s != %d",
+                                TweetContract.CREATED_AT, twoDaysAgo,
+                                TweetContract.TIMELINE_ID, TimelineModel.FAVORITES_ID
+                        ), null);
+            }
+
+            return GcmNetworkManager.RESULT_SUCCESS;
+        } catch (Throwable t) {
+            Timber.w(t, "");
         }
 
-        return GcmNetworkManager.RESULT_SUCCESS;
+        return GcmNetworkManager.RESULT_FAILURE;
     }
 
     private void notifyMentions(final Account account, Integer count) {
