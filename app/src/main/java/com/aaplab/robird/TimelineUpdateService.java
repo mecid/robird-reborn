@@ -17,7 +17,6 @@ import com.aaplab.robird.data.model.UserListsModel;
 import com.aaplab.robird.data.provider.contract.TweetContract;
 import com.aaplab.robird.inject.Inject;
 import com.aaplab.robird.ui.activity.HomeActivity;
-import com.aaplab.robird.util.DefaultObserver;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
@@ -28,7 +27,6 @@ import com.google.android.gms.gcm.TaskParams;
 
 import java.util.List;
 
-import rx.android.schedulers.AndroidSchedulers;
 import timber.log.Timber;
 
 /**
@@ -52,28 +50,20 @@ public final class TimelineUpdateService extends GcmTaskService {
             final PrefsModel prefsModel = new PrefsModel();
 
             for (final Account account : new AccountModel().accounts().toBlocking().first()) {
-                new TimelineModel(account, TimelineModel.HOME_ID).update().subscribe(OBSERVER);
-                new TimelineModel(account, TimelineModel.RETWEETS_ID).update().subscribe(OBSERVER);
-                new TimelineModel(account, TimelineModel.FAVORITES_ID).update().subscribe(OBSERVER);
-                new UserListsModel(account).update().subscribe(OBSERVER);
-                new DirectsModel(account).update().subscribe(OBSERVER);
+                new TimelineModel(account, TimelineModel.HOME_ID).update().toBlocking().first();
+                new TimelineModel(account, TimelineModel.RETWEETS_ID).update().toBlocking().first();
+                new TimelineModel(account, TimelineModel.FAVORITES_ID).update().toBlocking().first();
+                new UserListsModel(account).update().toBlocking().first();
+                new DirectsModel(account).update().toBlocking().first();
 
                 List<UserList> userLists = new UserListsModel(account).lists().toBlocking().first();
                 for (UserList userList : userLists)
-                    new TimelineModel(account, userList.listId()).update().subscribe(OBSERVER);
+                    new TimelineModel(account, userList.listId()).update().toBlocking().first();
 
-                new TimelineModel(account, TimelineModel.MENTIONS_ID)
-                        .update()
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new DefaultObserver<Integer>() {
-                            @Override
-                            public void onNext(Integer integer) {
-                                super.onNext(integer);
-                                if (prefsModel.isNotificationsEnabled() && integer > 0) {
-                                    notifyMentions(account, integer);
-                                }
-                            }
-                        });
+                final int newMentionCount = new TimelineModel(account, TimelineModel.MENTIONS_ID).update().toBlocking().first();
+                if (prefsModel.isNotificationsEnabled() && newMentionCount > 0) {
+                    notifyMentions(account, newMentionCount);
+                }
 
                 final long twoDaysAgo = System.currentTimeMillis() - 2 * 24 * 3600 * 1000;
                 Inject.contentResolver().delete(TweetContract.CONTENT_URI,
@@ -116,7 +106,4 @@ public final class TimelineUpdateService extends GcmTaskService {
             }
         });
     }
-
-    private static final DefaultObserver<Integer> OBSERVER = new DefaultObserver<Integer>() {
-    };
 }
