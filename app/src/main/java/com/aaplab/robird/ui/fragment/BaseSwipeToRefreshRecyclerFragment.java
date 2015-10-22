@@ -79,10 +79,10 @@ public abstract class BaseSwipeToRefreshRecyclerFragment extends BaseFragment im
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
             super.onScrollStateChanged(recyclerView, newState);
-            if (newState == RecyclerView.SCROLL_STATE_DRAGGING)
-                Glide.with(BaseSwipeToRefreshRecyclerFragment.this).pauseRequestsRecursive();
+            if (newState == RecyclerView.SCROLL_STATE_IDLE)
+                Glide.with(getActivity()).resumeRequestsRecursive();
             else
-                Glide.with(BaseSwipeToRefreshRecyclerFragment.this).resumeRequestsRecursive();
+                Glide.with(getActivity()).pauseRequestsRecursive();
         }
 
         @Override

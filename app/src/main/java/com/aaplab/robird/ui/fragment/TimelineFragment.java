@@ -2,6 +2,7 @@ package com.aaplab.robird.ui.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.RecyclerView;
@@ -22,6 +23,8 @@ import java.util.List;
 import butterknife.ButterKnife;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import twitter4j.RateLimitStatus;
+import twitter4j.TwitterException;
 
 
 /**
@@ -115,6 +118,22 @@ public class TimelineFragment extends BaseTimelineFragment {
                             public void onNext(Integer newTweetCount) {
                                 super.onNext(newTweetCount);
                                 setRefreshing(false);
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                super.onError(e);
+                                if (e instanceof TwitterException) {
+                                    final TwitterException twitterException = (TwitterException) e;
+                                    if (twitterException.exceededRateLimitation()) {
+                                        final RateLimitStatus status = twitterException.getRateLimitStatus();
+                                        Snackbar.make(
+                                                getActivity().findViewById(R.id.coordinator),
+                                                getString(R.string.rate_limit, status.getSecondsUntilReset()),
+                                                Snackbar.LENGTH_LONG
+                                        ).show();
+                                    }
+                                }
                             }
                         })
         );
