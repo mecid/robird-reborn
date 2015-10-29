@@ -17,6 +17,7 @@ import com.aaplab.robird.data.model.UserListsModel;
 import com.aaplab.robird.data.provider.contract.TweetContract;
 import com.aaplab.robird.inject.Inject;
 import com.aaplab.robird.ui.activity.HomeActivity;
+import com.aaplab.robird.util.DefaultObserver;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
@@ -27,6 +28,8 @@ import com.google.android.gms.gcm.TaskParams;
 
 import java.util.List;
 
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 /**
@@ -60,10 +63,19 @@ public final class TimelineUpdateService extends GcmTaskService {
                 for (UserList userList : userLists)
                     new TimelineModel(account, userList.listId()).update().toBlocking().first();
 
-                final int newMentionCount = new TimelineModel(account, TimelineModel.MENTIONS_ID).update().toBlocking().first();
-                if (prefsModel.isNotificationsEnabled() && newMentionCount > 0) {
-                    notifyMentions(account, newMentionCount);
-                }
+                new TimelineModel(account, TimelineModel.MENTIONS_ID)
+                        .update()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new DefaultObserver<Integer>() {
+                            @Override
+                            public void onNext(Integer newMentionCount) {
+                                super.onNext(newMentionCount);
+                                if (prefsModel.isNotificationsEnabled() && newMentionCount > 0) {
+                                    notifyMentions(account, newMentionCount);
+                                }
+                            }
+                        });
 
                 final long twoDaysAgo = System.currentTimeMillis() - 2 * 24 * 3600 * 1000;
                 Inject.contentResolver().delete(TweetContract.CONTENT_URI,

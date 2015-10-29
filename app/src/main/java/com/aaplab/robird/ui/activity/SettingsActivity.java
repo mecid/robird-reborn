@@ -2,8 +2,8 @@ package com.aaplab.robird.ui.activity;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 
 import com.aaplab.robird.R;
 import com.aaplab.robird.ui.fragment.SettingsFragment;
@@ -19,7 +19,8 @@ public class SettingsActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_coordinator_with_fab);
         setSupportActionBar(ButterKnife.<Toolbar>findById(this, R.id.toolbar));
-        ButterKnife.findById(this, R.id.fab).setVisibility(View.GONE);
+        ButterKnife.<CoordinatorLayout>findById(this, R.id.coordinator)
+                .removeView(ButterKnife.findById(this, R.id.fab));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         ButterKnife.bind(this);
 

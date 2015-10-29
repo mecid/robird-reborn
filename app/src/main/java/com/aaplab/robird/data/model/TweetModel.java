@@ -9,6 +9,7 @@ import com.aaplab.robird.data.provider.contract.TweetContract;
 import com.aaplab.robird.inject.Inject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import rx.Observable;
@@ -152,6 +153,7 @@ public class TweetModel extends BaseTwitterModel {
                                 inReplyToStatus = temp.inReplyToStatus();
                             }
 
+                            Collections.reverse(conversation);
                             subscriber.onNext(conversation);
                             subscriber.onCompleted();
                         } catch (TwitterException e) {
