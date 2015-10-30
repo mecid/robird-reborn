@@ -1,6 +1,7 @@
 package com.aaplab.robird.ui.fragment;
 
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
@@ -16,10 +17,8 @@ import android.view.ViewGroup;
 
 import com.aaplab.robird.R;
 import com.aaplab.robird.inject.Inject;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import it.sephiroth.android.library.imagezoom.ImageViewTouch;
 import it.sephiroth.android.library.imagezoom.ImageViewTouchBase;
@@ -47,9 +46,8 @@ public class ImageFragment extends BaseFragment implements View.OnTouchListener,
         super.onActivityCreated(savedInstanceState);
         mImage = getArguments().getString("image");
 
-        Glide.with(this)
+        Picasso.with(getActivity())
                 .load(mImage)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(mImageView);
 
         setHasOptionsMenu(true);
@@ -64,12 +62,22 @@ public class ImageFragment extends BaseFragment implements View.OnTouchListener,
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_save) {
-            Glide.with(this).load(mImage).asBitmap().into(new SimpleTarget<Bitmap>() {
+            Picasso.with(getActivity()).load(mImage).into(new Target() {
                 @Override
-                public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                    MediaStore.Images.Media.insertImage(Inject.contentResolver(), resource, "", "");
+                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                    MediaStore.Images.Media.insertImage(Inject.contentResolver(), bitmap, "", "");
                     Snackbar.make(getActivity().findViewById(R.id.coordinator),
                             R.string.image_saved, Snackbar.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onBitmapFailed(Drawable errorDrawable) {
+
+                }
+
+                @Override
+                public void onPrepareLoad(Drawable placeHolderDrawable) {
+
                 }
             });
         }

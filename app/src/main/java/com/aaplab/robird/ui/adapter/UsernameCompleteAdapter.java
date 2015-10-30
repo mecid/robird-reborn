@@ -16,8 +16,7 @@ import android.widget.TextView;
 
 import com.aaplab.robird.R;
 import com.aaplab.robird.data.entity.Contact;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,9 +62,8 @@ public class UsernameCompleteAdapter extends BaseAdapter implements Filterable {
 
         final Contact user = suggested.get(position);
 
-        Glide.with(parent.getContext())
+        Picasso.with(parent.getContext())
                 .load(user.avatar())
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(ButterKnife.<ImageView>findById(convertView, R.id.avatar));
         ButterKnife.<TextView>findById(convertView, R.id.screen_name).setText(user.username());
 

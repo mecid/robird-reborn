@@ -11,8 +11,7 @@ import android.widget.TextView;
 import com.aaplab.robird.R;
 import com.aaplab.robird.data.entity.Account;
 import com.aaplab.robird.ui.activity.UserProfileActivity;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -49,9 +48,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserHolder> {
         holder.fullNameTextView.setText(user.getName());
         holder.infoTextView.setText(user.getLocation());
 
-        Glide.with(mActivity)
+        Picasso.with(mActivity)
                 .load(user.getOriginalProfileImageURL())
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(holder.avatarImageView);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {

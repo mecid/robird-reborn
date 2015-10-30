@@ -42,9 +42,8 @@ import com.aaplab.robird.ui.fragment.TrendsFragment;
 import com.aaplab.robird.ui.fragment.UserListsFragment;
 import com.aaplab.robird.util.DefaultObserver;
 import com.aaplab.robird.util.NavigationUtils;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.gms.gcm.GcmNetworkManager;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -252,16 +251,14 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener,
         mScreenNameTextView.setText(TextUtils.concat("@", activeAccount.screenName()));
         mFullNameTextView.setText(activeAccount.fullName());
 
-        Glide.with(this)
+        Picasso.with(this)
                 .load(activeAccount.userBackground())
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(mBackgroundImageView);
 
         for (int i = 0; i < mAccounts.size(); ++i) {
             Account account = mAccounts.get(i);
-            Glide.with(this)
+            Picasso.with(this)
                     .load(account.avatar())
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(avatars[i]);
             avatars[i].setVisibility(View.VISIBLE);
         }

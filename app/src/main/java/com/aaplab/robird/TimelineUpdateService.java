@@ -4,6 +4,7 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.NotificationCompat;
 
@@ -16,13 +17,12 @@ import com.aaplab.robird.data.model.TimelineModel;
 import com.aaplab.robird.data.model.UserListsModel;
 import com.aaplab.robird.ui.activity.HomeActivity;
 import com.aaplab.robird.util.DefaultObserver;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
 import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.GcmTaskService;
 import com.google.android.gms.gcm.PeriodicTask;
 import com.google.android.gms.gcm.TaskParams;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.util.List;
 
@@ -101,11 +101,21 @@ public final class TimelineUpdateService extends GcmTaskService {
         if (new PrefsModel().isNotificationSoundEnabled())
             builder.setDefaults(Notification.DEFAULT_SOUND);
 
-        Glide.with(this).load(account.avatar()).asBitmap().into(new SimpleTarget<Bitmap>() {
+        Picasso.with(this).load(account.avatar()).into(new Target() {
             @Override
-            public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                builder.setLargeIcon(resource);
+            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                builder.setLargeIcon(bitmap);
                 notificationManager.notify(account.screenName(), 7226, builder.build());
+            }
+
+            @Override
+            public void onBitmapFailed(Drawable errorDrawable) {
+
+            }
+
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {
+
             }
         });
     }

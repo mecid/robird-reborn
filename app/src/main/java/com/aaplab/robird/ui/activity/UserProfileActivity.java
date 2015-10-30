@@ -2,7 +2,6 @@ package com.aaplab.robird.ui.activity;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -34,10 +33,8 @@ import com.aaplab.robird.ui.fragment.ComposeFragment;
 import com.aaplab.robird.ui.fragment.UserFriendsFragment;
 import com.aaplab.robird.ui.fragment.UserTimelineFragment;
 import com.aaplab.robird.util.DefaultObserver;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.BitmapImageViewTarget;
+import com.aaplab.robird.util.PaletteTransformation;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -300,21 +297,16 @@ public class UserProfileActivity extends BaseActivity {
             }
         });
 
-        Glide.with(this)
+        Picasso.with(this)
                 .load(mUser.getOriginalProfileImageURL())
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(mAvatarImageView);
 
-        Glide.with(this)
+        Picasso.with(this)
                 .load(mUser.getProfileBannerMobileRetinaURL())
-                .asBitmap()
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(new BitmapImageViewTarget(mUserBackgroundImageView) {
+                .transform(PaletteTransformation.instance())
+                .into(mUserBackgroundImageView, new PaletteTransformation.PaletteCallback(mUserBackgroundImageView) {
                     @Override
-                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                        super.onResourceReady(resource, glideAnimation);
-
-                        final Palette palette = Palette.from(resource).generate();
+                    protected void onSuccess(Palette palette) {
                         final int muted = palette.getMutedColor(getResources().getColor(R.color.primary));
                         final int darkMuted = palette.getDarkMutedColor(getResources().getColor(R.color.primaryDark));
 
@@ -322,6 +314,11 @@ public class UserProfileActivity extends BaseActivity {
                         mCollapsingToolbar.setContentScrimColor(muted);
                         mBioTextView.setBackgroundColor(muted);
                         mTabs.setBackgroundColor(muted);
+                    }
+
+                    @Override
+                    public void onError() {
+
                     }
                 });
     }
