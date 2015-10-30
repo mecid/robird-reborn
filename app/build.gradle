@@ -9,8 +9,8 @@ android {
         applicationId "com.aaplab.robird"
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode 62
-        versionName "1.1.6"
+        versionCode 63
+        versionName "1.1.7"
 
         resConfigs "en", "ru"
         resConfigs "nodpi", "xhdpi", "xxhdpi", "xxxhdpi"
@@ -41,9 +41,10 @@ dependencies {
 
     compile 'com.anjlab.android.iab.v3:library:1.0.28'
     compile 'com.github.provigen:ProviGen-lib:2.0.1'
-    compile 'com.github.bumptech.glide:glide:3.6.1'
     compile 'com.jonathanfinerty.once:once:0.3.2'
     compile 'org.twitter4j:twitter4j-core:4.0.4'
+    compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'com.squareup.okhttp:okhttp:2.5.0'
     compile 'com.twitter:twitter-text:1.13.0'
     compile 'io.reactivex:rxandroid:1.0.1'
     compile 'com.google.guava:guava:18.0'

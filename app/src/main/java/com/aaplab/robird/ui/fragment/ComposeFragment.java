@@ -41,8 +41,7 @@ import com.aaplab.robird.ui.activity.BaseActivity;
 import com.aaplab.robird.ui.adapter.UsernameCompleteAdapter;
 import com.aaplab.robird.util.DefaultObserver;
 import com.aaplab.robird.util.ImageUtils;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.squareup.picasso.Picasso;
 import com.twitter.Validator;
 
 import java.io.IOException;
@@ -178,9 +177,8 @@ public class ComposeFragment extends DialogFragment implements Toolbar.OnMenuIte
         mScreenNameTextView.setText(TextUtils.concat("@", mAccount.screenName()));
         mFullNameTextView.setText(mAccount.fullName());
 
-        Glide.with(this)
+        Picasso.with(getActivity())
                 .load(mAccount.avatar())
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(mAvatarImageView);
 
         mToolbar.inflateMenu(R.menu.compose);
@@ -413,9 +411,8 @@ public class ComposeFragment extends DialogFragment implements Toolbar.OnMenuIte
         }
 
         for (int i = 0; i < mAttachedImages.size(); ++i) {
-            Glide.with(this)
+            Picasso.with(getActivity())
                     .load(mAttachedImages.get(i))
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(mImageViews[i]);
 
             final int finalI = i;

@@ -25,8 +25,7 @@ import com.aaplab.robird.ui.activity.TweetDetailsActivity;
 import com.aaplab.robird.ui.activity.UserProfileActivity;
 import com.aaplab.robird.util.LinkUtils;
 import com.aaplab.robird.util.NetworkUtils;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -73,7 +72,6 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
     @Override
     public void onBindViewHolder(TweetHolder holder, int position) {
         final Tweet tweet = mTweets.get(position);
-        Glide.clear(holder.mediaImageView);
         bindFonts(holder, position);
 
         holder.usernameTextView.setText(TextUtils.concat("@", tweet.username()));
@@ -115,9 +113,8 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
             holder.mediaCountTextView.setText("" + media.length);
             holder.mediaImageView.setVisibility(View.VISIBLE);
 
-            Glide.with(mActivity)
+            Picasso.with(mActivity)
                     .load(media[0])
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(holder.mediaImageView);
 
             holder.mediaImageView.setOnClickListener(new View.OnClickListener() {
@@ -133,9 +130,8 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
 
         if (!mIsAvatarHiddenOnMobile) {
             holder.avatarImageView.setVisibility(View.VISIBLE);
-            Glide.with(mActivity)
+            Picasso.with(mActivity)
                     .load(tweet.avatar())
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(holder.avatarImageView);
         } else {
             holder.avatarImageView.setVisibility(View.GONE);
@@ -155,9 +151,8 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
                 holder.quotedImageView.setVisibility(View.GONE);
             } else {
                 final String[] media = tweet.quotedMedia().split("\\+\\+\\+\\+\\+");
-                Glide.with(mActivity)
+                Picasso.with(mActivity)
                         .load(media[0])
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(holder.quotedImageView);
                 holder.quotedImageView.setVisibility(View.VISIBLE);
             }

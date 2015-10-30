@@ -15,8 +15,7 @@ import com.aaplab.robird.data.entity.Account;
 import com.aaplab.robird.data.entity.Direct;
 import com.aaplab.robird.ui.activity.DirectChatActivity;
 import com.aaplab.robird.util.LinkUtils;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -64,9 +63,8 @@ public class DirectsAdapter extends RecyclerView.Adapter<DirectsAdapter.DirectHo
                     direct.fullName() : direct.recipientFullName();
         }
 
-        Glide.with(activity)
+        Picasso.with(activity)
                 .load(avatar)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(holder.avatarImageView);
 
         holder.infoTextView.setText(DateUtils.getRelativeTimeSpanString(direct.createdAt()));
