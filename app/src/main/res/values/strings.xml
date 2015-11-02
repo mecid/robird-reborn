@@ -85,4 +85,5 @@
     <string name="notification_sound">Notification sound</string>
     <string name="show_media_preview">Show media preview</string>
     <string name="rate_limit">Rate limit exceeded. %d seconds until reset.</string>
+    <string name="copy_url">Copy tweet url</string>
 </resources>
