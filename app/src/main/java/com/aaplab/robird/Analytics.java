@@ -2,6 +2,7 @@ package com.aaplab.robird;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 
 import com.yandex.metrica.YandexMetrica;
 
@@ -67,7 +68,7 @@ public final class Analytics {
     public static final class YandexMeticaTree extends Timber.Tree {
         @Override
         protected void log(int priority, String tag, String message, Throwable t) {
-            if (t != null)
+            if (t != null && priority > Log.INFO)
                 YandexMetrica.reportError(message, t);
         }
     }

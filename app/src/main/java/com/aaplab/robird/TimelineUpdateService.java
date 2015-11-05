@@ -78,7 +78,7 @@ public final class TimelineUpdateService extends GcmTaskService {
 
             return GcmNetworkManager.RESULT_SUCCESS;
         } catch (Throwable t) {
-            Timber.w(t, "");
+            Timber.i(t, "");
         }
 
         return GcmNetworkManager.RESULT_FAILURE;

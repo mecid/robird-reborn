@@ -38,7 +38,7 @@ public final class TweetLongerUtils {
             scanner.close();
             return new TwitLongerResponse(sb.toString()).content;
         } catch (IOException e) {
-            Timber.w("", e);
+            Timber.i("", e);
         }
 
         return sb.toString();
@@ -91,7 +91,7 @@ public final class TweetLongerUtils {
                 }
                 return content;
             } catch (IOException | XmlPullParserException e) {
-                Timber.w("", e);
+                Timber.i("", e);
             }
             return null;
         }
