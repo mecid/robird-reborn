@@ -1,14 +1,16 @@
 package com.aaplab.robird.util;
 
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.List;
-import java.util.Scanner;
 
 import timber.log.Timber;
 import twitter4j.HttpParameter;
@@ -23,7 +25,7 @@ import twitter4j.auth.OAuthAuthorization;
  */
 public class TweetMarkerUtils {
 
-    public static final String API_KEY = "RO-D31C990389DC";
+    private static final String API_KEY = "RO-D31C990389DC";
 
     public static final String TIMELINE = "timeline";
     public static final String MENTIONS = "mentions";
@@ -31,75 +33,64 @@ public class TweetMarkerUtils {
     public static final String RETWEETS = "retweets";
 
     private static final String TWITTER_VERIFY_CREDENTIALS_JSON = "https://api.twitter.com/1/account/verify_credentials.json";
+    private static final String TWEETMARKER_API_URL = "https://api.tweetmarker.net/v2/lastread";
 
-    public static void save(String collection, long lastRead, String user, OAuthAuthorization oauth) {
-        String jsonString;
+    public static long save(String collection, long lastRead, String user, OAuthAuthorization oauth) {
         try {
-            JSONObject idObject = new JSONObject();
-            idObject.put("id", lastRead);
-            JSONObject baseObject = new JSONObject();
-            baseObject.put(collection, idObject);
-            jsonString = baseObject.toString();
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return;
+            collection = "lists." + Long.parseLong(collection);
+        } catch (NumberFormatException ignored) {
+
         }
 
-        String urlString = "https://api.tweetmarker.net/v2/lastread?api_key=" + API_KEY + "&username=" + user;
-
-        String auth = generateVerifyCredentialsAuthorizationHeader(TWITTER_VERIFY_CREDENTIALS_JSON, oauth);
-
         try {
-            URL url = new URL(urlString);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setDoInput(false);
-            conn.setDoOutput(true);
-            conn.setRequestMethod("POST");
-            conn.addRequestProperty("X-Auth-Service-Provider", TWITTER_VERIFY_CREDENTIALS_JSON);
-            conn.addRequestProperty("X-Verify-Credentials-Authorization", auth);
-            OutputStream out = conn.getOutputStream();
-            out.write(jsonString.getBytes());
-            out.flush();
-            out.close();
-            int code = conn.getResponseCode();
-            if (code != 200) {
-                Timber.d("error code = %d", code);
-            }
-        } catch (Exception e) {
-            Timber.d(e, "");
+            final String auth = generateVerifyCredentialsAuthorizationHeader(TWITTER_VERIFY_CREDENTIALS_JSON, oauth);
+
+            JSONObject body = new JSONObject();
+            JSONObject collectionJson = new JSONObject();
+            collectionJson.put("id", lastRead);
+            body.put(collection, collectionJson);
+
+            MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+
+            Request request = new Request.Builder()
+                    .url(TWEETMARKER_API_URL + "?api_key=" + API_KEY + "&username=" + user)
+                    .addHeader("X-Auth-Service-Provider", TWITTER_VERIFY_CREDENTIALS_JSON)
+                    .addHeader("X-Verify-Credentials-Authorization", auth)
+                    .post(RequestBody.create(JSON, body.toString()))
+                    .build();
+
+            final Response response = new OkHttpClient().newCall(request).execute();
+            return new JSONObject(response.body().string()).getJSONObject(collection).getLong("id");
+        } catch (JSONException | IOException e) {
+            Timber.i(e, "");
         }
+
+        return -1;
     }
 
-    // Copied from Twiter4j's media helper AbstractImageUploadImpl
-    static protected String generateVerifyCredentialsAuthorizationHeader(String verifyCredentialsUrl, OAuthAuthorization oauth) {
+    private static String generateVerifyCredentialsAuthorizationHeader(String verifyCredentialsUrl, OAuthAuthorization oauth) {
         List<HttpParameter> oauthSignatureParams = oauth.generateOAuthSignatureHttpParams("GET", verifyCredentialsUrl);
         return "OAuth realm=\"http://api.twitter.com/\"," + OAuthAuthorization.encodeParameters(oauthSignatureParams, ",", true);
     }
 
     public static long get(String collection, String user) {
+        try {
+            collection = "lists." + Long.parseLong(collection);
+        } catch (NumberFormatException ignored) {
 
-        String urlString = "https://api.tweetmarker.net/v2/lastread?collection=" + collection + "&username=" + user + "&api_key=" + API_KEY;
+        }
+
+        Request request = new Request.Builder()
+                .url(TWEETMARKER_API_URL + "?api_key=" + API_KEY + "&username=" + user + "&collection" + collection)
+                .get()
+                .build();
 
         try {
-            URL url = new URL(urlString);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-            conn.setDoInput(true);
-            conn.setDoOutput(false);
-            int code = conn.getResponseCode();
-            if (code == 200) {
-                Scanner scanner = new Scanner(conn.getInputStream());
-                StringBuilder sb = new StringBuilder();
-                while (scanner.hasNext())
-                    sb.append(scanner.nextLine());
-                scanner.close();
-
-                JSONObject jsonObject = new JSONObject(sb.toString());
-                JSONObject timeline = jsonObject.getJSONObject(collection);
-                return Long.parseLong(timeline.getString("id"));
-            }
+            final Response response = new OkHttpClient().newCall(request).execute();
+            JSONObject json = new JSONObject(response.body().string());
+            return json.getJSONObject(collection).getLong("id");
         } catch (IOException | JSONException e) {
-            Timber.w(e, "");
+            Timber.i(e, "");
         }
 
         return -1;
