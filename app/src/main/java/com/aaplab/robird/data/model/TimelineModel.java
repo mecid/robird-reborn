@@ -107,7 +107,8 @@ public class TimelineModel extends BaseTwitterModel {
                         @Override
                         public void onNext(Long position) {
                             super.onNext(position);
-                            saveTimelinePosition(position);
+                            if (timelinePosition() < position)
+                                saveTimelinePosition(position);
                         }
                     });
 
@@ -206,9 +207,10 @@ public class TimelineModel extends BaseTwitterModel {
         return Observable.create(new Observable.OnSubscribe<Long>() {
             @Override
             public void call(Subscriber<? super Long> subscriber) {
-                TweetMarkerUtils.save(tweetMarkerCollection(), tweetId, mAccount.screenName(),
-                        (OAuthAuthorization) mTwitter.getAuthorization());
-                subscriber.onNext(tweetId);
+                subscriber.onNext(
+                        TweetMarkerUtils.save(tweetMarkerCollection(), tweetId, mAccount.screenName(),
+                                (OAuthAuthorization) mTwitter.getAuthorization())
+                );
                 subscriber.onCompleted();
             }
         });

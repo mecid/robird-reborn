@@ -177,6 +177,13 @@ public class TweetDetailsFragment extends BaseSwipeToRefreshRecyclerFragment {
             clipboard.setPrimaryClip(ClipData.newPlainText("", mTweet.text()));
             Snackbar.make(getActivity().findViewById(R.id.coordinator),
                     R.string.copied_to_clipboard, Snackbar.LENGTH_SHORT).show();
+        } else if (item.getItemId() == R.id.menu_copy_url) {
+            Analytics.event(Analytics.COPY);
+            ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+            clipboard.setPrimaryClip(ClipData.newPlainText("",
+                    String.format("https://twitter.com/%s/status/%d", mTweet.username(), mTweet.tweetId())));
+            Snackbar.make(getActivity().findViewById(R.id.coordinator),
+                    R.string.copied_to_clipboard, Snackbar.LENGTH_SHORT).show();
         } else if (item.getItemId() == R.id.menu_share) {
             Analytics.event(Analytics.SHARE);
             Intent shareIntent = ShareCompat.IntentBuilder.from(getActivity())

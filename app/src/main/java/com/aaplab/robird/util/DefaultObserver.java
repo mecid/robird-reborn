@@ -14,7 +14,7 @@ public abstract class DefaultObserver<T> implements Observer<T> {
 
     @Override
     public void onError(Throwable e) {
-        Timber.w(e, "");
+        Timber.i(e, "");
     }
 
     @Override

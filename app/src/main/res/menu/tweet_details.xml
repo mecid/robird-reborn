@@ -35,4 +35,9 @@
         android:id="@+id/menu_copy"
         android:title="@string/copy"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/menu_copy_url"
+        android:title="@string/copy_url"
+        app:showAsAction="never" />
 </menu>

@@ -115,6 +115,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
 
             Picasso.with(mActivity)
                     .load(media[0])
+                    .noFade()
                     .into(holder.mediaImageView);
 
             holder.mediaImageView.setOnClickListener(new View.OnClickListener() {
@@ -132,6 +133,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
             holder.avatarImageView.setVisibility(View.VISIBLE);
             Picasso.with(mActivity)
                     .load(tweet.avatar())
+                    .noFade()
                     .into(holder.avatarImageView);
         } else {
             holder.avatarImageView.setVisibility(View.GONE);
@@ -153,6 +155,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
                 final String[] media = tweet.quotedMedia().split("\\+\\+\\+\\+\\+");
                 Picasso.with(mActivity)
                         .load(media[0])
+                        .noFade()
                         .into(holder.quotedImageView);
                 holder.quotedImageView.setVisibility(View.VISIBLE);
             }
