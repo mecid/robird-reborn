@@ -9,8 +9,8 @@ android {
         applicationId "com.aaplab.robird"
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode 63
-        versionName "1.1.7"
+        versionCode 64
+        versionName "1.1.8"
 
         resConfigs "en", "ru"
         resConfigs "nodpi", "xhdpi", "xxhdpi", "xxxhdpi"
@@ -23,7 +23,7 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.google.android.gms:play-services-gcm:8.1.0'
+    compile 'com.google.android.gms:play-services-gcm:8.3.0'
     compile 'com.android.support:recyclerview-v7:23.1.0'
     compile 'com.android.support:preference-v7:23.1.0'
     compile 'com.android.support:preference-v14:23.1.0'
