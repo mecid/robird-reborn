@@ -1,7 +1,10 @@
 package com.aaplab.robird.ui.fragment;
 
 import android.content.Intent;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
@@ -21,6 +24,8 @@ import rx.subscriptions.CompositeSubscription;
  * Created by majid on 28.08.15.
  */
 public class SettingsFragment extends PreferenceFragmentCompat implements Preference.OnPreferenceClickListener, Preference.OnPreferenceChangeListener {
+
+    private static final int REQUEST_CODE_RINGTONE = 4324;
 
     private CompositeSubscription mSubscriptions;
     private BillingModel mBillingModel;
@@ -44,6 +49,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
     private Preference mBackgroundUpdateIntervalPreference;
     private Preference mUnlockOtherPreference;
     private Preference mRestorePreference;
+    private Preference mNotificationRingtonePreference;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -104,6 +110,9 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         mRestorePreference = findPreference("restore");
         mRestorePreference.setOnPreferenceClickListener(this);
 
+        mNotificationRingtonePreference = findPreference(PrefsModel.NOTIFICATION_RINGTONE);
+        mNotificationRingtonePreference.setOnPreferenceClickListener(this);
+
         enablePurchasedSettings();
     }
 
@@ -128,6 +137,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
                 Snackbar.make(getActivity().findViewById(R.id.coordinator),
                         R.string.purchase_history_restored, Snackbar.LENGTH_SHORT).show();
             }
+        } else if (mNotificationRingtonePreference == preference) {
+            pickNotificationRingtone();
         }
 
         return true;
@@ -201,10 +212,33 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         }
     }
 
+    private void pickNotificationRingtone() {
+        Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
+        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_NOTIFICATION);
+        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true);
+        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, true);
+        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_DEFAULT_URI, Settings.System.DEFAULT_NOTIFICATION_URI);
+
+        String existingValue = mPrefsModel.notificationSound();
+        if (TextUtils.isEmpty(existingValue)) {
+            // Select "Silent"
+            intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, (Uri) null);
+        } else {
+            intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, Uri.parse(existingValue));
+        }
+
+        startActivityForResult(intent, REQUEST_CODE_RINGTONE);
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (!mBillingModel.handleActivityResult(requestCode, resultCode, data))
             super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE_RINGTONE && data != null) {
+            Uri ringtone = data.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
+            mPrefsModel.setNotificationSound(ringtone != null ? ringtone.toString() : "");
+        }
     }
 
     @Override
