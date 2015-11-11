@@ -8,7 +8,7 @@ android {
     defaultConfig {
         applicationId "com.aaplab.robird"
         minSdkVersion 16
-        targetSdkVersion 22
+        targetSdkVersion 23
         versionCode 67
         versionName "1.1.11"
 
