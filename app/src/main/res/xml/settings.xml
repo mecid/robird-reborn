@@ -93,11 +93,10 @@
             app:key="notifications"
             app:title="@string/notifications" />
 
-        <SwitchPreferenceCompat
-            app:defaultValue="false"
+        <Preference
             app:dependency="notifications"
-            app:key="notification_sound"
-            app:title="@string/notification_sound" />
+            app:title="@string/notification_ringtone"
+            app:key="notification_ringtone" />
 
         <SwitchPreferenceCompat
             app:dependency="background_update_service"

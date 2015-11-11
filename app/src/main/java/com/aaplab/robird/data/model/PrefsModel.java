@@ -21,10 +21,10 @@ public final class PrefsModel {
     public static final String HIGHLIGHT_TIMELINE_LINKS = "highlight_timeline_links";
     public static final String BACKGROUND_UPDATE_SERVICE = "background_update_service";
     public static final String BACKGROUND_UPDATE_INTERVAL = "background_updates_interval";
-    public static final String NOTIFICATION_SOUND = "notification_sound";
     public static final String NOTIFICATIONS = "notifications";
     public static final String TWEETMARKER = "tweetmarker";
     public static final String MEDIA_PREVIEW = "media_preview";
+    public static final String NOTIFICATION_RINGTONE = "notification_ringtone";
 
     private final SharedPreferences mPreferences = Inject.preferences();
 
@@ -85,11 +85,15 @@ public final class PrefsModel {
         return mPreferences.getBoolean(NOTIFICATIONS, true);
     }
 
-    public boolean isNotificationSoundEnabled() {
-        return mPreferences.getBoolean(NOTIFICATION_SOUND, false);
-    }
-
     public boolean isTweetMarkerEnabled() {
         return mPreferences.getBoolean(TWEETMARKER, false);
+    }
+
+    public void setNotificationSound(String sound) {
+        mPreferences.edit().putString(NOTIFICATION_RINGTONE, sound).commit();
+    }
+
+    public String notificationSound() {
+        return mPreferences.getString(NOTIFICATION_RINGTONE, "");
     }
 }

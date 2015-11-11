@@ -86,4 +86,5 @@
     <string name="show_media_preview">Показывать картинки в ленте</string>
     <string name="rate_limit">Превышен лимит запросов. Попробуйте через %d секунд.</string>
     <string name="copy_url">Копировать ссылку на твит</string>
+    <string name="notification_ringtone">Мелодия уведомлений</string>
 </resources>

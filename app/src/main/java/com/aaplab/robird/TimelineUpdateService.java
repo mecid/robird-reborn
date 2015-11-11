@@ -1,12 +1,13 @@
 package com.aaplab.robird;
 
-import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.NotificationCompat;
+import android.text.TextUtils;
 
 import com.aaplab.robird.data.entity.Account;
 import com.aaplab.robird.data.entity.UserList;
@@ -98,8 +99,9 @@ public final class TimelineUpdateService extends GcmTaskService {
         builder.setSmallIcon(R.drawable.ic_at);
         builder.setAutoCancel(true);
 
-        if (new PrefsModel().isNotificationSoundEnabled())
-            builder.setDefaults(Notification.DEFAULT_SOUND);
+        final PrefsModel prefsModel = new PrefsModel();
+        if (!TextUtils.isEmpty(prefsModel.notificationSound()))
+            builder.setSound(Uri.parse(prefsModel.notificationSound()));
 
         Picasso.with(this).load(account.avatar()).into(new Target() {
             @Override
