@@ -1,7 +1,14 @@
+# Gradle
 .gradle
 /local.properties
+
+# OS X
 .DS_Store
+
+# Build output
 /build
 /captures
-Robird.iml
+
+# Android Studio
+*.iml
 .idea
