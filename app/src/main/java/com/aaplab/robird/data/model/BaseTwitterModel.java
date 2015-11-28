@@ -5,6 +5,8 @@ import com.aaplab.robird.data.entity.Account;
 
 import twitter4j.Twitter;
 import twitter4j.TwitterFactory;
+import twitter4j.TwitterStream;
+import twitter4j.TwitterStreamFactory;
 import twitter4j.conf.ConfigurationBuilder;
 
 /**
@@ -12,14 +14,16 @@ import twitter4j.conf.ConfigurationBuilder;
  */
 public abstract class BaseTwitterModel {
     protected Twitter mTwitter;
+    protected TwitterStream mTwitterStream;
     protected Account mAccount;
 
     public BaseTwitterModel(Account account) {
         mAccount = account;
-        mTwitter = configure(account);
+        mTwitter = configureTwitter(account);
+        mTwitterStream = configureTwitterStream(account);
     }
 
-    private static Twitter configure(Account account) {
+    private static Twitter configureTwitter(Account account) {
         final ConfigurationBuilder builder = new ConfigurationBuilder();
 
         builder.setOAuthConsumerKey(Config.TWITTER_CONSUMER_KEY);
@@ -28,5 +32,16 @@ public abstract class BaseTwitterModel {
         builder.setOAuthAccessToken(account.token());
 
         return new TwitterFactory(builder.build()).getInstance();
+    }
+
+    private static TwitterStream configureTwitterStream(Account account) {
+        final ConfigurationBuilder builder = new ConfigurationBuilder();
+
+        builder.setOAuthConsumerKey(Config.TWITTER_CONSUMER_KEY);
+        builder.setOAuthConsumerSecret(Config.TWITTER_CONSUMER_SECRET);
+        builder.setOAuthAccessTokenSecret(account.tokenSecret());
+        builder.setOAuthAccessToken(account.token());
+
+        return new TwitterStreamFactory(builder.build()).getInstance();
     }
 }
