@@ -350,8 +350,15 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener,
                     })
                     .show(getSupportFragmentManager(), ComposeFragment.TAG_SHARE);
         } else {
+            final StringBuilder shareBuilder = new StringBuilder();
+
+            if (!TextUtils.isEmpty(reader.getSubject()))
+                shareBuilder.append(reader.getSubject()).append(" ");
+
+            shareBuilder.append(reader.getText());
+
             ComposeFragment
-                    .share(reader.getText().toString())
+                    .share(shareBuilder.toString())
                     .show(getSupportFragmentManager(), ComposeFragment.TAG_SHARE);
         }
     }
