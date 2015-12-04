@@ -185,11 +185,8 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener,
     @Override
     public boolean onNavigationItemSelected(final MenuItem menuItem) {
         if (menuItem.getItemId() != R.id.navigation_item_settings) {
-            selectNavigation(menuItem);
             if (mSelectedNavigationPosition != menuItem.getOrder() ||
                     mSelectedAccountId != mAccounts.get(0).id()) {
-                mSelectedAccountId = mAccounts.get(0).id();
-                mSelectedNavigationPosition = menuItem.getOrder();
                 mPager.post(new Runnable() {
                     @Override
                     public void run() {
@@ -197,6 +194,8 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener,
                     }
                 });
             }
+
+            selectNavigation(menuItem);
         } else {
             ActivityCompat.startActivity(this, new Intent(this, SettingsActivity.class), null);
         }
@@ -205,6 +204,8 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener,
     }
 
     public void selectNavigation(MenuItem menuItem) {
+        mSelectedAccountId = mAccounts.get(0).id();
+        mSelectedNavigationPosition = menuItem.getOrder();
         setTitle(menuItem.getTitle());
         menuItem.setChecked(true);
         mDrawerLayout.closeDrawers();
