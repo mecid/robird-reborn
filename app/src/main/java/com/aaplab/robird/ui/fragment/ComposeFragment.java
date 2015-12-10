@@ -1,8 +1,10 @@
 package com.aaplab.robird.ui.fragment;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -10,6 +12,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -74,7 +77,9 @@ public class ComposeFragment extends DialogFragment implements Toolbar.OnMenuIte
     public static final String TAG_REPLY = "Reply";
     public static final String TAG_SHARE = "Share";
 
-    private static final int SELECT_PICTURE = 1743;
+    private static final int MAX_ATTACHED_IMAGE_COUNT = 4;
+    private static final int PERMISSION_REQUEST_CODE = 149;
+    private static final int IMAGE_REQUEST_CODE = 1743;
 
     public static ComposeFragment create(Account account) {
         Bundle args = new Bundle();
@@ -346,28 +351,10 @@ public class ComposeFragment extends DialogFragment implements Toolbar.OnMenuIte
             }
         } else if (item.getItemId() == R.id.menu_camera) {
             Analytics.event(Analytics.ATTACH_IMAGE);
-            // you can add only 4 images
-            if (mAttachedImages.size() < 4) {
-                try {
-                    Intent pickIntent = new Intent(Intent.ACTION_GET_CONTENT);
-                    pickIntent.setType("image/*");
-
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                        pickIntent.setAction(Intent.ACTION_OPEN_DOCUMENT);
-                        pickIntent.addCategory(Intent.CATEGORY_OPENABLE);
-                    }
-
-                    mCameraImageUri = Uri.fromFile(ImageUtils.createNewImageFile());
-                    Intent takePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    takePhotoIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCameraImageUri);
-
-                    Intent chooserIntent = Intent.createChooser(pickIntent, getString(R.string.app_name));
-                    chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{takePhotoIntent});
-
-                    startActivityForResult(chooserIntent, SELECT_PICTURE);
-                } catch (IOException e) {
-                    Timber.e(e, "Exception while starting image picker in compose screen.");
-                }
+            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
+            } else {
+                pickImage();
             }
         } else if (item.getItemId() == R.id.menu_at) {
             mEditText.append("@");
@@ -382,18 +369,52 @@ public class ComposeFragment extends DialogFragment implements Toolbar.OnMenuIte
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == SELECT_PICTURE) {
+        if (requestCode == IMAGE_REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK) {
-                if (data == null) {
-                    //Camera
-                    mAttachedImages.add(mCameraImageUri);
-                } else {
+                if (data != null && data.getData() != null) {
+                    //Gallery
                     Uri selectedImageUri = data.getData();
                     mAttachedImages.add(selectedImageUri);
+                } else {
+                    //Camera
+                    mAttachedImages.add(mCameraImageUri);
                 }
 
                 previewImages();
                 onTextChanged(mEditText.getText(), 0, 0, 0);
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        if (requestCode == PERMISSION_REQUEST_CODE && grantResults.length > 0 &&
+                grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            pickImage();
+        }
+    }
+
+    private void pickImage() {
+        if (mAttachedImages.size() < MAX_ATTACHED_IMAGE_COUNT) {
+            try {
+                Intent pickIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                pickIntent.setType("image/*");
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    pickIntent.setAction(Intent.ACTION_OPEN_DOCUMENT);
+                    pickIntent.addCategory(Intent.CATEGORY_OPENABLE);
+                }
+
+                mCameraImageUri = Uri.fromFile(ImageUtils.createNewImageFile());
+                Intent takePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                takePhotoIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCameraImageUri);
+
+                Intent chooserIntent = Intent.createChooser(pickIntent, getString(R.string.app_name));
+                chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{takePhotoIntent});
+
+                startActivityForResult(chooserIntent, IMAGE_REQUEST_CODE);
+            } catch (IOException e) {
+                Timber.w(e, "Exception while starting image picker in compose screen.");
             }
         }
     }
