@@ -87,4 +87,9 @@
     <string name="rate_limit">Превышен лимит запросов. Попробуйте через %d секунд.</string>
     <string name="copy_url">Копировать ссылку на твит</string>
     <string name="notification_ringtone">Мелодия уведомлений</string>
+    <string name="rate_title">Оценить Robird Reborn</string>
+    <string name="rate_message">Если вам нравится это приложение, оцените его, пожалуйста. Спасибо за поддержку!</string>
+    <string name="no_thanks">Нет, спасибо</string>
+    <string name="rate">Оценить</string>
+    <string name="later">Позже</string>
 </resources>
