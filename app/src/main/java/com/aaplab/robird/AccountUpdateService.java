@@ -38,9 +38,9 @@ public final class AccountUpdateService extends GcmTaskService {
 
                 accountModel.update(updatedAccount).toBlocking().first();
                 new ContactModel(account).update().toBlocking().first();
-
-                return GcmNetworkManager.RESULT_SUCCESS;
             }
+
+            return GcmNetworkManager.RESULT_SUCCESS;
         } catch (Throwable t) {
             Timber.i(t, "");
         }

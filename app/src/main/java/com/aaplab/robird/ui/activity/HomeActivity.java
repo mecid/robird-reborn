@@ -28,6 +28,7 @@ import android.widget.TextView;
 
 import com.aaplab.robird.AccountUpdateService;
 import com.aaplab.robird.Analytics;
+import com.aaplab.robird.AppRater;
 import com.aaplab.robird.R;
 import com.aaplab.robird.TimelineUpdateService;
 import com.aaplab.robird.data.entity.Account;
@@ -102,6 +103,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener,
         setContentView(R.layout.activity_home);
         ButterKnife.bind(this);
         setSupportActionBar(mToolbar);
+        AppRater.showRateDialogIfMeetsConditions(this);
 
         final View headerView = mNavigationView.inflateHeaderView(R.layout.navigation_header);
         avatars[0] = ButterKnife.findById(headerView, R.id.avatar);
