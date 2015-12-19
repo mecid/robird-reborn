@@ -1,10 +1,7 @@
 package com.aaplab.robird.util;
 
-import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Environment;
 
 import com.google.common.io.ByteStreams;
@@ -27,13 +24,6 @@ public final class ImageUtils {
         String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
         return File.createTempFile(imageFileName, ".jpg", storageDir);
-    }
-
-    public static void addNewImageToGallery(Context context, File file) {
-        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        Uri contentUri = Uri.fromFile(file);
-        mediaScanIntent.setData(contentUri);
-        context.sendBroadcast(mediaScanIntent);
     }
 
     public static InputStream sampleBitmap(InputStream is, int width, int height) throws IOException {
