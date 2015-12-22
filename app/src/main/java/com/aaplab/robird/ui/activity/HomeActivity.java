@@ -34,6 +34,7 @@ import com.aaplab.robird.data.entity.Account;
 import com.aaplab.robird.data.model.AccountModel;
 import com.aaplab.robird.data.model.BillingModel;
 import com.aaplab.robird.data.model.PrefsModel;
+import com.aaplab.robird.data.model.StreamModel;
 import com.aaplab.robird.data.model.TimelineModel;
 import com.aaplab.robird.ui.fragment.ComposeFragment;
 import com.aaplab.robird.ui.fragment.DirectsFragment;
@@ -54,6 +55,7 @@ import icepick.Icicle;
 import jonathanfinerty.once.Once;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
@@ -158,6 +160,26 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener,
         if (reader.isShareIntent()) {
             handleShareIntent(reader);
         }
+
+        //////////////////////////////
+        // Only for testing purposes
+        //////////////////////////////
+        mAccountModel.accounts()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .map(new Func1<List<Account>, StreamModel>() {
+                    @Override
+                    public StreamModel call(List<Account> accounts) {
+                        System.out.println("HomeActivity.call: " + accounts.get(0).fullName());
+                        return new StreamModel(accounts.get(0));
+                    }
+                })
+                .subscribe(new Action1<StreamModel>() {
+                    @Override
+                    public void call(StreamModel streamModel) {
+                        streamModel.start();
+                    }
+                });
     }
 
     @Override
