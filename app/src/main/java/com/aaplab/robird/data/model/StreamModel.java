@@ -49,41 +49,12 @@ public final class StreamModel extends BaseTwitterModel {
         }
     }
 
+    // Streaming support for:
+    //  - favourites: done
+    //  - home:       done
+    //  - retweets:   done
+    //  - mentions:   no
     private class UserStatusListener implements UserStreamListener {
-
-        private boolean isCurrentUserMentioned(UserMentionEntity[] entities) {
-            if (entities == null || entities.length <= 0) {
-                return false;
-            }
-
-            for (UserMentionEntity mention : entities) {
-                if (mention.getId() == mAccount.userId()) {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        private boolean isRetweeted(Status status) {
-            return status.isRetweeted() && status.getRetweetedStatus()
-                    .getUser().getId() == mAccount.userId();
-        }
-
-        private long getTimelineId(Status status) {
-            if (isCurrentUserMentioned(status.getUserMentionEntities())) {
-                System.out.println("Mentioned");
-                return TimelineModel.MENTIONS_ID;
-            }
-
-            if (isRetweeted(status)) {
-                System.out.println("Retweeted");
-                return TimelineModel.RETWEETS_ID;
-            }
-
-            System.out.println("Home");
-            return TimelineModel.HOME_ID;
-        }
 
         private void saveStatus(Status status, long timelineId) {
             Tweet tweet = Tweet.from(status);
@@ -111,6 +82,40 @@ public final class StreamModel extends BaseTwitterModel {
 
             Timber.d(String.format("Deleting tweet with id=%d; Removal status: %d",
                     statusId, tweetsDeleted));
+        }
+
+        private boolean isCurrentUserMentioned(UserMentionEntity[] mentions) {
+            if (mentions == null || mentions.length <= 0) {
+                return false;
+            }
+
+            for (UserMentionEntity mention : mentions) {
+                if (mention.getId() == mAccount.userId()) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private boolean isRetweeted(Status status) {
+            return status.isRetweet() && status.getRetweetedStatus()
+                    .getUser().getId() == mAccount.userId();
+        }
+
+        private long getTimelineId(Status status) {
+            if (isRetweeted(status)) {
+                System.out.println("Retweeted");
+                return TimelineModel.RETWEETS_ID;
+            }
+
+            if (isCurrentUserMentioned(status.getUserMentionEntities())) {
+                System.out.println("Mentioned");
+                return TimelineModel.MENTIONS_ID;
+            }
+
+            System.out.println("Home");
+            return TimelineModel.HOME_ID;
         }
 
         @Override
