@@ -177,164 +177,86 @@ public final class StreamModel extends BaseTwitterModel {
 
         @Override
         public final void onTrackLimitationNotice(int numberOfLimitedStatuses) {
-            // Stub implementation
         }
 
         @Override
         public final void onScrubGeo(long userId, long upToStatusId) {
-            // Stub implementation
         }
 
         @Override
         public final void onStallWarning(StallWarning warning) {
-            // Stub implementation
         }
 
         @Override
         public void onFriendList(long[] friendIds) {
-            // Stub implementation
         }
 
         @Override
         public void onFollow(User source, User followedUser) {
-            // Stub implementation
         }
 
         @Override
         public void onUnfollow(User source, User followedUser) {
-            // Stub implementation
         }
 
         @Override
         public void onUserListMemberAddition(User addedMember, User listOwner, UserList list) {
-            // Stub implementation
-
-//            System.out.println("onUserListMemberAddition added member:@"
-//                    + addedMember.getScreenName()
-//                    + " listOwner:@" + listOwner.getScreenName()
-//                    + " list:" + list.getName());
         }
 
         @Override
         public void onUserListMemberDeletion(User deletedMember, User listOwner, UserList list) {
-            // Stub implementation
-
-//            System.out.println("onUserListMemberDeleted deleted member:@"
-//                    + deletedMember.getScreenName()
-//                    + " listOwner:@" + listOwner.getScreenName()
-//                    + " list:" + list.getName());
         }
 
         @Override
         public void onUserListSubscription(User subscriber, User listOwner, UserList list) {
-            // Stub implementation
-
-//            System.out.println("onUserListSubscribed subscriber:@"
-//                    + subscriber.getScreenName()
-//                    + " listOwner:@" + listOwner.getScreenName()
-//                    + " list:" + list.getName());
         }
 
         @Override
         public void onUserListUnsubscription(User subscriber, User listOwner, UserList list) {
-            // Stub implementation
-
-//            System.out.println("onUserListUnsubscribed subscriber:@"
-//                    + subscriber.getScreenName()
-//                    + " listOwner:@" + listOwner.getScreenName()
-//                    + " list:" + list.getName());
         }
 
         @Override
         public void onUserListCreation(User listOwner, UserList list) {
-            // Stub implementation
-
-//            System.out.println("onUserListCreated  listOwner:@"
-//                    + listOwner.getScreenName()
-//                    + " list:" + list.getName());
         }
 
         @Override
         public void onUserListUpdate(User listOwner, UserList list) {
-            // Stub implementation
-
-//            System.out.println("onUserListUpdated  listOwner:@"
-//                    + listOwner.getScreenName()
-//                    + " list:" + list.getName());
         }
 
         @Override
         public void onUserListDeletion(User listOwner, UserList list) {
-            // Stub implementation
-
-//            System.out.println("onUserListDestroyed  listOwner:@"
-//                    + listOwner.getScreenName()
-//                    + " list:" + list.getName());
         }
 
         @Override
         public void onUserProfileUpdate(User updatedUser) {
-            // Stub implementation
-
-//            System.out.println("onUserProfileUpdated user:@" + updatedUser.getScreenName());
         }
 
         @Override
         public void onUserDeletion(long deletedUser) {
-            // Stub implementation
-
-//            System.out.println("onUserDeletion user:@" + deletedUser);
         }
 
         @Override
         public void onUserSuspension(long suspendedUser) {
-            // Stub implementation
-
-//            System.out.println("onUserSuspension user:@" + suspendedUser);
         }
 
         @Override
         public void onBlock(User source, User blockedUser) {
-            // Stub implementation
-//            System.out.println("onBlock source:@" + source.getScreenName()
-//                    + " target:@" + blockedUser.getScreenName());
         }
 
         @Override
         public void onUnblock(User source, User unblockedUser) {
-            // Stub implementation
-//            System.out.println("onUnblock source:@" + source.getScreenName()
-//                    + " target:@" + unblockedUser.getScreenName());
         }
 
         @Override
         public void onRetweetedRetweet(User source, User target, Status retweetedStatus) {
-            // Stub implementation
-
-//            System.out.println("onRetweetedRetweet source:@" + source.getScreenName()
-//                    + " target:@" + target.getScreenName()
-//                    + retweetedStatus.getUser().getScreenName()
-//                    + " - " + retweetedStatus.getText());
         }
 
         @Override
         public void onFavoritedRetweet(User source, User target, Status favoritedRetweet) {
-            // Stub implementation
-
-//            System.out.println("onFavroitedRetweet source:@" + source.getScreenName()
-//                    + " target:@" + target.getScreenName()
-//                    + favoritedRetweet.getUser().getScreenName()
-//                    + " - " + favoritedRetweet.getText());
         }
 
         @Override
         public void onQuotedTweet(User source, User target, Status quotingTweet) {
-            // Stub implementation
-
-//            System.out.println("onQuotedTweet" + source.getScreenName()
-//                    + " target:@" + target.getScreenName()
-//                    + quotingTweet.getUser().getScreenName()
-//                    + " - " + quotingTweet.getText());
         }
     }
 }
