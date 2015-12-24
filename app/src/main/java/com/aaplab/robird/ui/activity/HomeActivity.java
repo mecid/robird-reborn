@@ -98,6 +98,8 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener,
     private List<Account> mAccounts;
     private PrefsModel mPrefsModel;
 
+    private StreamModel mStreamModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -177,7 +179,13 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener,
                 .subscribe(new Action1<StreamModel>() {
                     @Override
                     public void call(StreamModel streamModel) {
-                        streamModel.start();
+                        mStreamModel = streamModel;
+                        mStreamModel.start();
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        throwable.printStackTrace();
                     }
                 });
     }
@@ -436,6 +444,9 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener,
     @Override
     protected void onDestroy() {
         mBillingModel.onDestroy();
+        if (mStreamModel != null) {
+            mStreamModel.stop();
+        }
         super.onDestroy();
     }
 }

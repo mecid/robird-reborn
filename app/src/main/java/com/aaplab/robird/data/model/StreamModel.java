@@ -1,94 +1,81 @@
 package com.aaplab.robird.data.model;
 
-import com.aaplab.robird.Config;
+import android.content.ContentValues;
+import android.net.Uri;
+
 import com.aaplab.robird.data.entity.Account;
 import com.aaplab.robird.data.entity.Tweet;
+import com.aaplab.robird.data.provider.contract.TweetContract;
+import com.aaplab.robird.inject.Inject;
 
-import rx.Observable;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx.schedulers.Schedulers;
+import timber.log.Timber;
 import twitter4j.StallWarning;
 import twitter4j.Status;
 import twitter4j.StatusDeletionNotice;
 import twitter4j.StatusListener;
+import twitter4j.TwitterException;
 import twitter4j.TwitterStream;
 import twitter4j.TwitterStreamFactory;
-import twitter4j.conf.ConfigurationBuilder;
 
-public final class StreamModel {
-
-    // Only one instance of TwitterStream per StreamModel
-    private final TwitterStream mTwitterStream;
+public final class StreamModel extends BaseTwitterModel {
+    private TwitterStream mTwitterStream;
 
     public StreamModel(Account account) {
-        mTwitterStream = configureTwitterStream(account);
-    }
+        super(account);
 
-    private static TwitterStream configureTwitterStream(Account account) {
-        final ConfigurationBuilder builder = new ConfigurationBuilder();
-
-        builder.setOAuthConsumerKey(Config.TWITTER_CONSUMER_KEY);
-        builder.setOAuthConsumerSecret(Config.TWITTER_CONSUMER_SECRET);
-        builder.setOAuthAccessTokenSecret(account.tokenSecret());
-        builder.setOAuthAccessToken(account.token());
-
-        return new TwitterStreamFactory(builder.build()).getInstance();
+        try {
+            mTwitterStream = new TwitterStreamFactory()
+                    .getInstance(mTwitter.getOAuthAccessToken());
+        } catch (TwitterException e) {
+            Timber.d(e, "Access token is not available or expired");
+        }
     }
 
     public void start() {
         System.out.println("Called");
 
-        RxStatusListener listener = new RxStatusListener();
-        Observable<Tweet> tweetStream = Observable.create(listener);
-
-        mTwitterStream.addListener(listener);
-
-        // TODO implement custom logic in order to prevent status bursting.
-        tweetStream
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<Tweet>() {
-                    @Override
-                    public void call(Tweet tweet) {
-                        System.out.println("Tweet: " + tweet.fullname() + " \n" + tweet.text());
-                    }
-                });
-
-        mTwitterStream.user();
+        if (mTwitterStream != null) {
+            mTwitterStream.addListener(new UserStatusListener(mAccount));
+            mTwitterStream.user();
+        }
     }
 
     public void stop() {
-        mTwitterStream.clearListeners();
-        mTwitterStream.cleanUp();
-        mTwitterStream.shutdown();
+        if (mTwitterStream != null) {
+            mTwitterStream.clearListeners();
+            mTwitterStream.cleanUp();
+            mTwitterStream.shutdown();
+        }
     }
 
-    private static class RxStatusListener implements StatusListener, Observable.OnSubscribe<Tweet> {
-        private Subscriber<? super Tweet> mSubscriber;
+    private static class UserStatusListener implements StatusListener {
+        private final Account account;
 
-        public RxStatusListener() {
-            mSubscriber = null;
-        }
-
-        @Override
-        public void call(Subscriber<? super Tweet> subscriber) {
-            mSubscriber = subscriber;
+        public UserStatusListener(Account account) {
+            this.account = account;
         }
 
         @Override
         public void onStatus(Status status) {
-            // if we there is subscriber, we can push status down to it as soon as it arrives.
-            if (mSubscriber != null) {
-                Tweet tweet = Tweet.from(status);
-                mSubscriber.onNext(tweet);
+            System.out.println("Status.text: " + status.getText());
+            System.out.println("Scopes: " + status.getScopes());
+            for (String id : status.getScopes().getPlaceIds()) {
+                System.out.println("ID: " + id);
             }
+
+            Tweet tweet = Tweet.from(status);
+
+            ContentValues contentValues = tweet.toContentValues();
+            contentValues.put(TweetContract.ACCOUNT_ID, account.id());
+            contentValues.put(TweetContract.TIMELINE_ID, 1);
+
+            Uri uri = Inject.contentResolver().insert(TweetContract.CONTENT_URI, contentValues);
+            System.out.println("Tweet URI: " + uri);
         }
 
         @Override
         public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
-            // Should find a way to push deletion notice to subscriber
+
         }
 
         @Override
@@ -108,10 +95,7 @@ public final class StreamModel {
 
         @Override
         public void onException(Exception ex) {
-            if (mSubscriber != null) {
-                mSubscriber.onError(ex);
-                mSubscriber.onCompleted();
-            }
+            ex.printStackTrace();
         }
     }
 }
