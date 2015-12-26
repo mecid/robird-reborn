@@ -173,7 +173,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         mUnlockAllPreference.setEnabled(!mBillingModel.isPurchased(BillingModel.UNLOCK_ALL_PRODUCT_ID));
         mUnlockInAppBrowserPreference.setEnabled(!mBillingModel.isPurchased(BillingModel.UNLOCK_IN_APP_BROWSER));
 
-        mUnlockOtherPreference.setVisible(false);
+        if (mUnlockOtherPreference.isVisible())
+            mUnlockOtherPreference.setVisible(false);
 
         mThemePreference.setEnabled(mBillingModel.isPurchased(BillingModel.UNLOCK_UI_PRODUCT_ID));
         mShowMediaPreviewPreference.setEnabled(mBillingModel.isPurchased(BillingModel.UNLOCK_UI_PRODUCT_ID));
