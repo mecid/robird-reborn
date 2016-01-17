@@ -34,7 +34,6 @@ dependencies {
 
     compile 'com.jakewharton.timber:timber:4.1.0'
     compile 'com.jakewharton:butterknife:7.0.1'
-    compile 'com.squareup:otto:1.3.8'
 
     compile 'com.anjlab.android.iab.v3:library:1.0.28'
     compile 'com.github.provigen:ProviGen-lib:2.0.1'
