@@ -29,8 +29,8 @@
 
         <ListPreference
             app:defaultValue="14"
-            app:entries="@array/timeline_font_size"
-            app:entryValues="@array/timeline_font_size"
+            app:entries="@array/timeline_font_sizes"
+            app:entryValues="@array/timeline_font_sizes"
             app:key="font_size"
             app:summary="14"
             app:title="@string/timeline_font_size" />
