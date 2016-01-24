@@ -12,10 +12,6 @@ android {
         versionCode 73
         versionName "1.2.6"
     }
-
-    lintOptions {
-        abortOnError false
-    }
 }
 
 dependencies {
