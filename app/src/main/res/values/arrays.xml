@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="timeline_font_size">
+    <string-array name="timeline_font_sizes" translatable="false">
         <item>14</item>
         <item>16</item>
         <item>18</item>
@@ -16,7 +16,7 @@
         <item>Day</item>
     </string-array>
 
-    <string-array name="background_update_period_values">
+    <string-array name="background_update_period_values" translatable="false">
         <item>900000</item>
         <item>1800000</item>
         <item>3600000</item>

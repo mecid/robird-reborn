@@ -8,8 +8,6 @@ import android.support.v7.app.AppCompatActivity;
 import com.aaplab.robird.Analytics;
 import com.aaplab.robird.R;
 import com.aaplab.robird.data.model.PrefsModel;
-import com.aaplab.robird.inject.Inject;
-import com.squareup.otto.Bus;
 
 import icepick.Icepick;
 import rx.Subscription;
@@ -21,7 +19,6 @@ import rx.subscriptions.CompositeSubscription;
 public abstract class BaseActivity extends AppCompatActivity {
 
     protected CompositeSubscription mSubscriptions;
-    protected Bus mBus;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -29,19 +26,12 @@ public abstract class BaseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Icepick.restoreInstanceState(this, savedInstanceState);
         mSubscriptions = new CompositeSubscription();
-        mBus = Inject.eventBus();
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         Icepick.saveInstanceState(this, outState);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        mBus.register(this);
     }
 
     @Override
@@ -54,12 +44,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onPause() {
         Analytics.onPause(this);
         super.onPause();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        mBus.unregister(this);
     }
 
     @Override
