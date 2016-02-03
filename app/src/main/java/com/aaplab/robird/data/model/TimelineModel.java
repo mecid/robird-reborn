@@ -10,6 +10,8 @@ import com.aaplab.robird.data.provider.contract.TweetContract;
 import com.aaplab.robird.inject.Inject;
 import com.aaplab.robird.util.DefaultObserver;
 import com.aaplab.robird.util.TweetMarkerUtils;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,6 +44,8 @@ public class TimelineModel extends BaseTwitterModel {
     private static final String POSITION = "position?account=%s&type=%d";
     private static final String UNREAD = "unread?account=%s&type=%d";
 
+    private static final int MAX_CACHED_TWEET_COUNT = 200;
+
     private static final Set<String> refreshingSet = Collections.synchronizedSet(new HashSet<String>());
 
     private final SqlBriteContentProvider mSqlBriteContentProvider =
@@ -66,13 +70,13 @@ public class TimelineModel extends BaseTwitterModel {
         );
     }
 
-    public void saveTimelinePosition(long position) {
+    public void saveTimelinePosition(long id) {
         Inject.preferences().edit().putLong(
-                String.format(POSITION, mAccount.screenName(), mTimelineId), position
+                String.format(POSITION, mAccount.screenName(), mTimelineId), id
         ).apply();
 
         if (mPrefsModel.isTweetMarkerEnabled())
-            saveTweetMarker(position)
+            saveTweetMarker(id)
                     .subscribeOn(Schedulers.io())
                     .subscribe(new DefaultObserver<Long>() {
                     });
@@ -82,6 +86,48 @@ public class TimelineModel extends BaseTwitterModel {
         return Inject.preferences().getLong(
                 String.format(POSITION, mAccount.screenName(), mTimelineId), 0
         );
+    }
+
+    public void deleteOldTweets() {
+        timeline()
+                .take(1)
+                .flatMap(new Func1<List<Tweet>, Observable<Integer>>() {
+                    @Override
+                    public Observable<Integer> call(List<Tweet> tweets) {
+                        if (tweets.isEmpty())
+                            return Observable.empty();
+
+                        final long timelinePositionId = timelinePosition();
+                        final int timelinePositionIndex = Iterables.indexOf(tweets,
+                                new Predicate<Tweet>() {
+                                    @Override
+                                    public boolean apply(Tweet input) {
+                                        return input.tweetId() == timelinePositionId;
+                                    }
+                                });
+
+                        int deleteIndex = timelinePositionIndex + 50;
+                        if (deleteIndex > tweets.size())
+                            deleteIndex = tweets.size();
+
+                        if (deleteIndex < MAX_CACHED_TWEET_COUNT && tweets.size() >= MAX_CACHED_TWEET_COUNT)
+                            deleteIndex = MAX_CACHED_TWEET_COUNT;
+
+                        return mSqlBriteContentProvider.delete(TweetContract.CONTENT_URI,
+                                String.format("%s=%d AND %s=%d AND %s<%d",
+                                        TweetContract.ACCOUNT_ID, mAccount.id(),
+                                        TweetContract.TIMELINE_ID, mTimelineId,
+                                        TweetContract.TWEET_ID, tweets.get(deleteIndex - 1).tweetId()
+                                ), null);
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .subscribe(new DefaultObserver<Integer>() {
+                    @Override
+                    public void onNext(Integer integer) {
+                        super.onNext(integer);
+                    }
+                });
     }
 
     public Observable<List<Tweet>> timeline() {
