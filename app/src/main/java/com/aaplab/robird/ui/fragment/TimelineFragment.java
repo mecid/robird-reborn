@@ -104,6 +104,7 @@ public class TimelineFragment extends BaseTimelineFragment {
         super.onStop();
         mTimelineModel.saveTimelinePosition(findFirstVisibleTweetId());
         mTimelineModel.saveLastUnread(mLastUnread);
+        mTimelineModel.deleteOldTweets();
     }
 
     @Override
