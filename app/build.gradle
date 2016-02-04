@@ -9,8 +9,8 @@ android {
         applicationId "com.aaplab.robird"
         minSdkVersion 16
         targetSdkVersion 23
-        versionCode 74
-        versionName "1.2.7"
+        versionCode 75
+        versionName "1.2.8"
     }
 }
 
