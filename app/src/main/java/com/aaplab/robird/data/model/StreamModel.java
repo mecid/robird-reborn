@@ -5,7 +5,9 @@ import android.net.Uri;
 
 import com.aaplab.robird.data.SqlBriteContentProvider;
 import com.aaplab.robird.data.entity.Account;
+import com.aaplab.robird.data.entity.Direct;
 import com.aaplab.robird.data.entity.Tweet;
+import com.aaplab.robird.data.provider.contract.DirectContract;
 import com.aaplab.robird.data.provider.contract.TweetContract;
 import com.aaplab.robird.inject.Inject;
 
@@ -46,14 +48,13 @@ public final class StreamModel extends BaseTwitterModel {
 
             // shutdown stream consuming thread
             mTwitterStream.cleanUp();
+
+            // shutdown all TwitterStream threads.
+            mTwitterStream.shutdown();
         }
     }
 
-    // Streaming support for:
-    //  - favourites: done
-    //  - home:       done
-    //  - retweets:   done
-    //  - mentions:   no
+
     private class UserStatusListener implements UserStreamListener {
 
         private void saveStatus(Status status, long timelineId) {
@@ -68,7 +69,7 @@ public final class StreamModel extends BaseTwitterModel {
                     .toBlocking()
                     .first();
 
-            Timber.d("Inserted new tweet with URI=" + uri.toString());
+            Timber.d("Inserted new tweet with URI=%s", uri.toString());
         }
 
         private void deleteStatus(long statusId, long timelineId) {
@@ -80,8 +81,25 @@ public final class StreamModel extends BaseTwitterModel {
                     .toBlocking()
                     .first();
 
-            Timber.d(String.format("Deleting tweet with id=%d; Removal status: %d",
-                    statusId, tweetsDeleted));
+            Timber.d("Deleting tweet with id=%d; Removal status: %d",
+                    statusId, tweetsDeleted);
+        }
+
+        private long getTimelineId(Status status) {
+            if (isRetweeted(status)) {
+                return TimelineModel.RETWEETS_ID;
+            }
+
+            if (isCurrentUserMentioned(status.getUserMentionEntities())) {
+                return TimelineModel.MENTIONS_ID;
+            }
+
+            return TimelineModel.HOME_ID;
+        }
+
+        private boolean isRetweeted(Status status) {
+            return status.isRetweet() && status.getRetweetedStatus()
+                    .getUser().getId() == mAccount.userId();
         }
 
         private boolean isCurrentUserMentioned(UserMentionEntity[] mentions) {
@@ -98,35 +116,15 @@ public final class StreamModel extends BaseTwitterModel {
             return false;
         }
 
-        private boolean isRetweeted(Status status) {
-            return status.isRetweet() && status.getRetweetedStatus()
-                    .getUser().getId() == mAccount.userId();
-        }
-
-        private long getTimelineId(Status status) {
-            if (isRetweeted(status)) {
-                System.out.println("Retweeted");
-                return TimelineModel.RETWEETS_ID;
-            }
-
-            if (isCurrentUserMentioned(status.getUserMentionEntities())) {
-                System.out.println("Mentioned");
-                return TimelineModel.MENTIONS_ID;
-            }
-
-            System.out.println("Home");
-            return TimelineModel.HOME_ID;
-        }
-
         @Override
         public void onStatus(Status status) {
-            Timber.d("onStatus @" + status.getUser().getScreenName() + " - " + status.getText());
+            Timber.d("onStatus @%s - %s", status.getUser().getScreenName(), status.getText());
             saveStatus(status, getTimelineId(status));
         }
 
         @Override
         public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
-            Timber.d("Got a status deletion notice id:" + statusDeletionNotice.getStatusId());
+            Timber.d("Got a status deletion notice id: %s", statusDeletionNotice.getStatusId());
             deleteStatus(statusDeletionNotice.getStatusId(), TimelineModel.HOME_ID);
         }
 
@@ -138,11 +136,9 @@ public final class StreamModel extends BaseTwitterModel {
         @Override
         public void onFavorite(User source, User target, Status favoritedStatus) {
             if (source.getId() == mAccount.userId()) {
-                Timber.d("onFavorite source:@"
-                        + source.getScreenName() + " target:@"
-                        + target.getScreenName() + " @"
-                        + favoritedStatus.getUser().getScreenName() + " - "
-                        + favoritedStatus.getText());
+                Timber.d("onFavorite source:@%s target:@%s @%s - %s",
+                        source.getScreenName(), target.getScreenName(),
+                        favoritedStatus.getUser().getScreenName(), favoritedStatus.getText());
 
                 saveStatus(favoritedStatus, TimelineModel.FAVORITES_ID);
             }
@@ -151,29 +147,43 @@ public final class StreamModel extends BaseTwitterModel {
         @Override
         public void onUnfavorite(User source, User target, Status unfavoritedStatus) {
             if (source.getId() == mAccount.userId()) {
-                Timber.d("onUnFavorite source:@"
-                        + source.getScreenName() + " target:@"
-                        + target.getScreenName() + " @"
-                        + unfavoritedStatus.getUser().getScreenName()
-                        + " - " + unfavoritedStatus.getText());
+                Timber.d("onUnFavorite source:@%s target:@%s @%s - %s",
+                        source.getScreenName(), target.getScreenName(),
+                        unfavoritedStatus.getUser().getScreenName(), unfavoritedStatus.getText());
 
                 deleteStatus(unfavoritedStatus.getId(), TimelineModel.FAVORITES_ID);
             }
         }
 
-        ///////////////////////////////////////////////////////////////////////////////////////////
-        // TODO Directs
-        ///////////////////////////////////////////////////////////////////////////////////////////
-
         @Override
         public void onDirectMessage(DirectMessage directMessage) {
-            System.out.println("onDirectMessage text:"
-                    + directMessage.getText());
+            Direct direct = Direct.from(directMessage);
+
+            ContentValues contentValues = direct.toContentValues();
+            contentValues.put(DirectContract.ACCOUNT_ID, mAccount.id());
+
+            Uri uri = mSqlBriteContentProvider
+                    .insert(DirectContract.CONTENT_URI, contentValues)
+                    .toBlocking()
+                    .first();
+
+            Timber.d("Inserted new direct message with URI=%s", uri.toString());
         }
 
         @Override
         public void onDeletionNotice(long directMessageId, long userId) {
             System.out.println("Got a direct message deletion notice id:" + directMessageId);
+            System.out.println("UserID and AccountId:" + userId + " | " + mAccount.id());
+
+            Integer directMessagesDeleted = mSqlBriteContentProvider.delete(TweetContract.CONTENT_URI,
+                    String.format("%s=%d AND %s=%d",
+                            DirectContract.DIRECT_ID, directMessageId,
+                            DirectContract.ACCOUNT_ID, mAccount.id()), null)
+                    .toBlocking()
+                    .first();
+
+            Timber.d("Deleting direct message with id=%d; Removal status: %d",
+                    directMessageId, directMessagesDeleted);
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////////
