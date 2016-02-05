@@ -87,4 +87,9 @@
     <string name="rate_limit">Rate limit exceeded. %d seconds until reset.</string>
     <string name="copy_url">Copy tweet url</string>
     <string name="notification_ringtone">Notification ringtone</string>
+    <string name="rate_title">Rate Robird Reborn</string>
+    <string name="rate_message">If you enjoy using this app, please take a moment to rate it. Thanks for your support!</string>
+    <string name="no_thanks">No thanks</string>
+    <string name="rate">Rate Now</string>
+    <string name="later">Later</string>
 </resources>

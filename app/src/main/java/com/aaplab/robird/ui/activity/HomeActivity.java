@@ -28,6 +28,7 @@ import android.widget.TextView;
 
 import com.aaplab.robird.AccountUpdateService;
 import com.aaplab.robird.Analytics;
+import com.aaplab.robird.AppRater;
 import com.aaplab.robird.R;
 import com.aaplab.robird.TimelineUpdateService;
 import com.aaplab.robird.data.entity.Account;
@@ -106,6 +107,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener,
         setContentView(R.layout.activity_home);
         ButterKnife.bind(this);
         setSupportActionBar(mToolbar);
+        AppRater.showRateDialogIfMeetsConditions(this);
 
         final View headerView = mNavigationView.inflateHeaderView(R.layout.navigation_header);
         avatars[0] = ButterKnife.findById(headerView, R.id.avatar);
@@ -215,11 +217,8 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener,
     @Override
     public boolean onNavigationItemSelected(final MenuItem menuItem) {
         if (menuItem.getItemId() != R.id.navigation_item_settings) {
-            selectNavigation(menuItem);
             if (mSelectedNavigationPosition != menuItem.getOrder() ||
                     mSelectedAccountId != mAccounts.get(0).id()) {
-                mSelectedAccountId = mAccounts.get(0).id();
-                mSelectedNavigationPosition = menuItem.getOrder();
                 mPager.post(new Runnable() {
                     @Override
                     public void run() {
@@ -227,6 +226,8 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener,
                     }
                 });
             }
+
+            selectNavigation(menuItem);
         } else {
             ActivityCompat.startActivity(this, new Intent(this, SettingsActivity.class), null);
         }
@@ -235,6 +236,8 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener,
     }
 
     public void selectNavigation(MenuItem menuItem) {
+        mSelectedAccountId = mAccounts.get(0).id();
+        mSelectedNavigationPosition = menuItem.getOrder();
         setTitle(menuItem.getTitle());
         menuItem.setChecked(true);
         mDrawerLayout.closeDrawers();
@@ -380,8 +383,15 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener,
                     })
                     .show(getSupportFragmentManager(), ComposeFragment.TAG_SHARE);
         } else {
+            final StringBuilder shareBuilder = new StringBuilder();
+
+            if (!TextUtils.isEmpty(reader.getSubject()))
+                shareBuilder.append(reader.getSubject()).append(" ");
+
+            shareBuilder.append(reader.getText());
+
             ComposeFragment
-                    .share(reader.getText().toString())
+                    .share(shareBuilder.toString())
                     .show(getSupportFragmentManager(), ComposeFragment.TAG_SHARE);
         }
     }

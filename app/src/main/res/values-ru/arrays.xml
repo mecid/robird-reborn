@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="background_update_period_entries">
+        <item>15 минут</item>
+        <item>30 минут</item>
+        <item>1 Час</item>
+        <item>12 часов</item>
+        <item>24 часа</item>
+    </string-array>
+</resources>
