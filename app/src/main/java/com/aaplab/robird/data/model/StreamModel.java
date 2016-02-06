@@ -72,19 +72,6 @@ public final class StreamModel extends BaseTwitterModel {
             Timber.d("Inserted new tweet with URI=%s", uri.toString());
         }
 
-        private void deleteStatus(long statusId, long timelineId) {
-            Integer tweetsDeleted = mSqlBriteContentProvider.delete(TweetContract.CONTENT_URI,
-                    String.format("%s=%d AND %s=%d AND %s=%d",
-                            TweetContract.TWEET_ID, statusId,
-                            TweetContract.ACCOUNT_ID, mAccount.id(),
-                            TweetContract.TIMELINE_ID, timelineId), null)
-                    .toBlocking()
-                    .first();
-
-            Timber.d("Deleting tweet with id=%d; Removal status: %d",
-                    statusId, tweetsDeleted);
-        }
-
         private long getTimelineId(Status status) {
             if (isRetweeted(status)) {
                 return TimelineModel.RETWEETS_ID;
@@ -125,7 +112,15 @@ public final class StreamModel extends BaseTwitterModel {
         @Override
         public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
             Timber.d("Got a status deletion notice id: %s", statusDeletionNotice.getStatusId());
-            deleteStatus(statusDeletionNotice.getStatusId(), TimelineModel.HOME_ID);
+
+            Integer tweetsDeleted = mSqlBriteContentProvider.delete(TweetContract.CONTENT_URI,
+                    String.format("%s=%d",
+                            TweetContract.TWEET_ID, statusDeletionNotice.getStatusId()), null)
+                    .toBlocking()
+                    .first();
+
+            Timber.d("Deleting tweet with id=%d; Removal status: %d",
+                    statusDeletionNotice.getStatusId(), tweetsDeleted);
         }
 
         @Override
@@ -151,7 +146,16 @@ public final class StreamModel extends BaseTwitterModel {
                         source.getScreenName(), target.getScreenName(),
                         unfavoritedStatus.getUser().getScreenName(), unfavoritedStatus.getText());
 
-                deleteStatus(unfavoritedStatus.getId(), TimelineModel.FAVORITES_ID);
+                Integer tweetsDeleted = mSqlBriteContentProvider.delete(TweetContract.CONTENT_URI,
+                        String.format("%s=%d AND %s=%d AND %s=%d",
+                                TweetContract.TWEET_ID, unfavoritedStatus.getId(),
+                                TweetContract.ACCOUNT_ID, mAccount.id(),
+                                TweetContract.TIMELINE_ID, TimelineModel.FAVORITES_ID), null)
+                        .toBlocking()
+                        .first();
+
+                Timber.d("Deleting tweet with id=%d; Removal status: %d",
+                        unfavoritedStatus.getId(), tweetsDeleted);
             }
         }
 
