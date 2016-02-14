@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import com.aaplab.robird.R;
 import com.volokh.danylo.video_player_manager.manager.PlayerItemChangeListener;
@@ -21,7 +22,9 @@ import butterknife.ButterKnife;
 /**
  * Created by majid on 14.02.16.
  */
-public class VideoFragment extends BaseFragment implements PlayerItemChangeListener, MediaPlayerWrapper.MainThreadMediaPlayerListener, View.OnClickListener {
+public class VideoFragment extends BaseFragment implements PlayerItemChangeListener,
+        MediaPlayerWrapper.MainThreadMediaPlayerListener, View.OnClickListener {
+
     public static VideoFragment create(String video) {
         final VideoFragment fragment = new VideoFragment();
 
@@ -31,6 +34,9 @@ public class VideoFragment extends BaseFragment implements PlayerItemChangeListe
 
         return fragment;
     }
+
+    @Bind(R.id.progress)
+    ProgressBar mProgressBar;
 
     @Bind(R.id.video_player)
     VideoPlayerView mVideoPlayerView;
@@ -92,6 +98,7 @@ public class VideoFragment extends BaseFragment implements PlayerItemChangeListe
 
     @Override
     public void onVideoPreparedMainThread() {
+        mProgressBar.setVisibility(View.GONE);
         mPlayButton.setVisibility(View.GONE);
     }
 
