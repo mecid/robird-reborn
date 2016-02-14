@@ -12,6 +12,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -23,6 +24,7 @@ import com.aaplab.robird.data.model.PrefsModel;
 import com.aaplab.robird.ui.activity.ImagesActivity;
 import com.aaplab.robird.ui.activity.TweetDetailsActivity;
 import com.aaplab.robird.ui.activity.UserProfileActivity;
+import com.aaplab.robird.ui.activity.VideoActivity;
 import com.aaplab.robird.util.LinkUtils;
 import com.aaplab.robird.util.NetworkUtils;
 import com.squareup.picasso.Picasso;
@@ -109,9 +111,10 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
         if (!TextUtils.isEmpty(tweet.media()) && !mIsMediaHiddenOnMobile && mShowMediaPreview) {
             final String[] media = tweet.media().split("\\+\\+\\+\\+\\+");
 
+            holder.playImageView.setVisibility(TextUtils.isEmpty(tweet.video()) ? View.GONE : View.VISIBLE);
             holder.mediaCountTextView.setVisibility(media.length > 1 ? View.VISIBLE : View.GONE);
             holder.mediaCountTextView.setText("" + media.length);
-            holder.mediaImageView.setVisibility(View.VISIBLE);
+            holder.mediaLayout.setVisibility(View.VISIBLE);
 
             Picasso.with(mActivity)
                     .load(media[0])
@@ -121,12 +124,15 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
             holder.mediaImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    ImagesActivity.start(mActivity, media);
+                    if (TextUtils.isEmpty(tweet.video()))
+                        ImagesActivity.start(mActivity, media);
+                    else
+                        VideoActivity.start(mActivity, tweet.video());
                 }
             });
         } else {
             holder.mediaCountTextView.setVisibility(View.GONE);
-            holder.mediaImageView.setVisibility(View.GONE);
+            holder.mediaLayout.setVisibility(View.GONE);
         }
 
         if (!mIsAvatarHiddenOnMobile) {
@@ -227,8 +233,14 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
         @Bind(R.id.full_name)
         TextView fullNameTextView;
 
+        @Bind(R.id.media_layout)
+        FrameLayout mediaLayout;
+
         @Bind(R.id.media)
         ImageView mediaImageView;
+
+        @Bind(R.id.play_button)
+        ImageView playImageView;
 
         @Bind(R.id.count)
         TextView mediaCountTextView;
