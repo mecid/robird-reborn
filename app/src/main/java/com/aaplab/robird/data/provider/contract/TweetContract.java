@@ -51,6 +51,9 @@ public interface TweetContract extends ProviGenBaseContract {
     public static final String MEDIA = "media";
 
     @Column(Column.Type.TEXT)
+    public static final String VIDEO = "video";
+
+    @Column(Column.Type.TEXT)
     public static final String MENTIONS = "mentions";
 
     @Column(Column.Type.INTEGER)
@@ -79,7 +82,7 @@ public interface TweetContract extends ProviGenBaseContract {
 
     public static final String[] PROJECTION = new String[]{
             _ID, TWEET_ID, IN_REPLY_TO_STATUS, CREATED_AT, TEXT, FAVORITED, RETWEETED_BY_ME,
-            USERNAME, FULLNAME, AVATAR, SOURCE, MEDIA, MENTIONS, RETWEETED_BY,
+            USERNAME, FULLNAME, AVATAR, SOURCE, MEDIA, VIDEO, MENTIONS, RETWEETED_BY,
             QUOTED_MEDIA, QUOTED_NAME, QUOTED_SCREEN_NAME, QUOTED_TEXT, QUOTED_ID
     };
 }
