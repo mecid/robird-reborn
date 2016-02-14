@@ -38,6 +38,8 @@ public final class StreamModel extends BaseTwitterModel {
         if (mTwitterStream != null) {
             mTwitterStream.addListener(new UserStatusListener());
             mTwitterStream.user();
+
+            Timber.d("Starting streaming for user=%s", mAccount.screenName());
         }
     }
 
@@ -51,6 +53,8 @@ public final class StreamModel extends BaseTwitterModel {
 
             // shutdown all TwitterStream threads.
             mTwitterStream.shutdown();
+
+            Timber.d("Stopping streaming for user=%s", mAccount.screenName());
         }
     }
 
@@ -146,6 +150,24 @@ public final class StreamModel extends BaseTwitterModel {
                         source.getScreenName(), target.getScreenName(),
                         unfavoritedStatus.getUser().getScreenName(), unfavoritedStatus.getText());
 
+                ContentValues tweetValues = new ContentValues();
+                tweetValues.put(TweetContract.FAVORITED, 0);
+
+                // Marking tweets with given id as unfavorited in all timelines except FAVOURITES_ID.
+                Integer numberOfTweetsUnfavorited = mSqlBriteContentProvider.update(TweetContract.CONTENT_URI,
+                        tweetValues, String.format("%s=%d AND %s=%d AND %s!=%d AND %s=%d",
+                                TweetContract.TWEET_ID, unfavoritedStatus.getId(),
+                                TweetContract.ACCOUNT_ID, mAccount.id(),
+                                TweetContract.TIMELINE_ID, TimelineModel.FAVORITES_ID,
+                                TweetContract.FAVORITED, 1), null)
+                        .toBlocking()
+                        .first();
+
+                Timber.d("Unfavorited tweets with id=%d - %d", unfavoritedStatus.getId(),
+                        numberOfTweetsUnfavorited);
+
+
+                // Deleting favorites with TimeLineID set to FAVORITES_ID
                 Integer tweetsDeleted = mSqlBriteContentProvider.delete(TweetContract.CONTENT_URI,
                         String.format("%s=%d AND %s=%d AND %s=%d",
                                 TweetContract.TWEET_ID, unfavoritedStatus.getId(),
@@ -176,8 +198,8 @@ public final class StreamModel extends BaseTwitterModel {
 
         @Override
         public void onDeletionNotice(long directMessageId, long userId) {
-            System.out.println("Got a direct message deletion notice id:" + directMessageId);
-            System.out.println("UserID and AccountId:" + userId + " | " + mAccount.id());
+            Timber.d("Got a direct message deletion notice with id=%d", directMessageId);
+            Timber.d("UserID=%d and AccountID=%d", userId, mAccount.id());
 
             Integer directMessagesDeleted = mSqlBriteContentProvider.delete(TweetContract.CONTENT_URI,
                     String.format("%s=%d AND %s=%d",

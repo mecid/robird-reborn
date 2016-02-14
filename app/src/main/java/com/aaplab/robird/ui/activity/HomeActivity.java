@@ -35,10 +35,10 @@ import com.aaplab.robird.data.entity.Account;
 import com.aaplab.robird.data.model.AccountModel;
 import com.aaplab.robird.data.model.BillingModel;
 import com.aaplab.robird.data.model.PrefsModel;
-import com.aaplab.robird.data.model.StreamModel;
 import com.aaplab.robird.data.model.TimelineModel;
 import com.aaplab.robird.ui.fragment.ComposeFragment;
 import com.aaplab.robird.ui.fragment.DirectsFragment;
+import com.aaplab.robird.ui.fragment.StreamFragment;
 import com.aaplab.robird.ui.fragment.TimelineFragment;
 import com.aaplab.robird.ui.fragment.TrendsFragment;
 import com.aaplab.robird.ui.fragment.UserListsFragment;
@@ -56,7 +56,6 @@ import icepick.Icicle;
 import jonathanfinerty.once.Once;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
@@ -98,8 +97,6 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener,
     private BillingModel mBillingModel;
     private List<Account> mAccounts;
     private PrefsModel mPrefsModel;
-
-    private StreamModel mStreamModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -165,31 +162,19 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener,
             handleShareIntent(reader);
         }
 
-        //////////////////////////////
-        // Only for testing purposes
-        //////////////////////////////
-        mAccountModel.accounts()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .map(new Func1<List<Account>, StreamModel>() {
-                    @Override
-                    public StreamModel call(List<Account> accounts) {
-                        System.out.println("HomeActivity.call: " + accounts.get(0).fullName());
-                        return new StreamModel(accounts.get(0));
-                    }
-                })
-                .subscribe(new Action1<StreamModel>() {
-                    @Override
-                    public void call(StreamModel streamModel) {
-                        mStreamModel = streamModel;
-                        mStreamModel.start();
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        throwable.printStackTrace();
-                    }
-                });
+        // if streaming is enabled, we need to make sure that
+        // StreamFragment is attached to FragmentManager
+        if (mPrefsModel.isTwitterStreamingEnabled()) {
+            Fragment streamFragment = getSupportFragmentManager()
+                    .findFragmentByTag(StreamFragment.class.getSimpleName());
+
+            // if we did not attach an instance earlier, we have to this now.
+            if (streamFragment == null) {
+                getSupportFragmentManager().beginTransaction()
+                        .add(StreamFragment.newInstance(), StreamFragment.class.getSimpleName())
+                        .commit();
+            }
+        }
     }
 
     @Override
@@ -454,9 +439,6 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener,
     @Override
     protected void onDestroy() {
         mBillingModel.onDestroy();
-        if (mStreamModel != null) {
-            mStreamModel.stop();
-        }
         super.onDestroy();
     }
 }

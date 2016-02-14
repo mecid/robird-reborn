@@ -95,13 +95,18 @@
 
         <Preference
             app:dependency="notifications"
-            app:title="@string/notification_ringtone"
-            app:key="notification_ringtone" />
+            app:key="notification_ringtone"
+            app:title="@string/notification_ringtone" />
 
         <SwitchPreferenceCompat
             app:dependency="background_update_service"
             app:key="tweetmarker"
             app:title="@string/tweetmarker" />
+
+        <SwitchPreferenceCompat
+            app:key="twitter_streaming"
+            app:summary="@string/twitter_streaming_summary"
+            app:title="@string/twitter_streaming" />
     </PreferenceCategory>
 
     <Preference
