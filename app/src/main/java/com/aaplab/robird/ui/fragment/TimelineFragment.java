@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.aaplab.robird.R;
 import com.aaplab.robird.data.entity.Account;
 import com.aaplab.robird.data.entity.Tweet;
+import com.aaplab.robird.data.model.PrefsModel;
 import com.aaplab.robird.data.model.TimelineModel;
 import com.aaplab.robird.util.DefaultObserver;
 
@@ -44,6 +45,7 @@ public class TimelineFragment extends BaseTimelineFragment {
     }
 
     private TimelineModel mTimelineModel;
+    private PrefsModel mPrefsModel;
     private TextView mUnreadCountTextView;
     private long mLastUnread;
 
@@ -52,6 +54,7 @@ public class TimelineFragment extends BaseTimelineFragment {
         super.onActivityCreated(savedInstanceState);
         mTimelineModel = new TimelineModel(mAccount,
                 getArguments().getLong("timeline_id", TimelineModel.HOME_ID));
+        mPrefsModel = new PrefsModel();
         mLastUnread = mTimelineModel.lastUnread();
         mRecyclerView.addOnScrollListener(new UnreadCounterScrollListener());
         setHasOptionsMenu(true);
@@ -70,16 +73,23 @@ public class TimelineFragment extends BaseTimelineFragment {
                             }
                         })
         );
+
+        // disable pull-to-refresh if streaming is enabled
+        mRefreshLayout.setEnabled(!mPrefsModel.isTwitterStreamingEnabled());
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
+
         inflater.inflate(R.menu.timeline, menu);
         MenuItem unreadMenuItem = menu.findItem(R.id.menu_unread);
+        MenuItem refreshMenuItem = menu.findItem(R.id.menu_refresh);
+
         final View actionView = MenuItemCompat.getActionView(unreadMenuItem);
-        mUnreadCountTextView = ButterKnife.findById(actionView, R.id.unread);
         final int unreadCount = findPosition(mLastUnread);
+
+        mUnreadCountTextView = ButterKnife.findById(actionView, R.id.unread);
         mUnreadCountTextView.setText("" + (unreadCount == -1 ? 0 : unreadCount));
         actionView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,6 +97,9 @@ public class TimelineFragment extends BaseTimelineFragment {
                 mLayoutManager.scrollToPosition(0);
             }
         });
+
+        // hide menu item if streaming is enabled
+        refreshMenuItem.setVisible(!mPrefsModel.isTwitterStreamingEnabled());
     }
 
     @Override
