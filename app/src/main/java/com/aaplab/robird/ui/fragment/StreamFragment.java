@@ -39,8 +39,6 @@ public final class StreamFragment extends Fragment {
 
         mStreamModels = new ArrayList<>();
         mSubscription = accountModel.accounts()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
                 .take(1)
                 .flatMap(new Func1<List<Account>, Observable<Account>>() {
                     @Override
@@ -51,14 +49,20 @@ public final class StreamFragment extends Fragment {
                 .map(new Func1<Account, StreamModel>() {
                     @Override
                     public StreamModel call(Account account) {
-                        (new TimelineModel(account, TimelineModel.HOME_ID)).update().toBlocking();
-                        (new TimelineModel(account, TimelineModel.MENTIONS_ID)).update().toBlocking();
-                        (new TimelineModel(account, TimelineModel.RETWEETS_ID)).update().toBlocking();
-                        (new TimelineModel(account, TimelineModel.FAVORITES_ID)).update().toBlocking();
+                        (new TimelineModel(account, TimelineModel.HOME_ID))
+                                .update().toBlocking().first();
+                        (new TimelineModel(account, TimelineModel.MENTIONS_ID))
+                                .update().toBlocking().first();
+                        (new TimelineModel(account, TimelineModel.RETWEETS_ID))
+                                .update().toBlocking().first();
+                        (new TimelineModel(account, TimelineModel.FAVORITES_ID))
+                                .update().toBlocking().first();
 
                         return new StreamModel(account);
                     }
                 })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new DefaultObserver<StreamModel>() {
                     @Override
                     public void onNext(StreamModel streamModel) {
