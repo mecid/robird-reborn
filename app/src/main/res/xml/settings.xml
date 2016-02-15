@@ -75,6 +75,11 @@
             app:title="@string/unlock_other_settings" />
 
         <SwitchPreferenceCompat
+            app:key="twitter_streaming"
+            app:summary="@string/twitter_streaming_summary"
+            app:title="@string/twitter_streaming" />
+
+        <SwitchPreferenceCompat
             app:defaultValue="true"
             app:key="background_update_service"
             app:title="@string/background_update_service" />
@@ -102,11 +107,6 @@
             app:dependency="background_update_service"
             app:key="tweetmarker"
             app:title="@string/tweetmarker" />
-
-        <SwitchPreferenceCompat
-            app:key="twitter_streaming"
-            app:summary="@string/twitter_streaming_summary"
-            app:title="@string/twitter_streaming" />
     </PreferenceCategory>
 
     <Preference

@@ -164,16 +164,10 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener,
 
         // if streaming is enabled, we need to make sure that
         // StreamFragment is attached to FragmentManager
-        if (mPrefsModel.isTwitterStreamingEnabled()) {
-            Fragment streamFragment = getSupportFragmentManager()
-                    .findFragmentByTag(StreamFragment.class.getSimpleName());
-
-            // if we did not attach an instance earlier, we have to this now.
-            if (streamFragment == null) {
-                getSupportFragmentManager().beginTransaction()
-                        .add(StreamFragment.newInstance(), StreamFragment.class.getSimpleName())
-                        .commit();
-            }
+        if (mPrefsModel.isTwitterStreamingEnabled() && savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(StreamFragment.create(), StreamFragment.class.getSimpleName())
+                    .commit();
         }
     }
 

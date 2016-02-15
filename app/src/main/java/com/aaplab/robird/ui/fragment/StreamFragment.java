@@ -6,14 +6,15 @@ import android.support.v4.app.Fragment;
 import com.aaplab.robird.data.entity.Account;
 import com.aaplab.robird.data.model.AccountModel;
 import com.aaplab.robird.data.model.StreamModel;
+import com.aaplab.robird.util.DefaultObserver;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.schedulers.Schedulers;
+import rx.subscriptions.Subscriptions;
 
 /**
  * Created by arazabishov on 2/14/16.
@@ -22,7 +23,7 @@ public final class StreamFragment extends Fragment {
     private List<StreamModel> mStreamModels;
     private Subscription mSubscription;
 
-    public static StreamFragment newInstance() {
+    public static StreamFragment create() {
         return new StreamFragment();
     }
 
@@ -37,9 +38,10 @@ public final class StreamFragment extends Fragment {
         mSubscription = accountModel.accounts()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<Account>>() {
+                .take(1)
+                .subscribe(new DefaultObserver<List<Account>>() {
                     @Override
-                    public void call(List<Account> accounts) {
+                    public void onNext(List<Account> accounts) {
                         for (Account account : accounts) {
                             StreamModel streamModel = new StreamModel(account);
                             streamModel.start();
@@ -55,9 +57,9 @@ public final class StreamFragment extends Fragment {
         super.onDestroy();
 
         // un-subscribing in order to prevent context leaks
-        if (mSubscription != null && !mSubscription.isUnsubscribed()) {
+        if (!mSubscription.isUnsubscribed()) {
             mSubscription.unsubscribe();
-            mSubscription = null;
+            mSubscription = Subscriptions.empty();
         }
 
         // Shutting down streaming
