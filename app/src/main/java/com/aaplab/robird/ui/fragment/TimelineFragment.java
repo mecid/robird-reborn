@@ -22,6 +22,7 @@ import com.aaplab.robird.util.DefaultObserver;
 import java.util.List;
 
 import butterknife.ButterKnife;
+import icepick.Icicle;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import twitter4j.RateLimitStatus;
@@ -43,6 +44,11 @@ public class TimelineFragment extends BaseTimelineFragment {
 
         return fragment;
     }
+
+    /* This variable will be used only
+    in cases when streaming is enabled*/
+    @Icicle
+    boolean mIsTimelineSyncedInitially;
 
     private TimelineModel mTimelineModel;
     private PrefsModel mPrefsModel;
@@ -74,8 +80,15 @@ public class TimelineFragment extends BaseTimelineFragment {
                         })
         );
 
-        // disable pull-to-refresh if streaming is enabled
-        mRefreshLayout.setEnabled(!mPrefsModel.isTwitterStreamingEnabled());
+        // Refresh only once before starting streaming
+        if (mPrefsModel.isTwitterStreamingEnabled()) {
+            if (!mIsTimelineSyncedInitially) {
+                setRefreshing(true);
+                onRefresh();
+            } else {
+                mRefreshLayout.setEnabled(false);
+            }
+        }
     }
 
     @Override
@@ -130,7 +143,14 @@ public class TimelineFragment extends BaseTimelineFragment {
                             @Override
                             public void onNext(Integer newTweetCount) {
                                 super.onNext(newTweetCount);
+
                                 setRefreshing(false);
+
+                                // mark timeline as refreshed
+                                mIsTimelineSyncedInitially = true;
+
+                                // disable pull-to-refresh if streaming is enabled
+                                mRefreshLayout.setEnabled(!mPrefsModel.isTwitterStreamingEnabled());
                             }
 
                             @Override
