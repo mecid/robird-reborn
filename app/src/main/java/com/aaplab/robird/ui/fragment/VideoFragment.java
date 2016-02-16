@@ -14,6 +14,7 @@ import com.volokh.danylo.video_player_manager.manager.SingleVideoPlayerManager;
 import com.volokh.danylo.video_player_manager.manager.VideoPlayerManager;
 import com.volokh.danylo.video_player_manager.meta.MetaData;
 import com.volokh.danylo.video_player_manager.ui.MediaPlayerWrapper;
+import com.volokh.danylo.video_player_manager.ui.ScalableTextureView;
 import com.volokh.danylo.video_player_manager.ui.VideoPlayerView;
 
 import butterknife.Bind;
@@ -51,6 +52,7 @@ public class VideoFragment extends BaseFragment implements PlayerItemChangeListe
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mVideo = getArguments().getString("video");
+        mVideoPlayerView.setScaleType(ScalableTextureView.ScaleType.FILL);
         mVideoPlayerManager = new SingleVideoPlayerManager(this);
         mVideoPlayerView.addMediaPlayerListener(this);
         mPlayButton.setOnClickListener(this);
