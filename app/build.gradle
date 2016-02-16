@@ -26,6 +26,7 @@ dependencies {
     compile 'com.android.support:design:23.1.1'
 
     compile 'it.sephiroth.android.library.imagezoom:imagezoom:1.0.5'
+    compile 'com.github.danylovolokh:video-player-manager:0.2.0'
     compile 'de.hdodenhof:circleimageview:2.0.0'
 
     compile 'com.jakewharton.timber:timber:4.1.0'
