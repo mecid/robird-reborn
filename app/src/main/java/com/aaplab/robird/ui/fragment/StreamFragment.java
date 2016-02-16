@@ -6,13 +6,10 @@ import android.support.v4.app.Fragment;
 import com.aaplab.robird.data.entity.Account;
 import com.aaplab.robird.data.model.AccountModel;
 import com.aaplab.robird.data.model.StreamModel;
-import com.aaplab.robird.data.model.TimelineModel;
 import com.aaplab.robird.util.DefaultObserver;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
@@ -23,8 +20,8 @@ import rx.subscriptions.Subscriptions;
  * Created by arazabishov on 2/14/16.
  */
 public final class StreamFragment extends Fragment {
-    private List<StreamModel> mStreamModels;
-    private Subscription mSubscription;
+    private Subscription mSubscription = Subscriptions.empty();
+    private StreamModel mStreamModel;
 
     public static StreamFragment create() {
         return new StreamFragment();
@@ -37,37 +34,21 @@ public final class StreamFragment extends Fragment {
 
         AccountModel accountModel = new AccountModel();
 
-        mStreamModels = new ArrayList<>();
+        // we have to fetch active user from database first
         mSubscription = accountModel.accounts()
-                .take(1)
-                .flatMap(new Func1<List<Account>, Observable<Account>>() {
+                .map(new Func1<List<Account>, Account>() {
                     @Override
-                    public Observable<Account> call(List<Account> accounts) {
-                        return Observable.from(accounts);
-                    }
-                })
-                .map(new Func1<Account, StreamModel>() {
-                    @Override
-                    public StreamModel call(Account account) {
-                        (new TimelineModel(account, TimelineModel.HOME_ID))
-                                .update().toBlocking().first();
-                        (new TimelineModel(account, TimelineModel.MENTIONS_ID))
-                                .update().toBlocking().first();
-                        (new TimelineModel(account, TimelineModel.RETWEETS_ID))
-                                .update().toBlocking().first();
-                        (new TimelineModel(account, TimelineModel.FAVORITES_ID))
-                                .update().toBlocking().first();
-
-                        return new StreamModel(account);
+                    public Account call(List<Account> accounts) {
+                        return accounts.get(0);
                     }
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new DefaultObserver<StreamModel>() {
+                .subscribe(new DefaultObserver<Account>() {
                     @Override
-                    public void onNext(StreamModel streamModel) {
-                        mStreamModels.add(streamModel);
-                        streamModel.start();
+                    public void onNext(Account account) {
+                        mStreamModel = new StreamModel(account);
+                        mStreamModel.start();
                     }
                 });
     }
@@ -79,12 +60,9 @@ public final class StreamFragment extends Fragment {
         // un-subscribing in order to prevent context leaks
         if (!mSubscription.isUnsubscribed()) {
             mSubscription.unsubscribe();
-            mSubscription = Subscriptions.empty();
-        }
 
-        // Shutting down streaming
-        for (StreamModel streamModel : mStreamModels) {
-            streamModel.stop();
+            // shutting down streaming
+            mStreamModel.stop();
         }
     }
 }
