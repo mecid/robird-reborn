@@ -60,6 +60,9 @@ public final class StreamFragment extends Fragment {
         // un-subscribing in order to prevent context leaks
         if (!mSubscription.isUnsubscribed()) {
             mSubscription.unsubscribe();
+        }
+
+        if (mStreamModel != null) {
 
             // shutting down streaming
             mStreamModel.stop();
