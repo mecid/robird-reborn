@@ -47,6 +47,12 @@ public final class StreamFragment extends Fragment {
                 .subscribe(new DefaultObserver<Account>() {
                     @Override
                     public void onNext(Account account) {
+                        // we have to shutdown stream
+                        // for previous user
+                        if (mStreamModel != null) {
+                            mStreamModel.stop();
+                        }
+
                         mStreamModel = new StreamModel(account);
                         mStreamModel.start();
                     }
