@@ -19,9 +19,6 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-
     // Android support libraries.
     compile 'com.google.android.gms:play-services-gcm:8.4.0'
     compile 'com.android.support:recyclerview-v7:23.1.1'
