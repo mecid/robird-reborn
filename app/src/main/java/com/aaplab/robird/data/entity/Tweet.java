@@ -11,6 +11,7 @@ import com.aaplab.robird.util.TweetLongerUtils;
 import com.aaplab.robird.util.TweetUtils;
 
 import auto.parcel.AutoParcel;
+import twitter4j.ExtendedMediaEntity;
 import twitter4j.MediaEntity;
 import twitter4j.Status;
 import twitter4j.URLEntity;
@@ -46,6 +47,9 @@ public abstract class Tweet implements Parcelable {
 
     @Nullable
     public abstract String media();
+
+    @Nullable
+    public abstract String video();
 
     public abstract String source();
 
@@ -88,13 +92,24 @@ public abstract class Tweet implements Parcelable {
         for (UserMentionEntity mention : status.getUserMentionEntities()) {
             sb.append("@").append(mention.getScreenName()).append(" ");
         }
+
         String mentions = sb.toString();
         sb = new StringBuilder();
 
-        MediaEntity[] mediaEntities = status.getExtendedMediaEntities();
+        String video = null;
+        String media = null;
+
+        ExtendedMediaEntity[] mediaEntities = status.getExtendedMediaEntities();
         if (mediaEntities != null && mediaEntities.length > 0) {
-            for (MediaEntity mediaEntity : mediaEntities) {
+            for (ExtendedMediaEntity mediaEntity : mediaEntities) {
                 sb.append(mediaEntity.getMediaURL()).append("+++++");
+
+                if (mediaEntities.length == 1) {
+                    final String type = mediaEntity.getType();
+                    if (TextUtils.equals(type, "video") || TextUtils.equals(type, "animated_gif")) {
+                        video = mediaEntity.getVideoVariants()[0].getUrl();
+                    }
+                }
             }
         }
 
@@ -109,6 +124,7 @@ public abstract class Tweet implements Parcelable {
             }
         }
 
+        // Extract tweetLonger
         if (urlEntities != null && urlEntities.length > 0) {
             for (URLEntity urlEntity : urlEntities) {
                 String detected = TweetLongerUtils.detectTwitLonger(urlEntity.getExpandedURL());
@@ -119,16 +135,13 @@ public abstract class Tweet implements Parcelable {
             }
         }
 
-        String media = null;
         if (!TextUtils.isEmpty(sb.toString()))
             media = sb.toString();
 
+        // Replace short url with media url
         if (status.getMediaEntities() != null && status.getMediaEntities().length > 0) {
             MediaEntity mediaEntity = status.getMediaEntities()[0];
             text = text.replaceAll(mediaEntity.getURL(), mediaEntity.getDisplayURL());
-
-            if (TextUtils.isEmpty(media))
-                media = mediaEntity.getMediaURL();
         }
 
         final Status quoted = status.getQuotedStatus();
@@ -187,7 +200,7 @@ public abstract class Tweet implements Parcelable {
         }
 
         return new AutoParcel_Tweet(0, tweetId, inReplyToStatus, createdAt, text, favorited,
-                retweetedByMe, retweetedBy, username, fullname, avatar, media, source, mentions,
+                retweetedByMe, retweetedBy, username, fullname, avatar, media, video, source, mentions,
                 quotedId, quotedText, quotedName, quotedScreenName, quotedMedia);
     }
 
@@ -204,6 +217,7 @@ public abstract class Tweet implements Parcelable {
         String retweetedBy = cursor.getString(cursor.getColumnIndexOrThrow(TweetContract.RETWEETED_BY));
         String text = cursor.getString(cursor.getColumnIndexOrThrow(TweetContract.TEXT));
         String media = cursor.getString(cursor.getColumnIndexOrThrow(TweetContract.MEDIA));
+        String video = cursor.getString(cursor.getColumnIndexOrThrow(TweetContract.VIDEO));
         String mentions = cursor.getString(cursor.getColumnIndexOrThrow(TweetContract.MENTIONS));
         String source = cursor.getString(cursor.getColumnIndexOrThrow(TweetContract.SOURCE));
         String quotedText = cursor.getString(cursor.getColumnIndexOrThrow(TweetContract.QUOTED_TEXT));
@@ -213,7 +227,7 @@ public abstract class Tweet implements Parcelable {
         long quotedId = cursor.getLong(cursor.getColumnIndexOrThrow(TweetContract.QUOTED_ID));
 
         return new AutoParcel_Tweet(id, tweetId, inReplyToStatus, createdAt, text, favorited,
-                retweetedByMe, retweetedBy, username, fullname, avatar, media, source, mentions,
+                retweetedByMe, retweetedBy, username, fullname, avatar, media, video, source, mentions,
                 quotedId, quotedText, quotedName, quotedScreenName, quotedMedia);
     }
 
@@ -229,6 +243,7 @@ public abstract class Tweet implements Parcelable {
         values.put(TweetContract.FAVORITED, favorited());
         values.put(TweetContract.FULLNAME, fullname());
         values.put(TweetContract.MEDIA, media());
+        values.put(TweetContract.VIDEO, video());
         values.put(TweetContract.MENTIONS, mentions());
         values.put(TweetContract.USERNAME, username());
         values.put(TweetContract.RETWEETED_BY, retweetedBy());
