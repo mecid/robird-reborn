@@ -12,41 +12,52 @@ android {
         versionCode 75
         versionName "1.2.8"
     }
+
+    packagingOptions {
+        exclude 'META-INF/LICENSE.txt'
+    }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    // Android support libraries.
     compile 'com.google.android.gms:play-services-gcm:8.4.0'
     compile 'com.android.support:recyclerview-v7:23.1.1'
-    compile 'com.android.support:preference-v7:23.1.1'
     compile 'com.android.support:preference-v14:23.1.1'
+    compile 'com.android.support:preference-v7:23.1.1'
     compile 'com.android.support:cardview-v7:23.1.1'
     compile 'com.android.support:palette-v7:23.1.1'
     compile 'com.android.support:customtabs:23.1.1'
     compile 'com.android.support:design:23.1.1'
 
-    compile 'it.sephiroth.android.library.imagezoom:imagezoom:1.0.5'
-    compile 'com.github.danylovolokh:video-player-manager:0.2.0'
-    compile 'de.hdodenhof:circleimageview:2.0.0'
+    // Square libraries.
+    compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'com.squareup.okhttp:okhttp:2.7.2'
+    compile 'com.squareup:otto:1.3.8'
 
+    // Jake Wharton libraries.
     compile 'com.jakewharton.timber:timber:4.1.0'
     compile 'com.jakewharton:butterknife:7.0.1'
 
+    // Twitter4J libraries.
+    compile 'org.twitter4j:twitter4j-stream:4.0.4'
+    compile 'org.twitter4j:twitter4j-core:4.0.4'
+
+    // Other
+    compile 'it.sephiroth.android.library.imagezoom:imagezoom:1.0.5'
+    compile 'com.github.danylovolokh:video-player-manager:0.2.0'
     compile 'com.anjlab.android.iab.v3:library:1.0.31'
     compile 'com.github.provigen:ProviGen-lib:2.0.1'
     compile 'com.jonathanfinerty.once:once:0.4.2'
-    compile 'org.twitter4j:twitter4j-core:4.0.4'
-    compile 'com.squareup.picasso:picasso:2.5.2'
-    compile 'com.squareup.okhttp:okhttp:2.7.2'
+    compile 'de.hdodenhof:circleimageview:2.0.0'
     compile 'com.twitter:twitter-text:1.13.0'
     compile 'io.reactivex:rxandroid:1.1.0'
     compile 'com.google.guava:guava:19.0'
 
-    compile 'com.github.frankiesardo:auto-parcel:0.3.1'
     apt 'com.github.frankiesardo:auto-parcel-processor:0.3.1'
+    compile 'com.github.frankiesardo:auto-parcel:0.3.1'
 
-    compile 'com.github.frankiesardo:icepick:2.3.6'
     apt 'com.github.frankiesardo:icepick-processor:2.3.6'
+    compile 'com.github.frankiesardo:icepick:2.3.6'
 
     compile 'com.yandex.android:mobmetricalib:2.30@aar'
 }

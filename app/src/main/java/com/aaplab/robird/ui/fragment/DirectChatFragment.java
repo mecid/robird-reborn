@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import com.aaplab.robird.data.entity.Account;
 import com.aaplab.robird.data.entity.Direct;
 import com.aaplab.robird.data.model.DirectsModel;
+import com.aaplab.robird.data.model.PrefsModel;
 import com.aaplab.robird.ui.adapter.DirectsAdapter;
 import com.aaplab.robird.util.DefaultObserver;
 
@@ -32,6 +33,7 @@ public class DirectChatFragment extends BaseSwipeToRefreshRecyclerFragment {
     private DirectsModel mDirectsModel;
     private Account mAccount;
     private String mUserName;
+    private PrefsModel mPrefsModel;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -39,6 +41,7 @@ public class DirectChatFragment extends BaseSwipeToRefreshRecyclerFragment {
         mAccount = getArguments().getParcelable("account");
         mUserName = getArguments().getString("username");
         mDirectsModel = new DirectsModel(mAccount);
+        mPrefsModel = new PrefsModel();
 
         mSubscriptions.add(
                 mDirectsModel
@@ -54,6 +57,16 @@ public class DirectChatFragment extends BaseSwipeToRefreshRecyclerFragment {
                             }
                         })
         );
+
+        // Refresh only once before starting streaming
+        if (mPrefsModel.isTwitterStreamingEnabled()) {
+            if (savedInstanceState == null) {
+                setRefreshing(true);
+                onRefresh();
+            } else {
+                mRefreshLayout.setEnabled(false);
+            }
+        }
     }
 
     @Override
@@ -69,6 +82,9 @@ public class DirectChatFragment extends BaseSwipeToRefreshRecyclerFragment {
                             public void onNext(Integer integer) {
                                 super.onNext(integer);
                                 setRefreshing(false);
+
+                                // disable pull-to-refresh if streaming is enabled
+                                mRefreshLayout.setEnabled(!mPrefsModel.isTwitterStreamingEnabled());
                             }
                         })
         );

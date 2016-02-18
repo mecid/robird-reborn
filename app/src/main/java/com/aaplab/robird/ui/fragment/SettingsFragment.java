@@ -50,6 +50,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
     private Preference mUnlockOtherPreference;
     private Preference mRestorePreference;
     private Preference mNotificationRingtonePreference;
+    private Preference mTwitterStreamingPreference;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -113,6 +114,9 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         mNotificationRingtonePreference = findPreference(PrefsModel.NOTIFICATION_RINGTONE);
         mNotificationRingtonePreference.setOnPreferenceClickListener(this);
 
+        mTwitterStreamingPreference = findPreference(PrefsModel.TWITTER_STREAMING);
+        mTwitterStreamingPreference.setOnPreferenceChangeListener(this);
+
         enablePurchasedSettings();
     }
 
@@ -146,12 +150,12 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
 
     @Override
     public boolean onPreferenceChange(Preference preference, Object o) {
-        // UI preference changed
+        // UI or Streaming preference changed
         if (preference == mThemePreference || preference == mHighlightTimelineLinksPreference ||
                 preference == mShowClientNameInTimelinePreference || preference == mTimelineFontSizePreference ||
                 preference == mHideMediaPreference || preference == mHideAvatarsPreference ||
                 preference == mShowAbsoluteTimePreference || preference == mCompactTimelinePreference ||
-                preference == mShowMediaPreviewPreference) {
+                preference == mShowMediaPreviewPreference || preference == mTwitterStreamingPreference) {
 
             Snackbar.make(getActivity().findViewById(R.id.coordinator),
                     R.string.need_app_restart, Snackbar.LENGTH_INDEFINITE).show();

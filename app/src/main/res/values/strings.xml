@@ -71,6 +71,8 @@
     <string name="notifications">Notifications</string>
     <string name="new_mentions">You have %d unread mentions</string>
     <string name="tweetmarker">TweetMarker</string>
+    <string name="twitter_streaming">Streaming</string>
+    <string name="twitter_streaming_summary">Enables support of twitter streaming</string>
     <string name="native_retweet">Native</string>
     <string name="quote_retweet">Quote</string>
     <string name="save">Save</string>

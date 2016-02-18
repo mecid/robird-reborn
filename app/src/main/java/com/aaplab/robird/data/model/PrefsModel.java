@@ -25,6 +25,7 @@ public final class PrefsModel {
     public static final String TWEETMARKER = "tweetmarker";
     public static final String MEDIA_PREVIEW = "media_preview";
     public static final String NOTIFICATION_RINGTONE = "notification_ringtone";
+    public static final String TWITTER_STREAMING = "twitter_streaming";
 
     private final SharedPreferences mPreferences = Inject.preferences();
 
@@ -95,5 +96,9 @@ public final class PrefsModel {
 
     public String notificationSound() {
         return mPreferences.getString(NOTIFICATION_RINGTONE, "");
+    }
+
+    public boolean isTwitterStreamingEnabled() {
+        return mPreferences.getBoolean(TWITTER_STREAMING, false);
     }
 }

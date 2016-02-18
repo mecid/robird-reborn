@@ -16,10 +16,10 @@ public abstract class BaseTwitterModel {
 
     public BaseTwitterModel(Account account) {
         mAccount = account;
-        mTwitter = configure(account);
+        mTwitter = configureTwitter(account);
     }
 
-    private static Twitter configure(Account account) {
+    private static Twitter configureTwitter(Account account) {
         final ConfigurationBuilder builder = new ConfigurationBuilder();
 
         builder.setOAuthConsumerKey(Config.TWITTER_CONSUMER_KEY);

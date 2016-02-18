@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import com.aaplab.robird.data.entity.Account;
 import com.aaplab.robird.data.entity.Direct;
 import com.aaplab.robird.data.model.DirectsModel;
+import com.aaplab.robird.data.model.PrefsModel;
 import com.aaplab.robird.ui.adapter.DirectsAdapter;
 import com.aaplab.robird.util.DefaultObserver;
 import com.google.common.collect.Ordering;
@@ -35,12 +36,14 @@ public class DirectsFragment extends BaseSwipeToRefreshRecyclerFragment {
 
     private DirectsModel mDirectsModel;
     private Account mAccount;
+    private PrefsModel mPrefsModel;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mAccount = getArguments().getParcelable("account");
         mDirectsModel = new DirectsModel(mAccount);
+        mPrefsModel = new PrefsModel();
 
         mSubscriptions.add(
                 mDirectsModel
@@ -55,11 +58,22 @@ public class DirectsFragment extends BaseSwipeToRefreshRecyclerFragment {
                             }
                         })
         );
+
+        // Refresh only once before starting streaming
+        if (mPrefsModel.isTwitterStreamingEnabled()) {
+            if (savedInstanceState == null) {
+                setRefreshing(true);
+                onRefresh();
+            } else {
+                mRefreshLayout.setEnabled(false);
+            }
+        }
     }
 
     @Override
     public void onRefresh() {
         super.onRefresh();
+
         mSubscriptions.add(
                 mDirectsModel
                         .update()
@@ -70,6 +84,9 @@ public class DirectsFragment extends BaseSwipeToRefreshRecyclerFragment {
                             public void onNext(Integer integer) {
                                 super.onNext(integer);
                                 setRefreshing(false);
+
+                                // disable pull-to-refresh if streaming is enabled
+                                mRefreshLayout.setEnabled(!mPrefsModel.isTwitterStreamingEnabled());
                             }
                         })
         );

@@ -71,6 +71,8 @@
     <string name="notifications">Уведомления</string>
     <string name="new_mentions">You have %d unread mentions</string>
     <string name="tweetmarker">TweetMarker</string>
+    <string name="twitter_streaming">Streaming</string>
+    <string name="twitter_streaming_summary">Активация поддержки twitter streaming-а</string>
     <string name="native_retweet">Простой</string>
     <string name="quote_retweet">Цитата</string>
     <string name="save">Сохранить</string>

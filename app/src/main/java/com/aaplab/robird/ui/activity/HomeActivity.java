@@ -38,6 +38,7 @@ import com.aaplab.robird.data.model.PrefsModel;
 import com.aaplab.robird.data.model.TimelineModel;
 import com.aaplab.robird.ui.fragment.ComposeFragment;
 import com.aaplab.robird.ui.fragment.DirectsFragment;
+import com.aaplab.robird.ui.fragment.StreamFragment;
 import com.aaplab.robird.ui.fragment.TimelineFragment;
 import com.aaplab.robird.ui.fragment.TrendsFragment;
 import com.aaplab.robird.ui.fragment.UserListsFragment;
@@ -159,6 +160,14 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener,
         final ShareCompat.IntentReader reader = ShareCompat.IntentReader.from(this);
         if (reader.isShareIntent()) {
             handleShareIntent(reader);
+        }
+
+        // if streaming is enabled, we need to make sure that
+        // StreamFragment is attached to FragmentManager
+        if (mPrefsModel.isTwitterStreamingEnabled() && savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(StreamFragment.create(), StreamFragment.class.getSimpleName())
+                    .commit();
         }
     }
 
