@@ -11,6 +11,9 @@ import com.aaplab.robird.data.provider.contract.DirectContract;
 import com.aaplab.robird.data.provider.contract.TweetContract;
 import com.aaplab.robird.inject.Inject;
 
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
 import timber.log.Timber;
 import twitter4j.DirectMessage;
 import twitter4j.StallWarning;
@@ -24,6 +27,8 @@ import twitter4j.UserMentionEntity;
 import twitter4j.UserStreamListener;
 
 public final class StreamModel extends BaseTwitterModel {
+    private static final Executor EXECUTOR = Executors.newSingleThreadExecutor();
+
     private final TwitterStream mTwitterStream;
     private final SqlBriteContentProvider mSqlBriteContentProvider;
 
@@ -35,27 +40,27 @@ public final class StreamModel extends BaseTwitterModel {
     }
 
     public void start() {
-        if (mTwitterStream != null) {
-            mTwitterStream.addListener(new UserStatusListener());
-            mTwitterStream.user();
-
-            Timber.d("Starting streaming for user=%s", mAccount.screenName());
-        }
+        EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                if (mTwitterStream != null) {
+                    mTwitterStream.addListener(new UserStatusListener());
+                    mTwitterStream.user();
+                }
+            }
+        });
     }
 
     public void stop() {
-        if (mTwitterStream != null) {
-            // remove reference to listener
-            mTwitterStream.clearListeners();
-
-            // shutdown stream consuming thread
-            mTwitterStream.cleanUp();
-
-            // shutdown all TwitterStream threads.
-            mTwitterStream.shutdown();
-
-            Timber.d("Stopping streaming for user=%s", mAccount.screenName());
-        }
+        EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                if (mTwitterStream != null) {
+                    mTwitterStream.clearListeners();
+                    mTwitterStream.shutdown();
+                }
+            }
+        });
     }
 
 
