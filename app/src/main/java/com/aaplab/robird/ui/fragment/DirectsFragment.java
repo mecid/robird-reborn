@@ -59,8 +59,7 @@ public class DirectsFragment extends BaseSwipeToRefreshRecyclerFragment {
                         })
         );
 
-        // Refresh only once before starting streaming
-        if (mPrefsModel.isTwitterStreamingEnabled()) {
+        if (mPrefsModel.isStreamingEnabled(getActivity())) {
             if (savedInstanceState == null) {
                 setRefreshing(true);
                 onRefresh();
@@ -84,9 +83,7 @@ public class DirectsFragment extends BaseSwipeToRefreshRecyclerFragment {
                             public void onNext(Integer integer) {
                                 super.onNext(integer);
                                 setRefreshing(false);
-
-                                // disable pull-to-refresh if streaming is enabled
-                                mRefreshLayout.setEnabled(!mPrefsModel.isTwitterStreamingEnabled());
+                                mRefreshLayout.setEnabled(!mPrefsModel.isStreamingEnabled(getActivity()));
                             }
                         })
         );

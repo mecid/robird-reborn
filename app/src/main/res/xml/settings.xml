@@ -76,8 +76,13 @@
 
         <SwitchPreferenceCompat
             app:key="twitter_streaming"
-            app:summary="@string/twitter_streaming_summary"
             app:title="@string/twitter_streaming" />
+
+        <SwitchPreferenceCompat
+            app:defaultValue="true"
+            app:dependency="twitter_streaming"
+            app:key="twitter_streaming_wifi"
+            app:title="@string/twitter_streaming_wifi" />
 
         <SwitchPreferenceCompat
             app:defaultValue="true"

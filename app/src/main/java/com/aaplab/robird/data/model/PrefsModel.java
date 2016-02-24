@@ -1,9 +1,11 @@
 package com.aaplab.robird.data.model;
 
 import android.app.AlarmManager;
+import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.aaplab.robird.inject.Inject;
+import com.aaplab.robird.util.NetworkUtils;
 
 /**
  * Created by majid on 01.09.15.
@@ -25,6 +27,7 @@ public final class PrefsModel {
     public static final String TWEETMARKER = "tweetmarker";
     public static final String MEDIA_PREVIEW = "media_preview";
     public static final String NOTIFICATION_RINGTONE = "notification_ringtone";
+    public static final String TWITTER_STREAMING_WIFI = "twitter_streaming_wifi";
     public static final String TWITTER_STREAMING = "twitter_streaming";
 
     private final SharedPreferences mPreferences = Inject.preferences();
@@ -98,7 +101,10 @@ public final class PrefsModel {
         return mPreferences.getString(NOTIFICATION_RINGTONE, "");
     }
 
-    public boolean isTwitterStreamingEnabled() {
-        return mPreferences.getBoolean(TWITTER_STREAMING, false);
+    public boolean isStreamingEnabled(Context context) {
+        final boolean streaming = mPreferences.getBoolean(TWITTER_STREAMING, false);
+        final boolean wifiOnly = mPreferences.getBoolean(TWITTER_STREAMING_WIFI, true);
+
+        return streaming && (!wifiOnly || NetworkUtils.isWifi(context));
     }
 }

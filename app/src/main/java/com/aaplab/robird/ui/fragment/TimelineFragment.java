@@ -74,8 +74,7 @@ public class TimelineFragment extends BaseTimelineFragment {
                         })
         );
 
-        // Refresh only once before starting streaming
-        if (mPrefsModel.isTwitterStreamingEnabled()) {
+        if (mPrefsModel.isStreamingEnabled(getActivity())) {
             if (savedInstanceState == null) {
                 setRefreshing(true);
                 onRefresh();
@@ -105,8 +104,7 @@ public class TimelineFragment extends BaseTimelineFragment {
             }
         });
 
-        // hide menu item if streaming is enabled
-        refreshMenuItem.setVisible(!mPrefsModel.isTwitterStreamingEnabled());
+        refreshMenuItem.setVisible(!mPrefsModel.isStreamingEnabled(getActivity()));
     }
 
     @Override
@@ -140,9 +138,7 @@ public class TimelineFragment extends BaseTimelineFragment {
                                 super.onNext(newTweetCount);
 
                                 setRefreshing(false);
-
-                                // disable pull-to-refresh if streaming is enabled
-                                mRefreshLayout.setEnabled(!mPrefsModel.isTwitterStreamingEnabled());
+                                mRefreshLayout.setEnabled(!mPrefsModel.isStreamingEnabled(getActivity()));
                             }
 
                             @Override
