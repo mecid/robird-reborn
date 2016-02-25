@@ -10,7 +10,17 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.List;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.X509TrustManager;
 
 import timber.log.Timber;
 import twitter4j.HttpParameter;
@@ -59,18 +69,13 @@ public class TweetMarkerUtils {
                     .post(RequestBody.create(JSON, body.toString()))
                     .build();
 
-            final Response response = new OkHttpClient().newCall(request).execute();
-            return new JSONObject(response.body().string()).getJSONObject(collection).getLong("id");
-        } catch (JSONException | IOException e) {
+            final Response response = createHttpClientWithoutSSL().newCall(request).execute();
+            if (response.isSuccessful()) return lastRead;
+        } catch (JSONException | IOException | KeyManagementException | NoSuchAlgorithmException e) {
             Timber.i(e, "");
         }
 
         return -1;
-    }
-
-    private static String generateVerifyCredentialsAuthorizationHeader(String verifyCredentialsUrl, OAuthAuthorization oauth) {
-        List<HttpParameter> oauthSignatureParams = oauth.generateOAuthSignatureHttpParams("GET", verifyCredentialsUrl);
-        return "OAuth realm=\"http://api.twitter.com/\"," + OAuthAuthorization.encodeParameters(oauthSignatureParams, ",", true);
     }
 
     public static long get(String collection, String user) {
@@ -86,13 +91,52 @@ public class TweetMarkerUtils {
                 .build();
 
         try {
-            final Response response = new OkHttpClient().newCall(request).execute();
+            final Response response = createHttpClientWithoutSSL().newCall(request).execute();
             JSONObject json = new JSONObject(response.body().string());
             return json.getJSONObject(collection).getLong("id");
-        } catch (IOException | JSONException e) {
+        } catch (IOException | JSONException | NoSuchAlgorithmException | KeyManagementException e) {
             Timber.i(e, "");
         }
 
         return -1;
+    }
+
+    private static String generateVerifyCredentialsAuthorizationHeader(String verifyCredentialsUrl, OAuthAuthorization oauth) {
+        List<HttpParameter> oauthSignatureParams = oauth.generateOAuthSignatureHttpParams("GET", verifyCredentialsUrl);
+        return "OAuth realm=\"http://api.twitter.com/\"," + OAuthAuthorization.encodeParameters(oauthSignatureParams, ",", true);
+    }
+
+    private static OkHttpClient createHttpClientWithoutSSL() throws KeyManagementException, NoSuchAlgorithmException {
+        final OkHttpClient client = new OkHttpClient();
+
+        final HostnameVerifier hostnameVerifier = new HostnameVerifier() {
+            @Override
+            public boolean verify(String s, SSLSession sslSession) {
+                return true;
+            }
+        };
+
+        SSLContext context = SSLContext.getInstance("TLS");
+        context.init(null, new X509TrustManager[]{new X509TrustManager() {
+            @Override
+            public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+
+            }
+
+            @Override
+            public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+
+            }
+
+            @Override
+            public X509Certificate[] getAcceptedIssuers() {
+                return new X509Certificate[0];
+            }
+        }}, new SecureRandom());
+
+        client.setHostnameVerifier(hostnameVerifier);
+        client.setSslSocketFactory(context.getSocketFactory());
+
+        return client;
     }
 }
