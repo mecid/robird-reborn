@@ -50,7 +50,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
     private Preference mUnlockOtherPreference;
     private Preference mRestorePreference;
     private Preference mNotificationRingtonePreference;
-    private Preference mTwitterStreamingPreference;
+    private Preference mStreamingPreference;
+    private Preference mStreamingOnWifiPreference;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -114,8 +115,11 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         mNotificationRingtonePreference = findPreference(PrefsModel.NOTIFICATION_RINGTONE);
         mNotificationRingtonePreference.setOnPreferenceClickListener(this);
 
-        mTwitterStreamingPreference = findPreference(PrefsModel.TWITTER_STREAMING);
-        mTwitterStreamingPreference.setOnPreferenceChangeListener(this);
+        mStreamingPreference = findPreference(PrefsModel.TWITTER_STREAMING);
+        mStreamingPreference.setOnPreferenceChangeListener(this);
+
+        mStreamingOnWifiPreference = findPreference(PrefsModel.TWITTER_STREAMING_WIFI);
+        mStreamingOnWifiPreference.setOnPreferenceChangeListener(this);
 
         enablePurchasedSettings();
     }
@@ -155,7 +159,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
                 preference == mShowClientNameInTimelinePreference || preference == mTimelineFontSizePreference ||
                 preference == mHideMediaPreference || preference == mHideAvatarsPreference ||
                 preference == mShowAbsoluteTimePreference || preference == mCompactTimelinePreference ||
-                preference == mShowMediaPreviewPreference || preference == mTwitterStreamingPreference) {
+                preference == mShowMediaPreviewPreference ||
+                preference == mStreamingPreference || mStreamingOnWifiPreference == preference) {
 
             Snackbar.make(getActivity().findViewById(R.id.coordinator),
                     R.string.need_app_restart, Snackbar.LENGTH_INDEFINITE).show();

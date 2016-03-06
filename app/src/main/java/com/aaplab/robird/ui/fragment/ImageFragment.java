@@ -1,6 +1,7 @@
 package com.aaplab.robird.ui.fragment;
 
 import android.Manifest;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -93,6 +94,11 @@ public class ImageFragment extends BaseFragment implements View.OnTouchListener,
             @Override
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                 final String uri = MediaStore.Images.Media.insertImage(Inject.contentResolver(), bitmap, "", "");
+
+                final ContentValues values = new ContentValues();
+                values.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis());
+                Inject.contentResolver().update(Uri.parse(uri), values, null, null);
+
                 getActivity().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse(uri)));
                 Snackbar.make(getActivity().findViewById(R.id.coordinator),
                         R.string.image_saved, Snackbar.LENGTH_SHORT).show();
