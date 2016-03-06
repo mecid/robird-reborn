@@ -101,6 +101,7 @@ public class TimelineFragment extends BaseTimelineFragment {
             @Override
             public void onClick(View view) {
                 mLayoutManager.scrollToPosition(0);
+                mLastUnread = findFirstVisibleTweetId();
             }
         });
 
