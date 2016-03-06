@@ -59,7 +59,9 @@ public class RobirdContentProvider extends ProviGenProvider {
             database.endTransaction();
         }
 
-        getContext().getContentResolver().notifyChange(uri, null);
+        if (values.length > 0)
+            getContext().getContentResolver().notifyChange(uri, null);
+
         database.close();
 
         return values.length;
